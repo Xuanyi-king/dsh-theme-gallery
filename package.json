@@ -9,6 +9,7 @@
     "test": "npm run test --workspaces",
     "pack:shanhe": "npm pack -w themes/shanhe",
     "pack:ultraman": "npm pack -w themes/ultraman",
-    "pack:perfect-world": "npm pack -w themes/perfect-world"
+    "pack:perfect-world": "npm pack -w themes/perfect-world",
+    "pack:flame-emperor": "npm pack -w themes/flame-emperor"
   }
 }

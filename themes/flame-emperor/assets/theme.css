@@ -1,0 +1,63 @@
+/* Original flame scene is embedded at build time and stays offline. */
+body[data-yandi-theme] {
+  --dsw-focus-ring-color: #62dcd2;
+  --dsw-elevation-stroke-color: rgba(89, 210, 199, .38);
+  background-color: #111318;
+  color: #edf6f3;
+}
+body[data-yandi-theme] main,
+body[data-yandi-theme] [role="main"] {
+  background-color: #111318;
+  background-image: linear-gradient(90deg, rgba(9,13,17,.68), rgba(9,13,17,.50) 55%, rgba(9,13,17,.12)), url("__SCENE_URL__");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+body[data-yandi-theme] :is(main,[role="main"]) :is(h1,h2) {
+  color: #f6e8d9;
+  letter-spacing: .035em;
+  text-shadow: 0 3px 20px rgba(9,10,12,.9), 0 0 15px rgba(227,113,65,.24);
+}
+body[data-yandi-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="true"]) { caret-color: #62dcd2; }
+body[data-yandi-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="true"]):focus-visible { outline-color: #62dcd2; }
+/* Visual status overlay only: preserve the original accessible announcement. */
+body[data-yandi-theme] button[data-turn-process][data-yandi-running] {
+  position: relative;
+  color: #72e8db;
+  background-image: linear-gradient(90deg, transparent, #e97842 25%, #68e7da 50%, #e97842 75%, transparent);
+  background-size: 250% 1px;
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+  animation: yandi-flame-flow 2.9s ease-in-out infinite;
+}
+body[data-yandi-theme] button[data-turn-process][data-yandi-running] > span:first-child { opacity: 0; }
+body[data-yandi-theme] button[data-turn-process][data-yandi-running]::before {
+  content: ''; position: absolute; top: 1px; left: 1px; width: 20px; height: 20px;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%236deada' d='M12 2C9 5 8 8 9 11c-2-2-4-3-7-3 0 5 2 9 6 10-2 0-3 0-5-1 2 4 5 6 9 6s7-2 9-6c-2 1-3 1-5 1 4-1 6-5 6-10-3 0-5 1-7 3 1-3 0-6-3-9Zm0 5c2 3 2 7 0 10-2-3-2-7 0-10Z'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 0 5px #16aab1);
+  pointer-events: none;
+  animation: yandi-flame-breathe 2.2s ease-in-out infinite;
+}
+body[data-yandi-theme] button[data-turn-process][data-yandi-running]::after {
+  content: attr(data-yandi-label); position: absolute; left: 26px; top: 0;
+  max-width: calc(100% - 26px); overflow: hidden; white-space: nowrap;
+  text-overflow: ellipsis; line-height: 24px; pointer-events: none;
+}
+@keyframes yandi-flame-flow {
+  0%, 100% { background-position: 100% 100%; }
+  50% { background-position: 0 100%; }
+}
+@keyframes yandi-flame-breathe {
+  0%, 100% { opacity: .65; transform: translateY(1px) scale(.85); }
+  50% { opacity: 1; transform: translateY(-2px) scale(1.15); }
+}
+@media (max-width: 700px) {
+  body[data-yandi-theme] main,
+  body[data-yandi-theme] [role="main"] { background-position: 66% center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-yandi-theme] button[data-turn-process][data-yandi-running],
+  body[data-yandi-theme] button[data-turn-process][data-yandi-running]::before {
+    animation: none; background-position: center bottom;
+  }
+}
