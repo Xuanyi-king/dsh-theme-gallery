@@ -6,8 +6,9 @@
 | --- | --- | --- | --- |
 | 山河剑意 | [查看样图](themes/shanhe/assets/concept-preview.webp) | 宣纸、水墨、朱砂、流动墨线 | [`themes/shanhe`](themes/shanhe/) |
 | 光之巨人（奥特曼灵感） | [查看样图](themes/ultraman/assets/concept-preview.webp) | 红银点缀、星空、蓝色能量核心 | [`themes/ultraman`](themes/ultraman/) |
+| 荒天帝意象（完美世界灵感） | [查看样图](themes/perfect-world/assets/concept-preview.webp) | 黑金战甲、赤色披风、诸天宫阙 | [`themes/perfect-world`](themes/perfect-world/) |
 
-两款均保留 DSH 的工作区与对话功能，运行中的回复状态分别有对应文案和轻量动画。外观图像均是原创生成的视觉素材；光之巨人主题不是官方奥特曼产品。
+三款均保留 DSH 的工作区与对话功能，运行中的回复状态分别有对应文案和轻量动画。外观图像均是原创生成的视觉素材；作品灵感主题均为非官方同人设计。
 
 ## 安装一款主题
 
@@ -28,11 +29,19 @@ npm run pack:ultraman
 dsh plugin --profile web add ./dsh-ultraman-theme-0.1.0.tgz
 ```
 
-执行 `dsh web` 或重启现有服务，再刷新网页。两款插件目前都会自动启用自己的主题；切换时先卸载当前主题，再安装下一款，避免装饰层同时生效：
+安装荒天帝意象主题时，把最后两行换成：
+
+```bash
+npm run pack:perfect-world
+dsh plugin --profile web add ./dsh-perfect-world-theme-0.1.0.tgz
+```
+
+执行 `dsh web` 或重启现有服务，再刷新网页。三款插件目前都会自动启用自己的主题；切换时先卸载当前主题，再安装下一款，避免装饰层同时生效：
 
 ```bash
 dsh plugin --profile web remove dsh-shanhe-theme
 # 或：dsh plugin --profile web remove dsh-ultraman-theme
+# 或：dsh plugin --profile web remove dsh-perfect-world-theme
 ```
 
 ## 开发与验证

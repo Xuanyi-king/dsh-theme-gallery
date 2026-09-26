@@ -8,6 +8,7 @@
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces",
     "pack:shanhe": "npm pack -w themes/shanhe",
-    "pack:ultraman": "npm pack -w themes/ultraman"
+    "pack:ultraman": "npm pack -w themes/ultraman",
+    "pack:perfect-world": "npm pack -w themes/perfect-world"
   }
 }
