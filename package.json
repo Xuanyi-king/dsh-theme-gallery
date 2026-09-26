@@ -11,6 +11,7 @@
     "pack:ultraman": "npm pack -w themes/ultraman",
     "pack:perfect-world": "npm pack -w themes/perfect-world",
     "pack:flame-emperor": "npm pack -w themes/flame-emperor",
-    "pack:great-sage": "npm pack -w themes/great-sage"
+    "pack:great-sage": "npm pack -w themes/great-sage",
+    "pack:nezha": "npm pack -w themes/nezha"
   }
 }
