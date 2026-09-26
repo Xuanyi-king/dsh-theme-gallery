@@ -1,0 +1,96 @@
+/* Original cosmic art is embedded at build time and stays offline. */
+body[data-ultra-theme] {
+  --dsw-focus-ring-color: #68d9ff;
+  --dsw-elevation-stroke-color: rgba(112, 196, 238, .32);
+  background-color: #071523;
+  color: #edf7ff;
+}
+
+body[data-ultra-theme] main,
+body[data-ultra-theme] [role="main"] {
+  background-color: #071523;
+  background-image: linear-gradient(90deg, rgba(4,15,28,.5) 0%, rgba(4,15,28,.23) 62%, rgba(4,15,28,.14) 100%), url("__SCENE_URL__");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+body[data-ultra-theme] :is(main,[role="main"]) :is(h1,h2) {
+  color: #f0f8ff;
+  letter-spacing: .025em;
+  text-shadow: 0 2px 18px rgba(68, 187, 238, .2);
+}
+
+body[data-ultra-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="true"]) {
+  caret-color: #6edcff;
+}
+
+body[data-ultra-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="true"]):focus-visible {
+  outline-color: #6edcff;
+}
+
+/* Live Turn status: visual overlay only. DSH's text and role=status stay intact. */
+body[data-ultra-theme] button[data-turn-process][data-ultra-running] {
+  position: relative;
+  color: #89ddff;
+  background-image: linear-gradient(90deg, transparent, #56cfff 50%, transparent);
+  background-size: 240% 1px;
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+  animation: ultra-energy-sweep 3s ease-in-out infinite;
+}
+
+body[data-ultra-theme] button[data-turn-process][data-ultra-running] > span:first-child {
+  opacity: 0;
+}
+
+body[data-ultra-theme] button[data-turn-process][data-ultra-running]::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 1px;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #7bdaff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(70, 207, 255, .8), inset 0 0 5px rgba(70, 207, 255, .6);
+  pointer-events: none;
+  animation: ultra-core-pulse 2.4s ease-in-out infinite;
+}
+
+body[data-ultra-theme] button[data-turn-process][data-ultra-running]::after {
+  content: attr(data-ultra-label);
+  position: absolute;
+  left: 26px;
+  top: 0;
+  max-width: calc(100% - 26px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 24px;
+  pointer-events: none;
+}
+
+@keyframes ultra-energy-sweep {
+  0%, 100% { background-position: 100% 100%; }
+  50% { background-position: 0 100%; }
+}
+
+@keyframes ultra-core-pulse {
+  0%, 100% { opacity: .65; transform: scale(.9); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+@media (max-width: 700px) {
+  body[data-ultra-theme] main,
+  body[data-ultra-theme] [role="main"] { background-position: 60% center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-ultra-theme] button[data-turn-process][data-ultra-running],
+  body[data-ultra-theme] button[data-turn-process][data-ultra-running]::before {
+    animation: none;
+    background-position: center bottom;
+  }
+}

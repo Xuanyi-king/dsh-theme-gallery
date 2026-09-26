@@ -1,48 +1,45 @@
-# 山河剑意 · DSH 主题
+# DSH 主题库
 
-为 DeepSeek Harness Web 设计的水墨主题插件。宣纸暖底、浅墨远山、朱砂交互色；只修改界面外观，不接触会话、模型或文件内容。灵感来自古风山水与江湖意境，不包含《剑来》的角色、文字或官方美术素材。
+为 DeepSeek Harness Web 制作的独立主题合集。每款主题都是一个可以通过 `dsh plugin --profile web add` 安装、更新和卸载的插件。仓库地址沿用最初的 `dsh-shanhe-theme`，现在承载多款主题。
 
-![山河剑意主题概念样图](assets/concept-preview.webp)
+| 主题 | 预览 | 风格 | 插件目录 |
+| --- | --- | --- | --- |
+| 山河剑意 | [查看样图](themes/shanhe/assets/concept-preview.webp) | 宣纸、水墨、朱砂、流动墨线 | [`themes/shanhe`](themes/shanhe/) |
+| 光之巨人（奥特曼灵感） | [查看样图](themes/ultraman/assets/concept-preview.webp) | 红银点缀、星空、蓝色能量核心 | [`themes/ultraman`](themes/ultraman/) |
 
-> 图片是设计概念图；实际主题保留 DSH 原有界面文字与功能，山水细节由插件内嵌 SVG 绘制。
+两款均保留 DSH 的工作区与对话功能，运行中的回复状态分别有对应文案和轻量动画。外观图像均是原创生成的视觉素材；光之巨人主题不是官方奥特曼产品。
 
-### 运行中的状态
+## 安装一款主题
 
-回复前的进程提示会呈现为「问道山海 · 求索中」；计时开始后显示「问道山海 · 已行 12 秒」等实时用时。左侧朱砂小印轻轻明暗起伏，底部墨线缓慢流动。动画会遵循系统的“减少动态效果”设置。
-
-这层显示只作用于 DSH 0.1.7 的运行中 Turn 按钮；已完成、停止和失败状态保留原文字，供屏幕阅读器读取的状态播报也保持原样。若 DSH 后续修改该按钮的 DOM 结构，装饰可能不再生效，但原有状态仍可正常阅读。
-
-## 安装
-
-适用于提供 `ctx.theme` 扩展的 DSH Web 客户端。已按 `dsh-v0.1.7-rc.1` 的主题接口检查插件结构。
+克隆仓库后，只打包要安装的主题：
 
 ```bash
 git clone https://github.com/xuanyi-niubi/dsh-shanhe-theme.git
 cd dsh-shanhe-theme
-npm run pack:local
+npm run build
+npm run pack:shanhe
 dsh plugin --profile web add ./dsh-shanhe-theme-0.1.1.tgz
 ```
 
-重启 `dsh web`，刷新网页。安装后主题会自动启用。如果同时装有其他自动选主题的插件，最后加载的插件可能接管外观。
+安装光之巨人主题时，把最后两行换成：
 
-卸载：
+```bash
+npm run pack:ultraman
+dsh plugin --profile web add ./dsh-ultraman-theme-0.1.0.tgz
+```
+
+执行 `dsh web` 或重启现有服务，再刷新网页。两款插件目前都会自动启用自己的主题；切换时先卸载当前主题，再安装下一款，避免装饰层同时生效：
 
 ```bash
 dsh plugin --profile web remove dsh-shanhe-theme
+# 或：dsh plugin --profile web remove dsh-ultraman-theme
 ```
 
-## 开发
+## 开发与验证
 
 ```bash
 npm run build
 npm test
-npm pack --dry-run
 ```
 
-`src/client.mjs` 注册主题 token；`assets/theme.css` 和 `assets/landscape.svg` 随构建内嵌于 `lib/client.js`，无需联网加载图像或字体。`cordis.patch.yml` 让 `dsh plugin add` 自动挂载插件。npm 包同时包含预构建的 `lib/`，下载仓库源码后可直接本地打包。
-
-这是一版可运行的主题实现，首页场景使用抽象原创山水 SVG。先前的概念样图展示了更丰富的水墨笔触、书法标题和剑形边栏；这些细节依赖 DSH 具体版本的组件结构，没有把不稳定的内部类名写死到插件中。若主区域未采用 `main` 或 `[role="main"]`，颜色仍会生效，山水背景可能不会显示。
-
-## 许可
-
-MIT。项目与 DeepSeek 官方及《剑来》作品方无关联。
+各主题的配色、资源和测试分别位于 `themes/<name>/`。根目录不发布 npm 包，不改动 DSH 源码。单款主题的能力与限制详见对应目录里的 README。
