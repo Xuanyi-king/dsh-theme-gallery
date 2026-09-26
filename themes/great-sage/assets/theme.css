@@ -1,0 +1,63 @@
+/* Original heavenly scenery is bundled offline. */
+body[data-qitian-theme] {
+  --dsw-focus-ring-color: #f5c675;
+  --dsw-elevation-stroke-color: rgba(237, 186, 102, .38);
+  background-color: #111824;
+  color: #fcf1db;
+}
+body[data-qitian-theme] main,
+body[data-qitian-theme] [role="main"] {
+  background-color: #111824;
+  background-image: linear-gradient(90deg, rgba(11,18,30,.65), rgba(11,18,30,.42) 56%, rgba(11,18,30,.09)), url("__SCENE_URL__");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+body[data-qitian-theme] :is(main,[role="main"]) :is(h1,h2) {
+  color: #ffe0a4;
+  letter-spacing: .035em;
+  text-shadow: 0 3px 22px rgba(12,18,26,.86), 0 0 16px rgba(238,175,92,.25);
+}
+body[data-qitian-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="true"]) { caret-color: #f5c675; }
+body[data-qitian-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="true"]):focus-visible { outline-color: #f5c675; }
+/* Decorates the live status without replacing DSH's accessible announcement. */
+body[data-qitian-theme] button[data-turn-process][data-qitian-running] {
+  position: relative;
+  color: #ffd899;
+  background-image: linear-gradient(90deg, transparent, #a86148 25%, #f6c676 50%, #a86148 75%, transparent);
+  background-size: 250% 1px;
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+  animation: qitian-cloud-trail 3s ease-in-out infinite;
+}
+body[data-qitian-theme] button[data-turn-process][data-qitian-running] > span:first-child { opacity: 0; }
+body[data-qitian-theme] button[data-turn-process][data-qitian-running]::before {
+  content: ''; position: absolute; top: 2px; left: 0; width: 20px; height: 20px;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23ffd58c' stroke-width='2' stroke-linecap='round' d='M4 16h12a4 4 0 1 0-4-4M8 12a3 3 0 1 1 3-3M5 20h11a3 3 0 1 0-3-3'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 0 5px #e09b54);
+  pointer-events: none;
+  animation: qitian-cloud-rise 2.8s ease-in-out infinite;
+}
+body[data-qitian-theme] button[data-turn-process][data-qitian-running]::after {
+  content: attr(data-qitian-label); position: absolute; left: 26px; top: 0;
+  max-width: calc(100% - 26px); overflow: hidden; white-space: nowrap;
+  text-overflow: ellipsis; line-height: 24px; pointer-events: none;
+}
+@keyframes qitian-cloud-trail {
+  0%, 100% { background-position: 100% 100%; }
+  50% { background-position: 0 100%; }
+}
+@keyframes qitian-cloud-rise {
+  0%, 100% { opacity: .6; transform: translate(0, 1px); }
+  50% { opacity: 1; transform: translate(2px, -2px); }
+}
+@media (max-width: 700px) {
+  body[data-qitian-theme] main,
+  body[data-qitian-theme] [role="main"] { background-position: 66% center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-qitian-theme] button[data-turn-process][data-qitian-running],
+  body[data-qitian-theme] button[data-turn-process][data-qitian-running]::before {
+    animation: none; background-position: center bottom;
+  }
+}
