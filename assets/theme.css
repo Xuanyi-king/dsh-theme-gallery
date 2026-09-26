@@ -29,6 +29,61 @@ body[data-shanhe-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="t
   outline-color: #a43d32;
 }
 
+/* DSH 0.1.7's live Turn button, selected by its public data attribute.
+   The actual text and adjacent aria-live status remain in the document. */
+body[data-shanhe-theme] button[data-turn-process][data-shanhe-running] {
+  position: relative;
+  color: #7b5143;
+  background-image: linear-gradient(90deg, transparent 0%, rgba(164,61,50,.1) 37%, #a43d32 50%, rgba(164,61,50,.1) 63%, transparent 100%);
+  background-size: 210% .5px;
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+  animation: shanhe-ink-trail 3.6s ease-in-out infinite;
+}
+
+body[data-shanhe-theme] button[data-turn-process][data-shanhe-running] > span:first-child {
+  opacity: 0;
+}
+
+body[data-shanhe-theme] button[data-turn-process][data-shanhe-running]::before {
+  content: '道';
+  position: absolute;
+  top: 3px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border: .5px solid #a43d32;
+  border-radius: 2px;
+  color: #a43d32;
+  text-align: center;
+  font: 11px/16px serif;
+  pointer-events: none;
+  animation: shanhe-seal-breathe 2.8s ease-in-out infinite;
+}
+
+body[data-shanhe-theme] button[data-turn-process][data-shanhe-running]::after {
+  content: attr(data-shanhe-label);
+  position: absolute;
+  left: 24px;
+  top: 0;
+  max-width: calc(100% - 24px);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 24px;
+  pointer-events: none;
+}
+
+@keyframes shanhe-ink-trail {
+  0%, 100% { background-position: 100% 100%; }
+  50% { background-position: 0 100%; }
+}
+
+@keyframes shanhe-seal-breathe {
+  0%, 100% { opacity: .55; }
+  50% { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   body[data-shanhe-theme] :is(button,a) { transition: color .18s ease, background-color .18s ease; }
 }
@@ -36,4 +91,12 @@ body[data-shanhe-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="t
 @media (max-width: 700px) {
   body[data-shanhe-theme] main,
   body[data-shanhe-theme] [role="main"] { background-position: 58% center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-shanhe-theme] button[data-turn-process][data-shanhe-running],
+  body[data-shanhe-theme] button[data-turn-process][data-shanhe-running]::before {
+    animation: none;
+    background-position: center bottom;
+  }
 }

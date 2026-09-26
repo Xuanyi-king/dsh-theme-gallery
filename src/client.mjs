@@ -57,6 +57,53 @@ export const THEME = Object.freeze({
 
 export const inject = ['theme'];
 
+/** The live Turn header is DSH's own `data-turn-process` button. Its adjacent
+ * role=status announcement remains untouched for assistive technology. */
+export function formatRunningStatus(announcement, visible) {
+  const status = announcement.trim();
+  const label = visible.trim();
+  if (status === '深度求索中') {
+    if (label === status) return '问道山海 · 求索中';
+    const match = /^深度求索中[，,]\s*用时\s*(.+)$/.exec(label);
+    return match ? `问道山海 · 已行 ${match[1]}` : null;
+  }
+  if (status === 'Deep diving...') {
+    if (label === status) return 'Seeking through mountains';
+    const match = /^Deep diving for\s+(.+)$/i.exec(label);
+    return match ? `Seeking through mountains · ${match[1]}` : null;
+  }
+  return null;
+}
+
+export function decorateRunningStatuses(root) {
+  for (const button of root.querySelectorAll('button[data-turn-process]')) {
+    const announcement = button.previousElementSibling;
+    const label = announcement?.getAttribute('role') === 'status'
+      ? formatRunningStatus(announcement.textContent ?? '', button.textContent ?? '')
+      : null;
+    if (label === null) {
+      button.removeAttribute('data-shanhe-running');
+      button.removeAttribute('data-shanhe-label');
+    } else {
+      button.setAttribute('data-shanhe-running', '');
+      button.setAttribute('data-shanhe-label', label);
+    }
+  }
+}
+
+export function installRunningStatus(root, Observer) {
+  decorateRunningStatuses(root);
+  const observer = new Observer(() => decorateRunningStatuses(root));
+  observer.observe(root, { childList: true, characterData: true, subtree: true });
+  return () => {
+    observer.disconnect();
+    for (const button of root.querySelectorAll('button[data-shanhe-running]')) {
+      button.removeAttribute('data-shanhe-running');
+      button.removeAttribute('data-shanhe-label');
+    }
+  };
+}
+
 export function apply(ctx) {
   ctx.effect(() => {
     const previous = ctx.theme.getTheme().preference;
@@ -77,7 +124,10 @@ export function apply(ctx) {
       document.head.appendChild(style);
     }
     document.body.setAttribute('data-shanhe-theme', '');
+    const stopStatus = typeof MutationObserver === 'function'
+      ? installRunningStatus(document.body, MutationObserver) : () => {};
     return () => {
+      stopStatus();
       document.body.removeAttribute('data-shanhe-theme');
       style?.remove();
     };
