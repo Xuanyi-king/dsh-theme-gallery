@@ -3,6 +3,152 @@
 const STYLE_TEXT = '';
 const STYLE_ID = 'dsh-nezha-theme';
 
+/* ---- full scene layer: themed hero copy, composer placeholder, running ornament ---- */
+export const SCENE = Object.freeze({
+  title: '莲心未改，破浪而行',
+  tagline: '',
+  badge: '哪吒 · 莲身灵感主题',
+  placeholder: '以心为火，写下你的问题…',
+});
+
+const ORN = 'data-nezha-orn';
+const ORN_RING = 'data-nezha-orn-ring';
+const ORN_GLYPH = 'data-nezha-orn-glyph';
+const ORN_TEXT = 'data-nezha-orn-text';
+const BUSY = 'data-nezha-busy';
+const PLACEHOLDER_ORIG = 'data-nezha-ph';
+const RUNNING = 'data-nezha-running';
+const LABEL = 'data-nezha-label';
+let richQueued = false;
+let richGeneration = 0;
+let lastX = null;
+let lastY = null;
+
+function composerRect(button) {
+  let node = button;
+  const own = button?.getBoundingClientRect?.() ?? null;
+  for (let step = 0; step < 4 && node?.parentElement; step += 1) {
+    const outer = node.parentElement.getBoundingClientRect?.();
+    if (outer && outer.width >= 320 && outer.height <= 220) return outer;
+    node = node.parentElement;
+  }
+  return own;
+}
+
+/** The composer is a Lexical contenteditable: its hint lives in a sibling
+ * element whose class ends in "_placeholder", not in a textarea attribute. */
+function placeholderBox(root) {
+  const boxes = root?.querySelectorAll?.('[class*="_placeholder"]') ?? [];
+  for (const box of boxes) {
+    const prev = box.previousElementSibling;
+    if (prev && typeof prev.className === 'string' && prev.className.includes('_input')) return box;
+  }
+  return null;
+}
+
+export function syncPlaceholder(root) {
+  const box = placeholderBox(root);
+  if (!box?.setAttribute || !box.getAttribute) return;
+  const want = SCENE.placeholder || null;
+  const stash = box.getAttribute(PLACEHOLDER_ORIG);
+  const now = box.textContent ?? '';
+  if (want === null) {
+    if (stash !== null) {
+      box.removeAttribute?.(PLACEHOLDER_ORIG);
+      if (stash !== now) box.textContent = stash;
+    }
+    return;
+  }
+  if (now === want) return;
+  if (stash === null) box.setAttribute(PLACEHOLDER_ORIG, now);
+  box.textContent = want;
+}
+
+export function syncOrnament(root, documentRef) {
+  if (!root?.setAttribute) return;
+  const button = root.querySelector?.(`button[${RUNNING}]`) ?? null;
+  if (!button) {
+    root.removeAttribute?.(BUSY);
+    return;
+  }
+  if (!root.getAttribute?.(BUSY)) root.setAttribute(BUSY, '');
+  let box = root.querySelector?.(`[${ORN}]`);  if (!box) {
+    if (!root.querySelector) return;
+    const host = documentRef ?? (typeof document === 'undefined' ? null : document);
+    const created = host?.createElement?.('div');
+    if (!created?.setAttribute) return;
+    created.setAttribute(ORN, '');
+    created.setAttribute('aria-hidden', 'true');
+    created.innerHTML = `<span ${ORN_GLYPH}><i ${ORN_RING}></i><i ${ORN_RING}></i><i ${ORN_RING}></i></span><span ${ORN_TEXT}></span>`;
+    root.appendChild?.(created);
+    box = created;
+  }
+  const text = button.getAttribute?.(LABEL) ?? '';
+  const slot = box.querySelector?.(`[${ORN_TEXT}]`);
+  if (slot && slot.textContent !== text) slot.textContent = text;
+  const rect = composerRect(button);
+  if (rect && box.style?.setProperty) {
+    const x = `${Math.round(rect.left + rect.width / 2)}px`;
+    const y = `${Math.round(rect.bottom + 20)}px`;
+    if (x !== lastX || y !== lastY) {
+      lastX = x;
+      lastY = y;
+      box.style.setProperty('--dsh-orn-x', x);
+      box.style.setProperty('--dsh-orn-y', y);
+    }
+  }
+}
+
+export function flushRich(root, documentRef) {
+  syncOrnament(root, documentRef);
+  syncPlaceholder(root);
+}
+
+export function resetRich(root) {
+  richGeneration += 1;
+  richQueued = false;
+  lastX = null;
+  lastY = null;
+  root?.removeAttribute?.(BUSY);
+  root?.querySelector?.(`[${ORN}]`)?.remove?.();
+  const box = placeholderBox(root);
+  const stash = box?.getAttribute?.(PLACEHOLDER_ORIG);
+  if (stash !== null && stash !== undefined && box?.setAttribute) {
+    box.removeAttribute?.(PLACEHOLDER_ORIG);
+    if (box.textContent !== stash) box.textContent = stash;
+  }
+}
+
+/** One animation frame per batch of mutations: the theme already observes every
+ * mutation, so an unthrottled rect read per streamed token would thrash layout. */
+export function scheduleRich(root, documentRef) {
+  if (richQueued) return;
+  if (typeof requestAnimationFrame !== 'function') {
+    flushRich(root, documentRef);
+    return;
+  }
+  richQueued = true;
+  const generation = richGeneration;
+  requestAnimationFrame(() => {
+    richQueued = false;
+    if (generation !== richGeneration) return;
+    flushRich(root, documentRef);
+  });
+}
+
+export function installRich(root, documentRef) {
+  if (!root) return () => {};
+  flushRich(root, documentRef);
+  if (typeof MutationObserver !== 'function') return () => resetRich(root);
+  const observer = new MutationObserver(() => scheduleRich(root, documentRef));
+  observer.observe(root, { childList: true, characterData: true, subtree: true });
+  return () => {
+    observer.disconnect();
+    resetRich(root);
+  };
+}
+
+
 export const THEME = Object.freeze({
   id: 'nezha',
   colorScheme: 'dark',
@@ -104,7 +250,7 @@ export function installRunningStatus(root, Observer) {
   };
 }
 
-export function apply(ctx) {
+function applyPalette(ctx) {
   ctx.effect(() => {
     const previous = ctx.theme.getTheme().preference;
     const unregister = ctx.theme.register(THEME);
@@ -132,4 +278,12 @@ export function apply(ctx) {
       style?.remove();
     };
   }, 'nezha: scenery');
+}
+
+export function apply(ctx) {
+  applyPalette(ctx);
+  ctx.effect(() => {
+    if (typeof document === 'undefined' || !document.body) return;
+    return installRich(document.body);
+  }, 'nezha: full scene');
 }

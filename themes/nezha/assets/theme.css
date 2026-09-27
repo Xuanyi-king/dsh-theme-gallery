@@ -5,13 +5,22 @@ body[data-nezha-theme] {
   background-color: #0e1d25;
   color: #fff0e5;
 }
-body[data-nezha-theme] main,
-body[data-nezha-theme] [role="main"] {
+body[data-nezha-theme]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   background-color: #0e1d25;
-  background-image: linear-gradient(90deg, rgba(7,20,27,.65), rgba(7,20,27,.42) 55%, rgba(7,20,27,.08)), url("__SCENE_URL__");
+  background-image: linear-gradient(rgba(14, 29, 37, 0.14), rgba(14, 29, 37, 0.14)), url("__SCENE_URL__");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  pointer-events: none;
+}
+body[data-nezha-theme] #root {
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 body[data-nezha-theme] :is(main,[role="main"]) :is(h1,h2) {
   color: #ffdbb0;
@@ -52,12 +61,88 @@ body[data-nezha-theme] button[data-turn-process][data-nezha-running]::after {
   50% { opacity: 1; transform: scale(1.1); }
 }
 @media (max-width: 700px) {
-  body[data-nezha-theme] main,
-  body[data-nezha-theme] [role="main"] { background-position: 65% center; }
+  body[data-nezha-theme]::before { background-position: 65% center; }
 }
 @media (prefers-reduced-motion: reduce) {
   body[data-nezha-theme] button[data-turn-process][data-nezha-running],
   body[data-nezha-theme] button[data-turn-process][data-nezha-running]::before {
     animation: none; background-position: center bottom;
   }
+}
+
+/* ---- full scene layer: themed hero copy, placeholder and running ornament ---- */
+body[data-nezha-theme] [class*="_previewBadge"] { display: none; }
+body[data-nezha-theme] [class*="_fishHitbox"] { display: none; }
+
+/* ---- reveal the scene: make the app background family translucent so the fixed body::before scene shows through (orca-link ladder) ---- */
+body[data-nezha-theme] {
+  --dsw-alias-bg-base: rgba(14, 29, 37, 0.12) !important;
+  --dsw-alias-bg-layer-1: rgba(22, 42, 50, 0.84) !important;
+  --dsw-alias-bg-layer-2: rgba(29, 51, 60, 0.88) !important;
+  --dsw-alias-bg-layer-3: rgba(39, 65, 74, 0.92) !important;
+  --dsw-alias-bg-module-platform: rgba(26, 48, 57, 0.88) !important;
+  --dsw-alias-bg-overlay: rgba(28, 50, 58, 0.97) !important;
+  --dsw-specific-bubble: rgba(41, 62, 71, 0.9) !important;
+  --dsw-specific-bubble-highlight: rgba(106, 64, 60, 0.94) !important;
+  --dsw-specific-input-major: rgba(30, 50, 58, 0.86) !important;
+  --dsw-specific-menu: rgba(34, 59, 66, 0.97) !important;
+  --dsw-specific-selector: rgba(41, 69, 74, 0.94) !important;
+  --dsw-specific-sidebar-fill: rgba(16, 36, 43, 0.8) !important;
+  --dsw-specific-sidebar-nav-item-active: rgba(88, 68, 47, 0.88) !important;
+  --dsw-specific-sidebar-nav-item-hover: rgba(32, 52, 60, 0.9) !important;
+}
+body[data-nezha-theme] [class*="_titleGroup"]::before {
+  order: 2;
+  content: '哪吒 · 莲身灵感主题';
+  padding: 3px 14px; border: .5px solid rgba(232, 156, 110, 0.55); border-radius: 999px;
+  background: rgba(14, 29, 37, 0.42); backdrop-filter: blur(3px);
+  color: #eed4c5; font-size: 12px; font-weight: 500; letter-spacing: .16em;
+  box-shadow: 0 0 18px rgba(232, 156, 110, 0.22);
+  flex-basis: auto; align-self: center; display: inline-flex; align-items: center; justify-content: center;
+  white-space: nowrap; line-height: 20px;
+}
+body[data-nezha-theme] [class*="_titleGroup"] > span:first-child {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 8px;
+  flex-basis: 100%;
+  font-size: 0; color: transparent;
+}
+body[data-nezha-theme] [class*="_titleGroup"] > span:first-child::before {
+  content: '莲心未改，破浪而行';
+  font-size: 30px; font-weight: 600; line-height: 1.28; letter-spacing: .12em;
+  color: #fff0e5; text-shadow: 0 2px 18px rgba(0,0,0,.62), 0 0 26px rgba(232, 156, 110, 0.34); white-space: nowrap;
+}
+body[data-nezha-theme] [data-nezha-orn] {
+  position: fixed; left: var(--dsh-orn-x, 50%); top: var(--dsh-orn-y, 72%);
+  transform: translateX(-50%); display: none; flex-direction: column;
+  align-items: center; gap: 10px; pointer-events: none; z-index: 45;
+}
+body[data-nezha-theme][data-nezha-busy] [data-nezha-orn] { display: flex; }
+body[data-nezha-theme] [data-nezha-orn-glyph] { position: relative; width: 46px; height: 46px; }
+body[data-nezha-theme] [data-nezha-orn-ring] {
+  position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px;
+  border: 1px solid rgba(232, 156, 110, 0.85); border-radius: 50%; opacity: 0;
+  animation: nezha-orn-ring 2.8s ease-out infinite;
+}
+body[data-nezha-theme] [data-nezha-orn-ring]:nth-child(2) { animation-delay: .9s; }
+body[data-nezha-theme] [data-nezha-orn-ring]:nth-child(3) { animation-delay: 1.8s; }
+@keyframes nezha-orn-ring {
+  0% { transform: scale(.45); opacity: .9; }
+  100% { transform: scale(2.7); opacity: 0; }
+}
+body[data-nezha-theme] [data-nezha-orn-text] {
+  font-size: 13px; letter-spacing: .2em; color: #e89c6e;
+  text-shadow: 0 0 14px rgba(232, 156, 110, 0.55);
+  animation: nezha-orn-glow 3.2s ease-in-out infinite;
+}
+body[data-nezha-theme] [data-nezha-orn-text]::after { content: ' · · ·'; letter-spacing: .1em; opacity: .8; }
+@keyframes nezha-orn-glow { 0%, 100% { opacity: .68; } 50% { opacity: 1; } }
+body[data-nezha-theme] [data-nezha-orn-glyph] { background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffb392' d='M12 3C9 7 9 11 12 15c3-4 3-8 0-12ZM3 9c0 5 3 8 8 9-1-4-4-7-8-9Zm18 0c-4 2-7 5-8 9 5-1 8-4 8-9ZM2 17c3 4 6 5 10 5s7-1 10-5c-4 2-7 2-10 2s-6 0-10-2Z'/%3E%3C/svg%3E"); filter: drop-shadow(0 0 8px rgba(232, 156, 110, 0.75)); animation: nezha-orn-float 3.4s ease-in-out infinite; }
+@keyframes nezha-orn-float { 0%, 100% { transform: translateY(2px) rotate(-4deg); } 50% { transform: translateY(-3px) rotate(4deg); } }
+@media (min-width: 701px) {
+  body[data-nezha-theme][data-nezha-busy]::before { animation: nezha-scene-drift 32s ease-in-out infinite alternate; }
+}
+@keyframes nezha-scene-drift { from { background-position: 50% 46%; } to { background-position: 50% 54%; } }
+@media (prefers-reduced-motion: reduce) {
+  body[data-nezha-theme] [data-nezha-orn-ring], body[data-nezha-theme] [data-nezha-orn-text], body[data-nezha-theme] [data-nezha-orn-glyph], body[data-nezha-theme] [data-nezha-orn-glyph]::before { animation: none; }
+  body[data-nezha-theme][data-nezha-busy]::before { animation: none; }
 }

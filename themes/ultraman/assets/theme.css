@@ -6,13 +6,22 @@ body[data-ultra-theme] {
   color: #edf7ff;
 }
 
-body[data-ultra-theme] main,
-body[data-ultra-theme] [role="main"] {
+body[data-ultra-theme]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   background-color: #071523;
-  background-image: linear-gradient(90deg, rgba(4,15,28,.5) 0%, rgba(4,15,28,.23) 62%, rgba(4,15,28,.14) 100%), url("__SCENE_URL__");
+  background-image: linear-gradient(rgba(7, 21, 35, 0.14), rgba(7, 21, 35, 0.14)), url("__SCENE_URL__");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  pointer-events: none;
+}
+body[data-ultra-theme] #root {
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 
 body[data-ultra-theme] :is(main,[role="main"]) :is(h1,h2) {
@@ -83,8 +92,7 @@ body[data-ultra-theme] button[data-turn-process][data-ultra-running]::after {
 }
 
 @media (max-width: 700px) {
-  body[data-ultra-theme] main,
-  body[data-ultra-theme] [role="main"] { background-position: 60% center; }
+  body[data-ultra-theme]::before { background-position: 60% center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -93,4 +101,87 @@ body[data-ultra-theme] button[data-turn-process][data-ultra-running]::after {
     animation: none;
     background-position: center bottom;
   }
+}
+
+/* ---- full scene layer: themed hero copy, placeholder and running ornament ---- */
+body[data-ultra-theme] [class*="_previewBadge"] { display: none; }
+body[data-ultra-theme] [class*="_fishHitbox"] { display: none; }
+
+/* ---- reveal the scene: make the app background family translucent so the fixed body::before scene shows through (orca-link ladder) ---- */
+body[data-ultra-theme] {
+  --dsw-alias-bg-base: rgba(7, 21, 35, 0.12) !important;
+  --dsw-alias-bg-layer-1: rgba(12, 31, 51, 0.84) !important;
+  --dsw-alias-bg-layer-2: rgba(20, 42, 65, 0.88) !important;
+  --dsw-alias-bg-layer-3: rgba(29, 53, 78, 0.92) !important;
+  --dsw-alias-bg-module-platform: rgba(17, 40, 62, 0.88) !important;
+  --dsw-alias-bg-overlay: rgba(18, 39, 59, 0.97) !important;
+  --dsw-specific-bubble: rgba(19, 47, 73, 0.9) !important;
+  --dsw-specific-bubble-highlight: rgba(36, 81, 121, 0.94) !important;
+  --dsw-specific-input-major: rgba(16, 38, 60, 0.86) !important;
+  --dsw-specific-menu: rgba(20, 41, 63, 0.97) !important;
+  --dsw-specific-selector: rgba(25, 52, 78, 0.94) !important;
+  --dsw-specific-sidebar-fill: rgba(11, 27, 45, 0.8) !important;
+  --dsw-specific-sidebar-nav-item-active: rgba(64, 32, 54, 0.88) !important;
+  --dsw-specific-sidebar-nav-item-hover: rgba(23, 46, 69, 0.9) !important;
+}
+body[data-ultra-theme] [class*="_titleGroup"]::before {
+  order: -1;
+  content: ''; width: 148px; height: 3px; margin-bottom: 2px;
+  background: linear-gradient(90deg, #eb4c4a 0 34%, transparent 34% 66%, #eb4c4a 66%);
+  box-shadow: 0 0 12px rgba(235, 76, 74, 0.55);
+  flex-basis: auto; align-self: center; display: inline-flex; align-items: center; justify-content: center;
+  white-space: nowrap; line-height: 20px;
+}
+body[data-ultra-theme] [class*="_titleGroup"] > span:first-child {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 8px;
+  flex-basis: 100%;
+  font-size: 0; color: transparent;
+}
+body[data-ultra-theme] [class*="_titleGroup"] > span:first-child::before {
+  content: '以光之名，探索未知';
+  font-size: 30px; font-weight: 600; line-height: 1.28; letter-spacing: .12em;
+  color: #edf7ff; text-shadow: 0 2px 18px rgba(0,0,0,.62), 0 0 26px rgba(235, 76, 74, 0.34); white-space: nowrap;
+  background-image: linear-gradient(180deg, #ffffff 26%, #d8ecff 58%, #eb4c4a 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+body[data-ultra-theme] [class*="_titleGroup"] > span:first-child::after {
+  content: '—— 每一次提问，都是新的出发 ——';
+  font-size: 13px; letter-spacing: .2em; color: #91a7ba;
+  text-shadow: 0 1px 10px rgba(0,0,0,.7); white-space: nowrap;
+}
+body[data-ultra-theme] [data-ultra-orn] {
+  position: fixed; left: var(--dsh-orn-x, 50%); top: var(--dsh-orn-y, 72%);
+  transform: translateX(-50%); display: none; flex-direction: column;
+  align-items: center; gap: 10px; pointer-events: none; z-index: 45;
+}
+body[data-ultra-theme][data-ultra-busy] [data-ultra-orn] { display: flex; }
+body[data-ultra-theme] [data-ultra-orn-glyph] { position: relative; width: 46px; height: 46px; }
+body[data-ultra-theme] [data-ultra-orn-ring] {
+  position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px;
+  border: 1px solid rgba(235, 76, 74, 0.85); border-radius: 50%; opacity: 0;
+  animation: ultra-orn-ring 2.8s ease-out infinite;
+}
+body[data-ultra-theme] [data-ultra-orn-ring]:nth-child(2) { animation-delay: .9s; }
+body[data-ultra-theme] [data-ultra-orn-ring]:nth-child(3) { animation-delay: 1.8s; }
+@keyframes ultra-orn-ring {
+  0% { transform: scale(.45); opacity: .9; }
+  100% { transform: scale(2.7); opacity: 0; }
+}
+body[data-ultra-theme] [data-ultra-orn-text] {
+  font-size: 13px; letter-spacing: .2em; color: #eb4c4a;
+  text-shadow: 0 0 14px rgba(235, 76, 74, 0.55);
+  animation: ultra-orn-glow 3.2s ease-in-out infinite;
+}
+@keyframes ultra-orn-glow { 0%, 100% { opacity: .68; } 50% { opacity: 1; } }
+body[data-ultra-theme] [data-ultra-orn-glyph] { display: flex; align-items: center; justify-content: center; animation: ultra-orn-float 3.4s ease-in-out infinite; }
+body[data-ultra-theme] [data-ultra-orn-glyph]::before { content: ''; width: 26px; height: 26px; border: 2px solid #eb4c4a; border-radius: 50%; box-shadow: 0 0 14px rgba(235, 76, 74, 0.7), inset 0 0 10px rgba(235, 76, 74, 0.45); animation: ultra-orn-spin 2.6s linear infinite; }
+@keyframes ultra-orn-spin { to { transform: rotate(360deg); } }
+@keyframes ultra-orn-float { 0%, 100% { transform: translateY(2px) rotate(-4deg); } 50% { transform: translateY(-3px) rotate(4deg); } }
+@media (min-width: 701px) {
+  body[data-ultra-theme][data-ultra-busy]::before { animation: ultra-scene-drift 32s ease-in-out infinite alternate; }
+}
+@keyframes ultra-scene-drift { from { background-position: 50% 46%; } to { background-position: 50% 54%; } }
+@media (prefers-reduced-motion: reduce) {
+  body[data-ultra-theme] [data-ultra-orn-ring], body[data-ultra-theme] [data-ultra-orn-text], body[data-ultra-theme] [data-ultra-orn-glyph], body[data-ultra-theme] [data-ultra-orn-glyph]::before { animation: none; }
+  body[data-ultra-theme][data-ultra-busy]::before { animation: none; }
 }

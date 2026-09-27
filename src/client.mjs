@@ -9,6 +9,16 @@ const RUNNING = 'data-dsh-gallery-running';
 const LABEL = 'data-dsh-gallery-label';
 const NS = 'settings.dshThemeGallery';
 const ROUTE = '/dsh-theme-gallery/selection';
+const ORN = 'data-dsh-gallery-orn';
+const ORN_RING = 'data-dsh-gallery-orn-ring';
+const ORN_GLYPH = 'data-dsh-gallery-orn-glyph';
+const ORN_TEXT = 'data-dsh-gallery-orn-text';
+const BUSY = 'data-dsh-gallery-busy';
+const PLACEHOLDER_ORIG = 'data-dsh-gallery-ph';
+let richQueued = false;
+let richGeneration = 0;
+let lastOrnX = null;
+let lastOrnY = null;
 
 export const inject = ['theme', 'slots', 'locale'];
 
@@ -43,6 +53,134 @@ export function decorateRunningStatuses(root, selected) {
       button.setAttribute(LABEL, label);
     }
   }
+  scheduleRich(root, selected);
+}
+
+// The composer row that the running ornament is centred under: walk up from the
+// process button until a parent looks like the composer rather than the page.
+function composerRect(button) {
+  let node = button;
+  const own = button?.getBoundingClientRect?.() ?? null;
+  for (let step = 0; step < 4 && node?.parentElement; step += 1) {
+    const outer = node.parentElement.getBoundingClientRect?.();
+    if (outer && outer.width >= 320 && outer.height <= 220) return outer;
+    node = node.parentElement;
+  }
+  return own;
+}
+
+/** The composer is a Lexical contenteditable: its hint lives in a sibling
+ * element whose class ends in "_placeholder", not in a textarea attribute. */
+function placeholderBox(root) {
+  const boxes = root?.querySelectorAll?.('[class*="_placeholder"]') ?? [];
+  for (const box of boxes) {
+    const prev = box.previousElementSibling;
+    if (prev && typeof prev.className === 'string' && prev.className.includes('_input')) return box;
+  }
+  return null;
+}
+
+/** The active theme's composer copy replaces the built-in hint; the original is
+ * stashed on the element so a built-in theme can restore it. */
+export function syncPlaceholder(root, selected) {
+  const box = placeholderBox(root);
+  if (!box?.setAttribute || !box.getAttribute) return;
+  const want = selected?.placeholder || null;
+  const stash = box.getAttribute(PLACEHOLDER_ORIG);
+  const now = box.textContent ?? '';
+  if (want === null) {
+    if (stash !== null) {
+      box.removeAttribute?.(PLACEHOLDER_ORIG);
+      if (stash !== now) box.textContent = stash;
+    }
+    return;
+  }
+  if (now === want) return;
+  if (stash === null) box.setAttribute(PLACEHOLDER_ORIG, now);
+  box.textContent = want;
+}
+
+/** The orphaned box the CSS animates while a turn runs: three expanding rings,
+ * a theme glyph and the themed status text. */
+export function syncOrnament(root, selected) {
+  if (!root?.setAttribute) return;
+  const button = root.querySelector?.('button[data-turn-process]') ?? null;
+  if (!button || !selected) {
+    root.removeAttribute?.(BUSY);
+    return;
+  }
+  if (!root.getAttribute?.(BUSY)) root.setAttribute(BUSY, '');
+  let box = root.querySelector?.(`[${ORN}]`);
+  if (!box) {
+    if (!root.querySelector) return;
+    let created = null;
+    if (typeof document !== 'undefined') {
+      created = document.createElement?.('div');
+      if (created) {
+        created.setAttribute(ORN, '');
+        created.setAttribute('aria-hidden', 'true');
+        created.innerHTML = `<span ${ORN_GLYPH}><i ${ORN_RING}></i><i ${ORN_RING}></i><i ${ORN_RING}></i></span><span ${ORN_TEXT}></span>`;
+      }
+    }
+    if (!created?.setAttribute) return;
+    root.appendChild?.(created);
+    box = created;
+  }
+  const text = button.getAttribute?.(LABEL) ?? '';
+  const slot = box.querySelector?.(`[${ORN_TEXT}]`);
+  if (slot && slot.textContent !== text) slot.textContent = text;
+  const rect = composerRect(button);
+  if (rect && box.style?.setProperty) {
+    const x = `${Math.round(rect.left + rect.width / 2)}px`;
+    const y = `${Math.round(rect.bottom + 20)}px`;
+    if (x !== lastOrnX || y !== lastOrnY) {
+      lastOrnX = x;
+      lastOrnY = y;
+      box.style.setProperty('--dsh-orn-x', x);
+      box.style.setProperty('--dsh-orn-y', y);
+    }
+  }
+}
+
+export function resetRich(root) {
+  richGeneration += 1;
+  richQueued = false;
+  lastOrnX = null;
+  lastOrnY = null;
+  root?.removeAttribute?.(BUSY);
+  root?.querySelector?.(`[${ORN}]`)?.remove?.();
+  const box = placeholderBox(root);
+  const stash = box?.getAttribute?.(PLACEHOLDER_ORIG);
+  if (stash !== null && stash !== undefined && box?.setAttribute) {
+    box.removeAttribute?.(PLACEHOLDER_ORIG);
+    if (box.textContent !== stash) box.textContent = stash;
+  }
+}
+
+function flushRich(root, selected) {
+  syncOrnament(root, selected);
+  syncPlaceholder(root, selected);
+}
+
+/** One animation frame per batch of mutations: the gallery already observes every
+ * streamed token, so an unthrottled rect read per mutation would thrash layout. */
+export function scheduleRich(root, selected) {
+  if (selected === null || selected === undefined) {
+    resetRich(root);
+    return;
+  }
+  if (richQueued) return;
+  if (typeof requestAnimationFrame !== 'function') {
+    flushRich(root, selected);
+    return;
+  }
+  richQueued = true;
+  const generation = richGeneration;
+  requestAnimationFrame(() => {
+    richQueued = false;
+    if (generation !== richGeneration) return;
+    flushRich(root, selected);
+  });
 }
 
 export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThis.document,

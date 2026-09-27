@@ -5,13 +5,22 @@ body[data-whale-prince-theme] {
   background-color: #081828;
   color: #edf8ff;
 }
-body[data-whale-prince-theme] main,
-body[data-whale-prince-theme] [role="main"] {
+body[data-whale-prince-theme]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   background-color: #081828;
-  background-image: linear-gradient(90deg, rgba(5,15,30,.68), rgba(5,15,30,.48) 58%, rgba(5,15,30,.1)), url("__SCENE_URL__");
+  background-image: linear-gradient(rgba(8, 24, 40, 0.14), rgba(8, 24, 40, 0.14)), url("__SCENE_URL__");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  pointer-events: none;
+}
+body[data-whale-prince-theme] #root {
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 body[data-whale-prince-theme] :is(main,[role="main"]) :is(h1,h2) {
   color: #ecf9ff;
@@ -52,12 +61,88 @@ body[data-whale-prince-theme] button[data-turn-process][data-whale-prince-runnin
   50% { opacity: 1; transform: translateY(-2px) rotate(6deg); }
 }
 @media (max-width: 700px) {
-  body[data-whale-prince-theme] main,
-  body[data-whale-prince-theme] [role="main"] { background-position: 65% center; }
+  body[data-whale-prince-theme]::before { background-position: 65% center; }
 }
 @media (prefers-reduced-motion: reduce) {
   body[data-whale-prince-theme] button[data-turn-process][data-whale-prince-running],
   body[data-whale-prince-theme] button[data-turn-process][data-whale-prince-running]::before {
     animation: none; background-position: center bottom;
   }
+}
+
+/* ---- full scene layer: themed hero copy, placeholder and running ornament ---- */
+body[data-whale-prince-theme] [class*="_previewBadge"] { display: none; }
+body[data-whale-prince-theme] [class*="_fishHitbox"] { display: none; }
+
+/* ---- reveal the scene: make the app background family translucent so the fixed body::before scene shows through (orca-link ladder) ---- */
+body[data-whale-prince-theme] {
+  --dsw-alias-bg-base: rgba(8, 24, 40, 0.12) !important;
+  --dsw-alias-bg-layer-1: rgba(16, 34, 55, 0.84) !important;
+  --dsw-alias-bg-layer-2: rgba(23, 43, 65, 0.88) !important;
+  --dsw-alias-bg-layer-3: rgba(32, 54, 75, 0.92) !important;
+  --dsw-alias-bg-module-platform: rgba(20, 41, 60, 0.88) !important;
+  --dsw-alias-bg-overlay: rgba(23, 43, 62, 0.97) !important;
+  --dsw-specific-bubble: rgba(32, 59, 82, 0.9) !important;
+  --dsw-specific-bubble-highlight: rgba(36, 67, 92, 0.94) !important;
+  --dsw-specific-input-major: rgba(22, 46, 68, 0.86) !important;
+  --dsw-specific-menu: rgba(28, 59, 81, 0.97) !important;
+  --dsw-specific-selector: rgba(36, 71, 95, 0.94) !important;
+  --dsw-specific-sidebar-fill: rgba(11, 32, 52, 0.8) !important;
+  --dsw-specific-sidebar-nav-item-active: rgba(88, 68, 47, 0.88) !important;
+  --dsw-specific-sidebar-nav-item-hover: rgba(24, 48, 71, 0.9) !important;
+}
+body[data-whale-prince-theme] [class*="_titleGroup"]::before {
+  order: -1;
+  content: '── 鲸少主题 ──';
+  padding: 3px 14px; border: .5px solid rgba(73, 189, 226, 0.55); border-radius: 999px;
+  background: rgba(8, 24, 40, 0.42); backdrop-filter: blur(3px);
+  color: #d0e3ee; font-size: 12px; font-weight: 500; letter-spacing: .16em;
+  box-shadow: 0 0 18px rgba(73, 189, 226, 0.22);
+  flex-basis: auto; align-self: center; display: inline-flex; align-items: center; justify-content: center;
+  white-space: nowrap; line-height: 20px;
+}
+body[data-whale-prince-theme] [class*="_titleGroup"] > span:first-child {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 8px;
+  flex-basis: 100%;
+  font-size: 0; color: transparent;
+}
+body[data-whale-prince-theme] [class*="_titleGroup"] > span:first-child::before {
+  content: '听潮问道，鲸游万象';
+  font-size: 30px; font-weight: 600; line-height: 1.28; letter-spacing: .12em;
+  color: #edf8ff; text-shadow: 0 2px 18px rgba(0,0,0,.62), 0 0 26px rgba(73, 189, 226, 0.34); white-space: nowrap;
+}
+body[data-whale-prince-theme] [data-whale-prince-orn] {
+  position: fixed; left: var(--dsh-orn-x, 50%); top: var(--dsh-orn-y, 72%);
+  transform: translateX(-50%); display: none; flex-direction: column;
+  align-items: center; gap: 10px; pointer-events: none; z-index: 45;
+}
+body[data-whale-prince-theme][data-whale-prince-busy] [data-whale-prince-orn] { display: flex; }
+body[data-whale-prince-theme] [data-whale-prince-orn-glyph] { position: relative; width: 46px; height: 46px; }
+body[data-whale-prince-theme] [data-whale-prince-orn-ring] {
+  position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px;
+  border: 1px solid rgba(73, 189, 226, 0.85); border-radius: 50%; opacity: 0;
+  animation: whale-prince-orn-ring 2.8s ease-out infinite;
+}
+body[data-whale-prince-theme] [data-whale-prince-orn-ring]:nth-child(2) { animation-delay: .9s; }
+body[data-whale-prince-theme] [data-whale-prince-orn-ring]:nth-child(3) { animation-delay: 1.8s; }
+@keyframes whale-prince-orn-ring {
+  0% { transform: scale(.45); opacity: .9; }
+  100% { transform: scale(2.7); opacity: 0; }
+}
+body[data-whale-prince-theme] [data-whale-prince-orn-text] {
+  font-size: 13px; letter-spacing: .2em; color: #49bde2;
+  text-shadow: 0 0 14px rgba(73, 189, 226, 0.55);
+  animation: whale-prince-orn-glow 3.2s ease-in-out infinite;
+}
+body[data-whale-prince-theme] [data-whale-prince-orn-text]::after { content: ' · · ·'; letter-spacing: .1em; opacity: .8; }
+@keyframes whale-prince-orn-glow { 0%, 100% { opacity: .68; } 50% { opacity: 1; } }
+body[data-whale-prince-theme] [data-whale-prince-orn-glyph] { background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2397eaff' d='M11 14c-1-5-4-8-9-9 1 5 4 8 9 9Zm2 0c1-5 4-8 9-9-1 5-4 8-9 9ZM2 17c4-3 7-3 10-1 3-2 6-2 10 1-4 0-6 1-10 4-4-3-6-4-10-4Z'/%3E%3C/svg%3E"); filter: drop-shadow(0 0 8px rgba(73, 189, 226, 0.75)); animation: whale-prince-orn-float 3.4s ease-in-out infinite; }
+@keyframes whale-prince-orn-float { 0%, 100% { transform: translateY(2px) rotate(-4deg); } 50% { transform: translateY(-3px) rotate(4deg); } }
+@media (min-width: 701px) {
+  body[data-whale-prince-theme][data-whale-prince-busy]::before { animation: whale-prince-scene-drift 32s ease-in-out infinite alternate; }
+}
+@keyframes whale-prince-scene-drift { from { background-position: 50% 46%; } to { background-position: 50% 54%; } }
+@media (prefers-reduced-motion: reduce) {
+  body[data-whale-prince-theme] [data-whale-prince-orn-ring], body[data-whale-prince-theme] [data-whale-prince-orn-text], body[data-whale-prince-theme] [data-whale-prince-orn-glyph], body[data-whale-prince-theme] [data-whale-prince-orn-glyph]::before { animation: none; }
+  body[data-whale-prince-theme][data-whale-prince-busy]::before { animation: none; }
 }

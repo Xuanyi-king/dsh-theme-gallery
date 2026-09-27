@@ -21,18 +21,24 @@ for (const item of CATALOG) {
   const attr = /body\[data-[\w-]+-theme\]/g;
   const running = /data-[\w-]+-running/g;
   const label = /data-[\w-]+-label/g;
+  const ornamentPart = /data-[\w-]+-orn-(ring|glyph|text)/g;
+  const ornament = /data-[\w-]+-orn\b/g;
+  const busy = /data-[\w-]+-busy/g;
   const scoped = originalCss
     .replace(attr, `body[data-dsh-gallery-theme="${slug}"]`)
     .replace(running, 'data-dsh-gallery-running')
     .replace(label, 'data-dsh-gallery-label')
+    .replace(ornamentPart, 'data-dsh-gallery-orn-$1')
+    .replace(ornament, 'data-dsh-gallery-orn')
+    .replace(busy, 'data-dsh-gallery-busy')
     .replaceAll('__SCENE_URL__', url);
   if (scoped.includes('__SCENE_URL__')) throw new Error(`unbundled scene: ${slug}`);
   css += `\n/* ${slug} */\n${scoped}\n`;
   const preview = await readScene(`../assets/gallery/${slug}.webp`);
   css += `.dsh-gallery-card[data-theme="${item.id}"] .dsh-gallery-scene { background-image: linear-gradient(0deg, rgba(5,12,20,.45), transparent), url("data:image/webp;base64,${preview.toString('base64')}"); background-size: cover; background-position: center; }\n`;
 }
-const catalog = CATALOG.map(({ slug, id, zh, en, detail, accent, intro, elapsed, english, definition }) =>
-  ({ slug, id, zh, en, detail, accent, intro, elapsed, english, definition }));
+const catalog = CATALOG.map(({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, definition }) =>
+  ({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, definition }));
 const client = body
   .replace("import { CATALOG } from './catalog.mjs';", `const CATALOG = ${JSON.stringify(catalog)};`)
   .replace("const STYLE_TEXT = '';", `const STYLE_TEXT = ${JSON.stringify(css)};`)
