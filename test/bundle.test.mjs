@@ -21,14 +21,15 @@ test('installable root package declares one bundle with all seven theme assets',
   assert.equal(pkg.exports['./client'], './lib/client.js');
 });
 
-test('every gallery scene targets the DSH conversation region and keeps native progress text visible', async () => {
+test('every gallery scene styles the conversation and animated native progress label', async () => {
   const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const choices = ['shanhe', 'ultraman', 'perfect-world', 'flame-emperor', 'great-sage', 'nezha', 'whale-prince'];
   for (const slug of choices) assert.ok(client.includes(`body[data-dsh-gallery-theme=\\"${slug}\\"]`), slug);
   assert.ok(client.includes('[data-conversation-region=\\"chat\\"]'));
-  assert.ok(client.includes('[data-dsh-gallery-running] > span:first-child { opacity: 1 !important; }'));
-  assert.ok(client.includes('[data-dsh-gallery-running]::before,'));
-  assert.ok(client.includes('[data-dsh-gallery-running]::after { display: none !important; }'));
+  assert.ok(client.includes('opacity: 0 !important;'));
+  assert.ok(client.includes('content: attr(data-dsh-gallery-label) !important;'));
+  assert.ok(client.includes('animation: gallery-progress-flow 3.2s linear infinite !important;'));
+  assert.ok(client.includes('@media (prefers-reduced-motion: reduce)'));
 });
 
 test('gallery paints the existing sidebar and composer using each scene without adding controls', async () => {
@@ -37,6 +38,8 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('[data-row-key^=\\"workspace:\\"]'));
   assert.ok(client.includes('[data-row-key^=\\"session:\\"]'));
   assert.ok(client.includes('--gallery-sidebar-fill'));
+  assert.ok(client.includes('background-size: 100% 100%, auto 100%;'));
+  assert.ok(client.includes('color-mix(in srgb, var(--gallery-sidebar-fill) 26%, transparent)'));
   assert.ok(client.includes('--gallery-chrome'));
   assert.ok(client.includes('button[class*=\\"newSession\\"]::before'));
   assert.ok(client.includes('[data-composer-card] button[class*=\\"_primary\\"]'));
