@@ -4,6 +4,9 @@ import { CATALOG } from './catalog.mjs';
 const STYLE_TEXT = '';
 const REACT = null;
 const STORAGE_KEY = 'dsh.themeGallery.selection';
+const VISUAL_KEY = 'dsh.themeGallery.visual';
+const VISUAL_DEFAULTS = Object.freeze({ brightness: 100, blur: 0, contrast: 100 });
+const VISUAL_RANGES = Object.freeze({ brightness: [45, 125], blur: [0, 12], contrast: [80, 150] });
 const ATTR = 'data-dsh-gallery-theme';
 const RUNNING = 'data-dsh-gallery-running';
 const LABEL = 'data-dsh-gallery-label';
@@ -197,6 +200,24 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
   let disposed = false;
   let writeQueue = Promise.resolve();
   const subscribers = new Set();
+  const readVisual = () => {
+    try {
+      const saved = JSON.parse(storage?.getItem(VISUAL_KEY) ?? 'null');
+      if (!saved || typeof saved !== 'object') return { ...VISUAL_DEFAULTS };
+      return Object.fromEntries(Object.entries(VISUAL_DEFAULTS).map(([key, fallback]) => {
+        const value = Number(saved[key]);
+        const [min, max] = VISUAL_RANGES[key];
+        return [key, Object.hasOwn(saved, key) && Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback];
+      }));
+    } catch { return { ...VISUAL_DEFAULTS }; }
+  };
+  let visual = readVisual();
+  const syncVisual = () => {
+    const style = doc?.body?.style;
+    style?.setProperty('--gallery-scene-brightness', String(visual.brightness / 100));
+    style?.setProperty('--gallery-scene-blur', `${visual.blur}px`);
+    style?.setProperty('--gallery-text-contrast', String(visual.contrast / 100));
+  };
   const read = () => { try { return storage?.getItem(STORAGE_KEY) ?? null; } catch { return null; } };
   const remember = id => {
     try { if (valid.has(id)) storage?.setItem(STORAGE_KEY, id); else storage?.removeItem(STORAGE_KEY); } catch { /* Storage may be disabled. */ }
@@ -230,6 +251,7 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
       style.textContent = styleText;
       doc.head.appendChild(style);
     }
+    syncVisual();
     const unlisten = ctx.on?.('theme/change', snapshot => {
       // The host may apply its built-in theme setting after this plugin starts.
       // Keep a gallery choice active until it is explicitly reset in this page.
@@ -268,6 +290,16 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
     }
     return {
       getSelection: () => current,
+      getAdjustments: () => ({ ...visual }),
+      adjust(key, value) {
+        if (!Object.hasOwn(VISUAL_RANGES, key)) throw new Error(`unknown adjustment: ${key}`);
+        const amount = Number(value);
+        if (!Number.isFinite(amount)) return;
+        const [min, max] = VISUAL_RANGES[key];
+        visual = { ...visual, [key]: Math.min(max, Math.max(min, amount)) };
+        syncVisual();
+        try { storage?.setItem(VISUAL_KEY, JSON.stringify(visual)); } catch { /* Storage may be disabled. */ }
+      },
       select(id) {
         if (!valid.has(id) && !['light', 'dark', 'system'].includes(id)) throw new Error(`unknown theme: ${id}`);
         userSelected = true;
@@ -285,6 +317,9 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
           ctx.theme.setTheme(restore);
         }
         doc?.body?.removeAttribute(ATTR);
+        for (const property of ['--gallery-scene-brightness', '--gallery-scene-blur', '--gallery-text-contrast']) {
+          doc?.body?.style?.removeProperty(property);
+        }
         if (doc?.body) decorateRunningStatuses(doc.body, null);
         style?.remove();
         for (const stop of unregister.reverse()) stop();
@@ -303,7 +338,13 @@ export function createGallerySection(React, controller, catalog = CATALOG) {
   return function GallerySection(props) {
     const t = props.t ?? (key => key);
     const [selected, setSelected] = React.useState(() => controller.getSelection());
+    const [visual, setVisual] = React.useState(() => controller.getAdjustments());
     React.useEffect(() => controller.subscribe(setSelected), []);
+    const controls = [
+      { key: 'brightness', min: 45, max: 125, unit: '%' },
+      { key: 'blur', min: 0, max: 12, unit: 'px' },
+      { key: 'contrast', min: 80, max: 150, unit: '%' },
+    ];
     const choices = [
       { id: 'system', slug: 'system', zh: '跟随 DSH', en: 'DSH default', detail: '恢复内置主题', accent: '#8e9caa' },
       { id: 'light', slug: 'light', zh: 'DSH 明亮', en: 'DSH Light', detail: '内置浅色外观', accent: '#dae5e9' },
@@ -333,6 +374,21 @@ export function createGallerySection(React, controller, catalog = CATALOG) {
           h('span', { className: 'dsh-gallery-check', 'aria-hidden': true }, selected === choice.id ? '✓' : ''),
         ),
       )),
+      h('fieldset', { className: 'dsh-gallery-controls', disabled: !catalog.some(item => item.id === selected) },
+        h('legend', null, t('appearance')),
+        h('p', null, t('appearanceHint')),
+        controls.map(control => h('label', { key: control.key, className: 'dsh-gallery-control' },
+          h('span', null, t(control.key)),
+          h('input', { type: 'range', min: control.min, max: control.max, step: 1,
+            value: visual[control.key], 'aria-label': t(control.key),
+            onChange: event => {
+              controller.adjust(control.key, event.target.value);
+              setVisual(controller.getAdjustments());
+            },
+          }),
+          h('output', null, `${visual[control.key]}${control.unit}`),
+        )),
+      ),
       h('p', { className: 'dsh-gallery-footnote' }, t('footnote')),
     );
   };
@@ -344,8 +400,8 @@ export function apply(ctx) {
     controller = applyGallery(ctx);
     return () => controller.dispose();
   }, 'dsh-theme-gallery: selection and scenery');
-  const zh = { nav: '主题', title: '主题', intro: '挑选喜欢的主题，即点即换。七款主题都包含在这个插件中。', footnote: '选择保存在 DSH 中；可随时恢复默认外观。', system: '跟随 DSH', light: 'DSH 明亮', dark: 'DSH 深色' };
-  const en = { nav: 'Themes', title: 'Themes', intro: 'Choose a theme and switch instantly. All seven are included.', footnote: 'Your choice is saved by DSH. Return to the default at any time.', system: 'DSH default', light: 'DSH Light', dark: 'DSH Dark' };
+  const zh = { nav: '主题', title: '主题', intro: '挑选喜欢的主题，即点即换。七款主题都包含在这个插件中。', footnote: '选择保存在 DSH 中；可随时恢复默认外观。', system: '跟随 DSH', light: 'DSH 明亮', dark: 'DSH 深色', appearance: '画面与文字', appearanceHint: '调节时立即生效，重启后仍会保留。默认：亮度 100%、模糊 0px、文字对比 100%。', brightness: '背景明暗', blur: '背景模糊', contrast: '文字对比' };
+  const en = { nav: 'Themes', title: 'Themes', intro: 'Choose a theme and switch instantly. All seven are included.', footnote: 'Your choice is saved by DSH. Return to the default at any time.', system: 'DSH default', light: 'DSH Light', dark: 'DSH Dark', appearance: 'Scene and text', appearanceHint: 'Updates instantly and persists after restart. Defaults: brightness 100%, blur 0px, text contrast 100%.', brightness: 'Scene brightness', blur: 'Scene blur', contrast: 'Text contrast' };
   for (const item of CATALOG) { zh[item.slug] = item.zh; en[item.slug] = item.en; }
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'dsh-theme-gallery: locale');
   ctx.slots.inject('settings.section', () => ctx.slots.register({

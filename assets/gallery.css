@@ -13,4 +13,12 @@
 .dsh-gallery-copy strong { font-size: 14px; }
 .dsh-gallery-copy small { color: var(--dsw-alias-label-secondary); font-size: 12px; }
 .dsh-gallery-check { position: absolute; right: 12px; bottom: 16px; color: var(--dsh-gallery-accent); font-weight: 700; }
+.dsh-gallery-controls { border: 1px solid var(--dsw-alias-border-l2); border-radius: 14px; padding: 12px 18px 18px; margin: 0; }
+.dsh-gallery-controls legend { padding: 0 6px; font-size: 15px; font-weight: 600; }
+.dsh-gallery-controls p { margin: 0 0 16px; color: var(--dsw-alias-label-secondary); font-size: 12px; }
+.dsh-gallery-controls:disabled { opacity: .5; }
+.dsh-gallery-control { display: grid; grid-template-columns: 92px minmax(80px, 1fr) 52px; align-items: center; gap: 14px; margin: 12px 0; font-size: 13px; }
+.dsh-gallery-control input { width: 100%; accent-color: var(--dsh-gallery-accent, #87aec4); cursor: pointer; }
+.dsh-gallery-control output { text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) { .dsh-gallery-control { grid-template-columns: 80px minmax(60px, 1fr) 48px; gap: 7px; } }
 @media (prefers-reduced-motion: reduce) { .dsh-gallery-card { transition: none; } }

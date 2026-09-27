@@ -3,11 +3,14 @@ import assert from 'node:assert/strict';
 import { CATALOG } from '../src/catalog.mjs';
 import { applyGallery, formatRunningStatus, decorateRunningStatuses, createGallerySection } from '../src/client.mjs';
 
-function harness(saved = null, fetchImpl = null) {
+function harness(saved = null, fetchImpl = null, visualSaved = null) {
   const data = new Map(saved ? [['dsh.themeGallery.selection', saved]] : []);
+  if (visualSaved !== null) data.set('dsh.themeGallery.visual', visualSaved);
   const storage = { getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value), removeItem: key => data.delete(key) };
   const attrs = new Map();
-  const body = { setAttribute: (k, v) => attrs.set(k, v), removeAttribute: k => attrs.delete(k), querySelectorAll: () => [] };
+  const styles = new Map();
+  const body = { setAttribute: (k, v) => attrs.set(k, v), removeAttribute: k => attrs.delete(k), querySelectorAll: () => [],
+    style: { setProperty: (k, v) => styles.set(k, v), removeProperty: k => styles.delete(k) } };
   const elements = [];
   const document = { body, head: { appendChild: item => elements.push(item) }, createElement: () => ({ remove() {} }) };
   const definitions = new Map([['light', {}], ['dark', {}]]);
@@ -20,7 +23,7 @@ function harness(saved = null, fetchImpl = null) {
   };
   const ctx = { theme, on(name, fn) { listeners.set(name, fn); return () => listeners.delete(name); } };
   const controller = applyGallery(ctx, { document, storage, Observer: null, styleText: '.gallery{}', fetchImpl });
-  return { ctx, controller, attrs, data, definitions, elements, get choice() { return choice; } };
+  return { ctx, controller, attrs, styles, data, definitions, elements, get choice() { return choice; } };
 }
 
 test('one gallery registers all seven unique themes and restores a saved selection', () => {
@@ -85,9 +88,35 @@ test('settings section offers every theme plus DSH default through an accessible
   const buttons = nodes.filter(x => x.type === 'button');
   assert.equal(buttons.length, 10);
   assert.equal(buttons.filter(x => x.props['aria-pressed'] === true).length, 1);
+  const ranges = nodes.filter(x => x.type === 'input' && x.props.type === 'range');
+  assert.deepEqual(ranges.map(x => x.props['aria-label']), ['brightness', 'blur', 'contrast']);
+  ranges[1].props.onChange({ target: { value: '5' } });
+  assert.equal(h.controller.getAdjustments().blur, 5);
   buttons.find(x => x.props['data-theme'] === 'gallery-great-sage').props.onClick();
   assert.equal(h.choice, 'gallery-great-sage');
   h.controller.dispose();
+});
+
+test('scene and text sliders persist, restore, clamp, and clean up visual properties', () => {
+  const h = harness('gallery-shanhe');
+  assert.deepEqual(h.controller.getAdjustments(), { brightness: 100, blur: 0, contrast: 100 });
+  h.controller.adjust('brightness', 65);
+  h.controller.adjust('blur', 5);
+  h.controller.adjust('contrast', 130);
+  assert.equal(h.styles.get('--gallery-scene-brightness'), '0.65');
+  assert.equal(h.styles.get('--gallery-scene-blur'), '5px');
+  assert.equal(h.styles.get('--gallery-text-contrast'), '1.3');
+  assert.deepEqual(JSON.parse(h.data.get('dsh.themeGallery.visual')), { brightness: 65, blur: 5, contrast: 130 });
+  h.controller.adjust('blur', 999);
+  assert.equal(h.controller.getAdjustments().blur, 12);
+  h.controller.adjust('brightness', 'invalid');
+  assert.equal(h.controller.getAdjustments().brightness, 65);
+  const restored = harness('gallery-shanhe', null, h.data.get('dsh.themeGallery.visual'));
+  assert.deepEqual(restored.controller.getAdjustments(), { brightness: 65, blur: 12, contrast: 130 });
+  assert.equal(restored.styles.get('--gallery-scene-blur'), '12px');
+  restored.controller.dispose();
+  h.controller.dispose();
+  assert.equal(h.styles.size, 0);
 });
 
 test('host choice survives a fresh browser session and reset persists as default', async () => {
