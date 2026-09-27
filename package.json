@@ -12,6 +12,7 @@
     "pack:perfect-world": "npm pack -w themes/perfect-world",
     "pack:flame-emperor": "npm pack -w themes/flame-emperor",
     "pack:great-sage": "npm pack -w themes/great-sage",
-    "pack:nezha": "npm pack -w themes/nezha"
+    "pack:nezha": "npm pack -w themes/nezha",
+    "pack:whale-prince": "npm pack -w themes/whale-prince"
   }
 }
