@@ -10,22 +10,15 @@
 
 回复进行时，视觉提示为「推演诸天 · 悟道中」，计时后显示「推演诸天 · 已历 12 秒」；金色道纹轻微旋转，赤金流光沿底边流动。系统开启减少动态效果后动画停止。完成与失败状态保留原文，屏幕阅读器使用 DSH 原始播报。
 
-## 安装
+## 安装与切换
 
-此主题按 DSH `v0.1.7-rc.1` Web 客户端的 `ctx.theme` 接口制作。先卸载正在自动启用的其他主题插件，再安装：
-
-```bash
-git clone https://github.com/xuanyi-niubi/dsh-shanhe-theme.git
-cd dsh-shanhe-theme/themes/perfect-world
-npm run pack:local
-dsh plugin --profile web add ./dsh-perfect-world-theme-0.1.0.tgz
-```
-
-重启 `dsh web` 并刷新浏览器。卸载：
+在 DSH 桌面应用「插件 → 添加插件」中粘贴 `https://github.com/xuanyi-niubi/dsh-theme-gallery` 安装统一主题库，然后到「设置 → 主题」选择「荒天帝意象」。也可用 Web profile 一条命令安装：
 
 ```bash
-dsh plugin --profile web remove dsh-perfect-world-theme
+dsh plugin --profile web add https://github.com/xuanyi-niubi/dsh-theme-gallery
 ```
+
+在「设置 → 主题」中可随时切换其他主题或选择「跟随 DSH」恢复默认。完整说明见[仓库首页](../../README.md)。
 
 ## 开发
 

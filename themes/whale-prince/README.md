@@ -10,22 +10,15 @@ DeepSeek Harness Web 的独立男性角色主题。深海巨鲸、海上王城�
 
 回复进行时视觉提示为「鲸息推演 · 潮声渐起」，计时后为「鲸息推演 · 已航 12 秒」。鲸尾轻摆，蓝色潮纹沿提示底边掠过。系统开启“减少动态效果”后动画停止。完成、停止和失败状态保留原文，屏幕阅读器继续使用 DSH 原始状态播报。
 
-## 安装
+## 安装与切换
 
-按 DSH `v0.1.7-rc.1` Web 客户端 `ctx.theme` 接口制作。先卸载其他自动启用的主题插件：
-
-```bash
-git clone https://github.com/xuanyi-niubi/dsh-shanhe-theme.git
-cd dsh-shanhe-theme/themes/whale-prince
-npm run pack:local
-dsh plugin --profile web add ./dsh-whale-prince-theme-0.1.0.tgz
-```
-
-重启 `dsh web` 并刷新浏览器。卸载：
+在 DSH 桌面应用「插件 → 添加插件」中粘贴 `https://github.com/xuanyi-niubi/dsh-theme-gallery` 安装统一主题库，然后到「设置 → 主题」选择「鲸少 · 沧海之主」。也可用 Web profile 一条命令安装：
 
 ```bash
-dsh plugin --profile web remove dsh-whale-prince-theme
+dsh plugin --profile web add https://github.com/xuanyi-niubi/dsh-theme-gallery
 ```
+
+在「设置 → 主题」中可随时切换其他主题或选择「跟随 DSH」恢复默认。完整说明见[仓库首页](../../README.md)。
 
 ## 开发
 

@@ -1,90 +1,47 @@
 # DSH 主题库
 
-为 DeepSeek Harness Web 制作的独立主题合集。每款主题都是一个可以通过 `dsh plugin --profile web add` 安装、更新和卸载的插件。仓库地址沿用最初的 `dsh-shanhe-theme`，现在承载多款主题。
+一个插件，七款主题。安装后在 DeepSeek Harness 的「设置 → 主题」中随时切换，也可以选「跟随 DSH」恢复默认；选中的主题在关闭并重新打开 DSH 后仍会保留。
 
-| 主题 | 预览 | 风格 | 插件目录 |
-| --- | --- | --- | --- |
-| 山河剑意 | [查看样图](themes/shanhe/assets/concept-preview.webp) | 宣纸、水墨、朱砂、流动墨线 | [`themes/shanhe`](themes/shanhe/) |
-| 光之巨人（奥特曼灵感） | [查看样图](themes/ultraman/assets/concept-preview.webp) | 红银点缀、星空、蓝色能量核心 | [`themes/ultraman`](themes/ultraman/) |
-| 荒天帝意象（完美世界灵感） | [查看样图](themes/perfect-world/assets/concept-preview.webp) | 黑金战甲、赤色披风、诸天宫阙 | [`themes/perfect-world`](themes/perfect-world/) |
-| 炎帝意象（斗破苍穹灵感） | [查看样图](themes/flame-emperor/assets/concept-preview.webp) | 黑袍重尺、青色火莲、赤色火山 | [`themes/flame-emperor`](themes/flame-emperor/) |
-| 齐天大圣 | [查看样图](themes/great-sage/assets/concept-preview.webp) | 火眼金睛、金箍棒、云海天宫 | [`themes/great-sage`](themes/great-sage/) |
-| 哪吒 · 莲身破浪 | [查看样图](themes/nezha/assets/concept-preview.webp) | 混天绫、乾坤圈、火尖枪、风火轮 | [`themes/nezha`](themes/nezha/) |
-| 鲸少 · 沧海之主 | [查看样图](themes/whale-prince/assets/concept-preview.webp) | 男性海洋守望者、巨鲸、深海王城 | [`themes/whale-prince`](themes/whale-prince/) |
+| 主题 | 样图 | 风格 |
+| --- | --- | --- |
+| 山河剑意 | [查看样图](themes/shanhe/assets/concept-preview.webp) | 宣纸、水墨、朱砂、流动墨线 |
+| 光之巨人（奥特曼灵感） | [查看样图](themes/ultraman/assets/concept-preview.webp) | 红银点缀、星空、蓝色能量核心 |
+| 荒天帝意象（完美世界灵感） | [查看样图](themes/perfect-world/assets/concept-preview.webp) | 黑金战甲、赤色披风、诸天宫阙 |
+| 炎帝意象（斗破苍穹灵感） | [查看样图](themes/flame-emperor/assets/concept-preview.webp) | 黑袍重尺、青色火莲、赤色火山 |
+| 齐天大圣 | [查看样图](themes/great-sage/assets/concept-preview.webp) | 火眼金睛、金箍棒、云海天宫 |
+| 哪吒 · 莲身破浪 | [查看样图](themes/nezha/assets/concept-preview.webp) | 混天绫、乾坤圈、火尖枪、风火轮 |
+| 鲸少 · 沧海之主 | [查看样图](themes/whale-prince/assets/concept-preview.webp) | 男性海洋守望者、巨鲸、深海王城 |
 
-七款均保留 DSH 的工作区与对话功能，运行中的回复状态分别有对应文案和轻量动画。外观图像均是原创生成的视觉素材；作品灵感主题均为非官方设计。
+主题图像为原创视觉素材，相关作品灵感主题均为非官方设计。每款主题都有专属配色、场景以及回复运行状态文案和轻量动画。
 
-## 安装一款主题
+## 安装
 
-克隆仓库后，只打包要安装的主题：
+在 DSH 桌面应用中打开「插件 → 添加插件」，在输入框粘贴下面的仓库地址，点击「安装」：
 
-```bash
-git clone https://github.com/xuanyi-niubi/dsh-shanhe-theme.git
-cd dsh-shanhe-theme
-npm run build
-npm run pack:shanhe
-dsh plugin --profile web add ./dsh-shanhe-theme-0.1.1.tgz
+```text
+https://github.com/xuanyi-niubi/dsh-theme-gallery
 ```
 
-安装光之巨人主题时，把最后两行换成：
+通过 Web profile 的命令行安装时，也只需一条命令：
 
 ```bash
-npm run pack:ultraman
-dsh plugin --profile web add ./dsh-ultraman-theme-0.1.0.tgz
+dsh plugin --profile web add https://github.com/xuanyi-niubi/dsh-theme-gallery
 ```
 
-安装荒天帝意象主题时，把最后两行换成：
+安装后打开「设置 → 主题」，点击喜欢的主题卡片即可切换，不需要为每款主题分别安装插件。
 
-```bash
-npm run pack:perfect-world
-dsh plugin --profile web add ./dsh-perfect-world-theme-0.1.0.tgz
-```
+## 切换、恢复与保存
 
-安装炎帝意象主题时，把最后两行换成：
+「设置 → 主题」包含七款主题和「跟随 DSH」「DSH 明亮」「DSH 深色」三个内置选项。选择「跟随 DSH」会清除主题库的覆盖设置，恢复 DSH 默认外观；随时可以再次选择主题。
 
-```bash
-npm run pack:flame-emperor
-dsh plugin --profile web add ./dsh-flame-emperor-theme-0.1.0.tgz
-```
-
-安装齐天大圣主题时，把最后两行换成：
-
-```bash
-npm run pack:great-sage
-dsh plugin --profile web add ./dsh-great-sage-theme-0.1.0.tgz
-```
-
-安装哪吒主题时，把最后两行换成：
-
-```bash
-npm run pack:nezha
-dsh plugin --profile web add ./dsh-nezha-theme-0.1.0.tgz
-```
-
-安装鲸少主题时，把最后两行换成：
-
-```bash
-npm run pack:whale-prince
-dsh plugin --profile web add ./dsh-whale-prince-theme-0.1.0.tgz
-```
-
-执行 `dsh web` 或重启现有服务，再刷新网页。七款插件目前都会自动启用自己的主题；切换时先卸载当前主题，再安装下一款，避免装饰层同时生效：
-
-```bash
-dsh plugin --profile web remove dsh-shanhe-theme
-# 或：dsh plugin --profile web remove dsh-ultraman-theme
-# 或：dsh plugin --profile web remove dsh-perfect-world-theme
-# 或：dsh plugin --profile web remove dsh-flame-emperor-theme
-# 或：dsh plugin --profile web remove dsh-great-sage-theme
-# 或：dsh plugin --profile web remove dsh-nezha-theme
-# 或：dsh plugin --profile web remove dsh-whale-prince-theme
-```
+选择会写入 DSH 本机配置目录中的 `dsh-theme-gallery/selection.json`；页面同时保存本地副本，供宿主未提供配置接口时恢复。重启 DSH 后会重新读取选择。如果此前安装过旧版单款主题插件，请先移除那些旧插件，避免旧版装饰同时运行。
 
 ## 开发与验证
 
 ```bash
 npm run build
 npm test
+npm run pack:gallery
 ```
 
-各主题的配色、资源和测试分别位于 `themes/<name>/`。根目录不发布 npm 包，不改动 DSH 源码。单款主题的能力与限制详见对应目录里的 README。
+仓库根目录是统一安装包。各款主题的原始资源与测试保留在 `themes/<name>/`，便于继续迭代。

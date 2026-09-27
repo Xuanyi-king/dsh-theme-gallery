@@ -10,22 +10,15 @@
 
 DSH 正在回复时，运行提示会显示「光能解析 · 聚焦中」；计时后显示「光能解析 · 已持续 12 秒」。左侧蓝色能量核心缓缓脉动，进度线流动。系统开启“减少动态效果”后，动画停止。完成、停止和失败提示保持原文，屏幕阅读器的状态播报也保持原样。
 
-## 安装
+## 安装与切换
 
-支持 DSH Web 中的 `ctx.theme` 接口，按照 `dsh-v0.1.7-rc.1` 的客户端约定制作。安装前先卸载其他自动启用的独立主题插件，例如 `dsh-shanhe-theme`，以免两个插件同时挂载装饰层。
-
-```bash
-git clone https://github.com/xuanyi-niubi/dsh-shanhe-theme.git
-cd dsh-shanhe-theme/themes/ultraman
-npm run pack:local
-dsh plugin --profile web add ./dsh-ultraman-theme-0.1.0.tgz
-```
-
-重启 `dsh web` 并刷新浏览器。卸载：
+在 DSH 桌面应用「插件 → 添加插件」中粘贴 `https://github.com/xuanyi-niubi/dsh-theme-gallery` 安装统一主题库，然后到「设置 → 主题」选择「光之巨人」。也可用 Web profile 一条命令安装：
 
 ```bash
-dsh plugin --profile web remove dsh-ultraman-theme
+dsh plugin --profile web add https://github.com/xuanyi-niubi/dsh-theme-gallery
 ```
+
+在「设置 → 主题」中可随时切换其他主题或选择「跟随 DSH」恢复默认。完整说明见[仓库首页](../../README.md)。
 
 ## 开发
 

@@ -10,22 +10,15 @@ DeepSeek Harness Web 的独立主题插件。黑袍、重尺、青色火莲与�
 
 回复进行时视觉提示为「异火推演 · 凝焰中」，计时后显示「异火推演 · 已炼 12 秒」。青色火纹轻轻脉动，橙青流光沿底边流动。系统开启“减少动态效果”后停止动画。完成、停止和失败提示保持原文；屏幕阅读器继续使用 DSH 原始状态播报。
 
-## 安装
+## 安装与切换
 
-按 DSH `v0.1.7-rc.1` Web 客户端的 `ctx.theme` 接口制作。先卸载正在自动启用的其他主题，再安装：
-
-```bash
-git clone https://github.com/xuanyi-niubi/dsh-shanhe-theme.git
-cd dsh-shanhe-theme/themes/flame-emperor
-npm run pack:local
-dsh plugin --profile web add ./dsh-flame-emperor-theme-0.1.0.tgz
-```
-
-重启 `dsh web` 并刷新浏览器。卸载：
+在 DSH 桌面应用「插件 → 添加插件」中粘贴 `https://github.com/xuanyi-niubi/dsh-theme-gallery` 安装统一主题库，然后到「设置 → 主题」选择「炎帝意象」。也可用 Web profile 一条命令安装：
 
 ```bash
-dsh plugin --profile web remove dsh-flame-emperor-theme
+dsh plugin --profile web add https://github.com/xuanyi-niubi/dsh-theme-gallery
 ```
+
+在「设置 → 主题」中可随时切换其他主题或选择「跟随 DSH」恢复默认。完整说明见[仓库首页](../../README.md)。
 
 ## 开发
 

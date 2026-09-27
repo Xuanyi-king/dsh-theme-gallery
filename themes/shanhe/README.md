@@ -12,24 +12,15 @@
 
 这层显示只作用于 DSH 0.1.7 的运行中 Turn 按钮；已完成、停止和失败状态保留原文字，供屏幕阅读器读取的状态播报也保持原样。若 DSH 后续修改该按钮的 DOM 结构，装饰可能不再生效，但原有状态仍可正常阅读。
 
-## 安装
+## 安装与切换
 
-适用于提供 `ctx.theme` 扩展的 DSH Web 客户端。已按 `dsh-v0.1.7-rc.1` 的主题接口检查插件结构。
-
-```bash
-git clone https://github.com/xuanyi-niubi/dsh-shanhe-theme.git
-cd dsh-shanhe-theme/themes/shanhe
-npm run pack:local
-dsh plugin --profile web add ./dsh-shanhe-theme-0.1.1.tgz
-```
-
-重启 `dsh web`，刷新网页。安装后主题会自动启用。如果同时装有其他自动选主题的插件，最后加载的插件可能接管外观。
-
-卸载：
+在 DSH 桌面应用「插件 → 添加插件」中粘贴 `https://github.com/xuanyi-niubi/dsh-theme-gallery` 安装统一主题库，然后到「设置 → 主题」选择「山河剑意」。也可用 Web profile 一条命令安装：
 
 ```bash
-dsh plugin --profile web remove dsh-shanhe-theme
+dsh plugin --profile web add https://github.com/xuanyi-niubi/dsh-theme-gallery
 ```
+
+在「设置 → 主题」中可随时切换其他主题或选择「跟随 DSH」恢复默认。完整说明见[仓库首页](../../README.md)。
 
 ## 开发
 

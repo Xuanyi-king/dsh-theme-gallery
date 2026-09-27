@@ -1,12 +1,34 @@
 {
   "name": "dsh-theme-gallery",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "description": "One installable DeepSeek Harness plugin with seven switchable themes",
+  "license": "MIT",
   "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-theme",
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  },
+  "files": ["lib", "cordis.patch.yml", "README.md", "LICENSE"],
   "workspaces": ["themes/*"],
   "scripts": {
-    "build": "npm run build --workspaces",
-    "test": "npm run test --workspaces",
+    "build": "npm run build --workspaces && node scripts/build-gallery.mjs",
+    "test": "npm run test --workspaces && node --test test/*.test.mjs",
+    "pack:gallery": "npm run build && npm pack --workspaces=false",
     "pack:shanhe": "npm pack -w themes/shanhe",
     "pack:ultraman": "npm pack -w themes/ultraman",
     "pack:perfect-world": "npm pack -w themes/perfect-world",
