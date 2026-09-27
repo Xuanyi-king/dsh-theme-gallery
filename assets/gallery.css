@@ -8,6 +8,8 @@
 .dsh-gallery-card:focus-visible { outline: 2px solid var(--dsh-gallery-accent); outline-offset: 3px; }
 .dsh-gallery-card[aria-pressed="true"] { border-color: var(--dsh-gallery-accent); box-shadow: 0 0 0 1px var(--dsh-gallery-accent); }
 .dsh-gallery-scene { display: block; height: 108px; background: linear-gradient(145deg, var(--dsw-alias-bg-layer-2), var(--dsh-gallery-accent)); position: relative; }
+.dsh-gallery-card[aria-pressed="true"] .dsh-gallery-scene { filter: brightness(var(--gallery-preview-brightness, 1)) blur(var(--gallery-preview-blur, 0px)); }
+.dsh-gallery-card[aria-pressed="true"] .dsh-gallery-copy { filter: contrast(var(--gallery-preview-contrast, 1)); }
 .dsh-gallery-light { position: absolute; width: 96px; height: 96px; top: 5px; right: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,.55); box-shadow: 0 0 35px 9px var(--dsh-gallery-accent), inset 0 0 24px rgba(255,255,255,.4); opacity: .8; }
 .dsh-gallery-copy { display: flex; flex-direction: column; gap: 5px; padding: 12px 14px 14px; }
 .dsh-gallery-copy strong { font-size: 14px; }

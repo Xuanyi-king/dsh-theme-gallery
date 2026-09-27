@@ -361,7 +361,12 @@ export function createGallerySection(React, controller, catalog = CATALOG) {
           key: choice.id, type: 'button', className: 'dsh-gallery-card',
           'data-theme': choice.id, 'aria-pressed': selected === choice.id,
           'aria-label': `${choice.zh} · ${choice.detail}`,
-          style: { '--dsh-gallery-accent': choice.accent },
+          style: {
+            '--dsh-gallery-accent': choice.accent,
+            '--gallery-preview-brightness': selected === choice.id ? String(visual.brightness / 100) : '1',
+            '--gallery-preview-blur': selected === choice.id ? `${visual.blur}px` : '0px',
+            '--gallery-preview-contrast': selected === choice.id ? String(visual.contrast / 100) : '1',
+          },
           onClick: () => { controller.select(choice.id); setSelected(choice.id); },
         },
           h('span', { className: 'dsh-gallery-scene', 'aria-hidden': true },

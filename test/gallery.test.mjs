@@ -114,6 +114,12 @@ test('scene and text sliders persist, restore, clamp, and clean up visual proper
   const restored = harness('gallery-shanhe', null, h.data.get('dsh.themeGallery.visual'));
   assert.deepEqual(restored.controller.getAdjustments(), { brightness: 65, blur: 12, contrast: 130 });
   assert.equal(restored.styles.get('--gallery-scene-blur'), '12px');
+  const React = { createElement: (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat() }), useState: initial => [typeof initial === 'function' ? initial() : initial, () => {}], useEffect: () => {} };
+  const preview = createGallerySection(React, restored.controller)({ t: key => key });
+  const cards = preview.children.find(child => child.props?.className === 'dsh-gallery-grid').children;
+  const chosen = cards.find(card => card.props['data-theme'] === 'gallery-shanhe');
+  assert.equal(chosen.props.style['--gallery-preview-brightness'], '0.65');
+  assert.equal(chosen.props.style['--gallery-preview-blur'], '12px');
   restored.controller.dispose();
   h.controller.dispose();
   assert.equal(h.styles.size, 0);
