@@ -11,6 +11,7 @@ const sceneMap = {
   'whale-prince': 'ocean-lord.webp',
 };
 let css = await read('../assets/gallery.css');
+const sword = await readScene('../assets/gallery/shanhe-sword.png');
 // The sidebar is a separate DSH surface. Its palette must be applied to the
 // sidebar root itself: the global theme tokens alone leave workspace rows and
 // controls looking like the stock UI over a themed conversation scene.
@@ -115,6 +116,78 @@ body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running]
 body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running]::after { display: none !important; }
 body[data-dsh-gallery-theme] [data-dsh-gallery-orn] { display: none !important; }
 @media (max-width: 800px) { body[data-dsh-gallery-theme] [data-composer-card] { backdrop-filter: none; } }
+`;
+css += `
+/* The reference art is already bright; paint it on the actual DSH centre
+   column, above the shell's stacked translucent backgrounds. */
+body[data-dsh-gallery-theme] :is([data-pane="conversation"], [class*="centerCol"]) {
+  background: linear-gradient(rgba(9, 11, 16, .025), rgba(9, 11, 16, .065)), var(--dsh-gallery-scene) center / cover no-repeat;
+  --dsw-alias-bg-base: rgba(10, 12, 17, .035) !important;
+}
+body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"]) {
+  background: var(--dsh-gallery-scene) center / cover no-repeat;
+  --dsw-alias-bg-base: rgba(248, 244, 235, .035) !important;
+}
+body[data-dsh-gallery-theme] [class*="composerHero"] { padding-bottom: clamp(64px, 11vh, 150px); }
+/* The existing headline becomes the scene's calligraphy. The generic
+   'inspired theme' pill is removed from every theme. */
+body[data-dsh-gallery-theme] [class*="_titleGroup"]::before { content: none !important; display: none !important; }
+body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child::before {
+  font-family: "STKaiti", "KaiTi", "Kaiti SC", "Songti SC", serif;
+  font-size: clamp(36px, 3.9vw, 66px);
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: .09em;
+}
+body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"] > span:first-child::before {
+  font-size: clamp(38px, 4vw, 68px);
+  color: #272522;
+  text-shadow: 0 2px 2px rgba(48, 37, 26, .1);
+}
+body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"] > span:first-child::after {
+  font-family: "STKaiti", "KaiTi", "Kaiti SC", serif;
+  font-size: clamp(14px, 1.25vw, 21px);
+  color: #584d40;
+  letter-spacing: .25em;
+  margin-top: 12px;
+}
+body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"] { position: relative; }
+body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"]::after {
+  content: '深';
+  position: absolute;
+  inset-inline-end: -28px;
+  top: 8px;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #a73e35;
+  color: #a73e35;
+  font: 18px/1 serif;
+  transform: rotate(-5deg);
+  pointer-events: none;
+}
+body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"]) { position: relative; }
+body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"])::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  left: -28px;
+  top: 0;
+  width: 56px;
+  height: 100%;
+  background: url("data:image/png;base64,${sword.toString('base64')}") center / 56px 100% no-repeat;
+  pointer-events: none;
+}
+body[data-dsh-gallery-theme]:not([data-dsh-gallery-theme="shanhe"]) :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--gallery-sidebar-fill) 96%, transparent), color-mix(in srgb, var(--gallery-sidebar-fill) 89%, transparent) 53%, color-mix(in srgb, var(--gallery-sidebar-fill) 55%, transparent)), var(--dsh-gallery-scene) left bottom / cover no-repeat;
+}
+@media (max-width: 700px) {
+  body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child::before { font-size: clamp(26px, 7vw, 42px); white-space: normal; }
+  body[data-dsh-gallery-theme] [class*="composerHero"] { padding-bottom: 36px; }
+  body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"])::after { display: none; }
+  body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"]::after { display: none; }
+}
 `;
 const catalog = CATALOG.map(({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, definition }) =>
   ({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, definition }));

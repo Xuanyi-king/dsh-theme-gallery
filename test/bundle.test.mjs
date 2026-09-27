@@ -37,6 +37,8 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('[data-row-key^=\\"workspace:\\"]'));
   assert.ok(client.includes('[data-row-key^=\\"session:\\"]'));
   assert.ok(client.includes('--gallery-sidebar-fill'));
+  assert.ok(client.includes('content: none !important; display: none !important;'));
+  assert.ok(client.includes('data:image/png;base64,'));
   assert.ok(client.includes('[data-conversation-region=\\"composer\\"]'));
   assert.ok(client.includes('--dsh-gallery-scene'));
   assert.ok(client.includes('data:image/webp;base64,'));

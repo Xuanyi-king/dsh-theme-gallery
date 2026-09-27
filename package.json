@@ -1,6 +1,6 @@
 {
   "name": "dsh-theme-gallery",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "One installable DeepSeek Harness plugin with seven switchable themes",
   "license": "MIT",
   "type": "module",
