@@ -5,8 +5,8 @@ const STYLE_TEXT = '';
 const REACT = null;
 const STORAGE_KEY = 'dsh.themeGallery.selection';
 const VISUAL_KEY = 'dsh.themeGallery.visual';
-const VISUAL_DEFAULTS = Object.freeze({ brightness: 100, blur: 0, contrast: 100 });
-const VISUAL_RANGES = Object.freeze({ brightness: [45, 125], blur: [0, 12], contrast: [80, 150] });
+const VISUAL_DEFAULTS = Object.freeze({ fade: 0, blur: 0, contrast: 100 });
+const VISUAL_RANGES = Object.freeze({ fade: [0, 80], blur: [0, 12], contrast: [80, 150] });
 const ATTR = 'data-dsh-gallery-theme';
 const RUNNING = 'data-dsh-gallery-running';
 const LABEL = 'data-dsh-gallery-label';
@@ -22,6 +22,7 @@ let richQueued = false;
 let richGeneration = 0;
 let lastOrnX = null;
 let lastOrnY = null;
+const originalHeroText = new WeakMap();
 
 export const inject = ['theme', 'slots', 'locale'];
 
@@ -56,7 +57,21 @@ export function decorateRunningStatuses(root, selected) {
       button.setAttribute(LABEL, label);
     }
   }
+  decorateHero(root, selected);
   scheduleRich(root, selected);
+}
+
+export function decorateHero(root, selected) {
+  for (const span of root.querySelectorAll('[class*="_titleGroup"] > span:first-child')) {
+    if (selected?.hero) {
+      if (!originalHeroText.has(span)) originalHeroText.set(span, span.textContent ?? '');
+      if (span.textContent !== selected.hero) span.textContent = selected.hero;
+    } else if (originalHeroText.has(span)) {
+      const original = originalHeroText.get(span);
+      if (span.textContent !== original) span.textContent = original;
+      originalHeroText.delete(span);
+    }
+  }
 }
 
 // The composer row that the running ornament is centred under: walk up from the
@@ -214,7 +229,7 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
   let visual = readVisual();
   const syncVisual = () => {
     const style = doc?.body?.style;
-    style?.setProperty('--gallery-scene-brightness', String(visual.brightness / 100));
+    style?.setProperty('--gallery-scene-fade', `${visual.fade}%`);
     style?.setProperty('--gallery-scene-blur', `${visual.blur}px`);
     style?.setProperty('--gallery-text-contrast', String(visual.contrast / 100));
   };
@@ -317,7 +332,7 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
           ctx.theme.setTheme(restore);
         }
         doc?.body?.removeAttribute(ATTR);
-        for (const property of ['--gallery-scene-brightness', '--gallery-scene-blur', '--gallery-text-contrast']) {
+        for (const property of ['--gallery-scene-fade', '--gallery-scene-blur', '--gallery-text-contrast']) {
           doc?.body?.style?.removeProperty(property);
         }
         if (doc?.body) decorateRunningStatuses(doc.body, null);
@@ -341,7 +356,7 @@ export function createGallerySection(React, controller, catalog = CATALOG) {
     const [visual, setVisual] = React.useState(() => controller.getAdjustments());
     React.useEffect(() => controller.subscribe(setSelected), []);
     const controls = [
-      { key: 'brightness', min: 45, max: 125, unit: '%' },
+      { key: 'fade', min: 0, max: 80, unit: '%' },
       { key: 'blur', min: 0, max: 12, unit: 'px' },
       { key: 'contrast', min: 80, max: 150, unit: '%' },
     ];
@@ -363,7 +378,8 @@ export function createGallerySection(React, controller, catalog = CATALOG) {
           'aria-label': `${choice.zh} · ${choice.detail}`,
           style: {
             '--dsh-gallery-accent': choice.accent,
-            '--gallery-preview-brightness': selected === choice.id ? String(visual.brightness / 100) : '1',
+            '--gallery-preview-fade': selected === choice.id ? `${visual.fade}%` : '0%',
+            '--gallery-preview-wash': choice.slug === 'shanhe' ? '#faf6ed' : '#111824',
             '--gallery-preview-blur': selected === choice.id ? `${visual.blur}px` : '0px',
             '--gallery-preview-contrast': selected === choice.id ? String(visual.contrast / 100) : '1',
           },
@@ -405,8 +421,8 @@ export function apply(ctx) {
     controller = applyGallery(ctx);
     return () => controller.dispose();
   }, 'dsh-theme-gallery: selection and scenery');
-  const zh = { nav: '主题', title: '主题', intro: '挑选喜欢的主题，即点即换。七款主题都包含在这个插件中。', footnote: '选择保存在 DSH 中；可随时恢复默认外观。', system: '跟随 DSH', light: 'DSH 明亮', dark: 'DSH 深色', appearance: '画面与文字', appearanceHint: '调节时立即生效，重启后仍会保留。默认：亮度 100%、模糊 0px、文字对比 100%。', brightness: '背景明暗', blur: '背景模糊', contrast: '文字对比' };
-  const en = { nav: 'Themes', title: 'Themes', intro: 'Choose a theme and switch instantly. All seven are included.', footnote: 'Your choice is saved by DSH. Return to the default at any time.', system: 'DSH default', light: 'DSH Light', dark: 'DSH Dark', appearance: 'Scene and text', appearanceHint: 'Updates instantly and persists after restart. Defaults: brightness 100%, blur 0px, text contrast 100%.', brightness: 'Scene brightness', blur: 'Scene blur', contrast: 'Text contrast' };
+  const zh = { nav: '主题', title: '主题', intro: '挑选喜欢的主题，即点即换。七款主题都包含在这个插件中。', footnote: '选择保存在 DSH 中；可随时恢复默认外观。', system: '跟随 DSH', light: 'DSH 明亮', dark: 'DSH 深色', appearance: '画面与文字', appearanceHint: '调节时立即生效，重启后仍会保留。默认：深淡 0%、模糊 0px、文字对比 100%。', fade: '背景深淡', blur: '背景模糊', contrast: '文字对比' };
+  const en = { nav: 'Themes', title: 'Themes', intro: 'Choose a theme and switch instantly. All seven are included.', footnote: 'Your choice is saved by DSH. Return to the default at any time.', system: 'DSH default', light: 'DSH Light', dark: 'DSH Dark', appearance: 'Scene and text', appearanceHint: 'Updates instantly and persists after restart. Defaults: depth 0%, blur 0px, text contrast 100%.', fade: 'Background depth', blur: 'Scene blur', contrast: 'Text contrast' };
   for (const item of CATALOG) { zh[item.slug] = item.zh; en[item.slug] = item.en; }
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'dsh-theme-gallery: locale');
   ctx.slots.inject('settings.section', () => ctx.slots.register({

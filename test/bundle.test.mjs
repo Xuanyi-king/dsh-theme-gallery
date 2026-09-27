@@ -43,7 +43,8 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('[data-row-key^=\\"workspace:\\"]'));
   assert.ok(client.includes('[data-row-key^=\\"session:\\"]'));
   assert.ok(client.includes('--gallery-sidebar-fill'));
-  assert.ok(client.includes('backdrop-filter: brightness(var(--gallery-scene-brightness, 1)) blur(var(--gallery-scene-blur, 0px));'));
+  assert.ok(client.includes('backdrop-filter: blur(var(--gallery-scene-blur, 0px));'));
+  assert.ok(client.includes('--gallery-scene-fade'));
   assert.ok(client.includes('filter: contrast(var(--gallery-text-contrast, 1));'));
   assert.ok(client.includes('color-mix(in srgb, var(--gallery-sidebar-fill) 26%, transparent)'));
   assert.ok(client.includes('--gallery-chrome'));
@@ -54,6 +55,9 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('[data-conversation-region=\\"composer\\"]'));
   assert.ok(client.includes('--dsh-gallery-scene'));
   assert.ok(client.includes('data:image/webp;base64,'));
+  assert.ok(client.includes('content: none !important;\\n  display: none !important;'));
+  assert.ok(client.includes('山河入墨，剑意问心'));
+  assert.ok(client.includes('诸天为卷，问道而行'));
 });
 
 test('bundled plugin registers a settings page whose cards switch and reset themes', async () => {

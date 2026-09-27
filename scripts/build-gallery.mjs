@@ -44,6 +44,15 @@ const statusMotion = {
   nezha: 'gallery-lotus 3.6s ease-in-out infinite',
   'whale-prince': 'gallery-tide 3.4s ease-in-out infinite',
 };
+const heroLooks = {
+  shanhe: ['"STXingkai", "STKaiti", "KaiTi", serif', '#2d2924', '#66574b', '.16em', '700'],
+  ultraman: ['"Bahnschrift", "Microsoft YaHei", sans-serif', '#ecf8ff', '#a9d6ee', '.13em', '750'],
+  'perfect-world': ['"Songti SC", "STSong", "Noto Serif CJK SC", serif', '#f7e7bb', '#d8b879', '.16em', '700'],
+  'flame-emperor': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#f1faf6', '#93dfd8', '.12em', '750'],
+  'great-sage': ['"STXingkai", "KaiTi", "Songti SC", serif', '#fff2d5', '#e9c887', '.17em', '700'],
+  nezha: ['"STKaiti", "KaiTi", "Songti SC", serif', '#fff1e6', '#ffd0ad', '.15em', '700'],
+  'whale-prince': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#e9f7ff', '#b6dbea', '.14em', '600'],
+};
 for (const item of CATALOG) {
   const slug = item.slug;
   const originalCss = await read(`../themes/${slug}/assets/theme.css`);
@@ -69,7 +78,7 @@ for (const item of CATALOG) {
   if (scoped.includes('__SCENE_URL__')) throw new Error(`unbundled scene: ${slug}`);
   css += `\n/* ${slug} */\n${scoped}\n`;
   const [fill, ink, muted, selected, trim] = sidebarPalettes[slug];
-  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; }\n`;
+  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-scene-wash: ${slug === 'shanhe' ? '#faf6ed' : fill}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; }\n`;
   const mark = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${statusMarks[slug].replaceAll('__ACCENT__', item.accent)}</svg>`;
   css += `body[data-dsh-gallery-theme="${slug}"] { --gallery-status-icon: url("data:image/svg+xml,${encodeURIComponent(mark)}"); --gallery-status-motion: ${statusMotion[slug]}; }\n`;
   const preview = await readScene(`../assets/gallery/${slug}.webp`);
@@ -80,7 +89,7 @@ css += `
    inserted: the rules style the native sidebar, conversation and composer. */
 body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) {
   border-right: 1px solid var(--gallery-sidebar-trim);
-  background: var(--dsh-gallery-scene) 18% bottom / auto 100% no-repeat;
+  background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)), var(--dsh-gallery-scene) 18% bottom / auto 100% no-repeat;
 }
 body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
   --dsw-specific-sidebar-fill: var(--gallery-sidebar-fill);
@@ -90,8 +99,8 @@ body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) >
   --dsw-alias-interactive-bg-hover: var(--gallery-sidebar-selected);
   color: var(--gallery-sidebar-ink);
   background: linear-gradient(180deg, color-mix(in srgb, var(--gallery-sidebar-fill) 83%, transparent), color-mix(in srgb, var(--gallery-sidebar-fill) 59%, transparent) 42%, color-mix(in srgb, var(--gallery-sidebar-fill) 35%, transparent));
-  -webkit-backdrop-filter: brightness(var(--gallery-scene-brightness, 1)) blur(var(--gallery-scene-blur, 0px));
-  backdrop-filter: brightness(var(--gallery-scene-brightness, 1)) blur(var(--gallery-scene-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--gallery-scene-blur, 0px));
+  backdrop-filter: blur(var(--gallery-scene-blur, 0px));
 }
 /* The original controls and Workspace tree remain interactive and keep their
    native focus, menus, collapse state and row positions. */
@@ -155,8 +164,8 @@ body[data-dsh-gallery-theme] :is([data-pane="conversation"], [class*="centerCol"
   position: absolute;
   inset: calc(-1 * var(--gallery-scene-blur, 0px));
   z-index: -1;
-  background: var(--dsh-gallery-scene) center / cover no-repeat;
-  filter: brightness(var(--gallery-scene-brightness, 1)) blur(var(--gallery-scene-blur, 0px));
+  background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)), var(--dsh-gallery-scene) center / cover no-repeat;
+  filter: blur(var(--gallery-scene-blur, 0px));
   pointer-events: none;
 }
 body[data-dsh-gallery-theme] [data-conversation-scroll],
@@ -403,8 +412,86 @@ body[data-dsh-gallery-theme]:not([data-dsh-gallery-theme="shanhe"]) [class*="_ti
   body[data-dsh-gallery-theme] [data-composer-card] button[class*="_primary"] { width: 34px; height: 34px; }
 }
 `;
-const catalog = CATALOG.map(({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, definition }) =>
-  ({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, definition }));
+css += `
+/* Keep the real, accessible DSH headline and replace its text in place.
+   The group pseudo-elements supply only a themed mark and a fine rule. */
+body[data-dsh-gallery-theme] [class*="_titleGroup"] {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: min(100%, 800px);
+  max-width: 100%;
+  gap: 0;
+  text-align: center;
+  position: relative;
+}
+body[data-dsh-gallery-theme] [class*="_titleGroup"]::before {
+  content: '' !important;
+  display: block !important;
+  order: -1;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  margin: 0 0 14px;
+  border: 0;
+  border-radius: 0;
+  background: var(--gallery-status-icon) center / 34px 34px no-repeat;
+  box-shadow: none;
+  pointer-events: none;
+}
+body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-basis: auto;
+  max-width: 100%;
+  font-size: clamp(29px, 3.35vw, 52px) !important;
+  line-height: 1.24;
+  white-space: normal;
+  text-wrap: balance;
+}
+body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child::before {
+  content: none !important;
+  display: none !important;
+}
+body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child::after {
+  display: block !important;
+  margin: 13px 0 0;
+  font-size: clamp(12px, 1.1vw, 16px);
+  line-height: 1.5;
+  letter-spacing: .22em;
+  white-space: normal;
+  text-shadow: none;
+}
+body[data-dsh-gallery-theme] [class*="_titleGroup"]::after {
+  content: '' !important;
+  display: block !important;
+  position: static;
+  flex: none;
+  width: clamp(110px, 20vw, 240px);
+  height: 2px;
+  margin: 16px auto 0;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(90deg, transparent, var(--gallery-chrome), transparent);
+  box-shadow: 0 0 9px color-mix(in srgb, var(--gallery-chrome) 30%, transparent);
+  transform: none;
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child { font-size: clamp(26px, 7vw, 39px) !important; }
+  body[data-dsh-gallery-theme] [class*="_titleGroup"]::before { width: 28px; height: 28px; background-size: 26px 26px; margin-bottom: 8px; }
+}
+`;
+for (const item of CATALOG) {
+  const [font, ink, muted, tracking, weight] = heroLooks[item.slug];
+  css += `body[data-dsh-gallery-theme="${item.slug}"] [class*="_titleGroup"] > span:first-child { font-family: ${font}; font-weight: ${weight}; letter-spacing: ${tracking}; color: ${ink} !important; text-shadow: 0 2px 14px color-mix(in srgb, var(--gallery-sidebar-fill) 74%, transparent), 0 0 22px color-mix(in srgb, var(--gallery-chrome) 22%, transparent); -webkit-text-fill-color: currentColor; background-image: none; }\n`;
+  css += `body[data-dsh-gallery-theme="${item.slug}"] [class*="_titleGroup"] > span:first-child::after { content: ${JSON.stringify(item.tagline)} !important; font-family: ${font}; font-weight: 400; color: ${muted}; -webkit-text-fill-color: ${muted}; }\n`;
+}
+const catalog = CATALOG.map(({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, hero, tagline, definition }) =>
+  ({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, hero, tagline, definition }));
 const client = body
   .replace("import { CATALOG } from './catalog.mjs';", `const CATALOG = ${JSON.stringify(catalog)};`)
   .replace("const STYLE_TEXT = '';", `const STYLE_TEXT = ${JSON.stringify(css)};`)

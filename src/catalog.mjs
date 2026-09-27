@@ -6,8 +6,19 @@ import { THEME as greatSage } from '../themes/great-sage/src/client.mjs';
 import { THEME as nezha } from '../themes/nezha/src/client.mjs';
 import { THEME as whalePrince } from '../themes/whale-prince/src/client.mjs';
 
+const HERO_COPY = Object.freeze({
+  shanhe: ['山河入墨，剑意问心', '一念为始 · 万里山河'],
+  ultraman: ['以光之名，探索未知', '光在前方 · 向未知进发'],
+  'perfect-world': ['诸天为卷，问道而行', '以身为种 · 一念开天'],
+  'flame-emperor': ['异火为引，破云而行', '焰起苍穹 · 炼心成章'],
+  'great-sage': ['踏云而来，万法皆通', '执一棒 · 问天地'],
+  nezha: ['莲心未改，破浪而行', '燃一盏莲火 · 问乾坤'],
+  'whale-prince': ['听潮问道，鲸游万象', '潮声为序 · 深海为章'],
+});
+
 const entry = (slug, zh, en, detail, accent, intro, elapsed, english, placeholder, original) => Object.freeze({
   slug, id: `gallery-${slug}`, zh, en, detail, accent, intro, elapsed, english, placeholder,
+  hero: HERO_COPY[slug][0], tagline: HERO_COPY[slug][1],
   definition: Object.freeze({ id: `gallery-${slug}`, colorScheme: original.colorScheme, tokens: original.tokens }),
 });
 
