@@ -37,6 +37,9 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('[data-row-key^=\\"workspace:\\"]'));
   assert.ok(client.includes('[data-row-key^=\\"session:\\"]'));
   assert.ok(client.includes('--gallery-sidebar-fill'));
+  assert.ok(client.includes('--gallery-chrome'));
+  assert.ok(client.includes('button[class*=\\"newSession\\"]::before'));
+  assert.ok(client.includes('[data-composer-card] button[class*=\\"_primary\\"]'));
   assert.ok(client.includes('content: none !important; display: none !important;'));
   assert.ok(client.includes('data:image/png;base64,'));
   assert.ok(client.includes('[data-conversation-region=\\"composer\\"]'));

@@ -49,7 +49,7 @@ for (const item of CATALOG) {
   if (scoped.includes('__SCENE_URL__')) throw new Error(`unbundled scene: ${slug}`);
   css += `\n/* ${slug} */\n${scoped}\n`;
   const [fill, ink, muted, selected, trim] = sidebarPalettes[slug];
-  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; }\n`;
+  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; }\n`;
   const preview = await readScene(`../assets/gallery/${slug}.webp`);
   css += `.dsh-gallery-card[data-theme="${item.id}"] .dsh-gallery-scene { background-image: linear-gradient(0deg, rgba(5,12,20,.45), transparent), url("data:image/webp;base64,${preview.toString('base64')}"); background-size: cover; background-position: center; }\n`;
 }
@@ -187,6 +187,120 @@ body[data-dsh-gallery-theme]:not([data-dsh-gallery-theme="shanhe"]) :is([data-pa
   body[data-dsh-gallery-theme] [class*="composerHero"] { padding-bottom: 36px; }
   body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"])::after { display: none; }
   body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"]::after { display: none; }
+}
+`;
+css += `
+/* Native controls are painted as part of each concept scene. Their real
+   buttons, disabled state, hit targets and keyboard focus remain DSH-owned. */
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"])
+  [class*="root"]:not([class*="collapsed"]) button[class*="newSession"] {
+  border: 1px solid var(--gallery-chrome);
+  border-radius: 11px;
+  background:
+    radial-gradient(ellipse at 4% 50%, color-mix(in srgb, var(--gallery-chrome) 38%, transparent), transparent 37%),
+    radial-gradient(ellipse at 96% 50%, color-mix(in srgb, var(--gallery-chrome) 38%, transparent), transparent 37%),
+    color-mix(in srgb, var(--gallery-sidebar-fill) 78%, var(--gallery-sidebar-selected));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--gallery-chrome) 38%, transparent),
+    inset 0 0 14px color-mix(in srgb, var(--gallery-chrome) 15%, transparent),
+    0 0 18px color-mix(in srgb, var(--gallery-chrome) 27%, transparent);
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"])
+  [class*="root"]:not([class*="collapsed"]) button[class*="newSession"]::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid color-mix(in srgb, var(--gallery-chrome) 58%, transparent);
+  border-radius: 7px;
+  pointer-events: none;
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"])
+  [class*="root"]:not([class*="collapsed"]) button[class*="newSession"]::after {
+  content: '';
+  position: absolute;
+  inset: 6px 8px;
+  background:
+    radial-gradient(circle at 0 0, var(--gallery-chrome) 0 2px, transparent 3px),
+    radial-gradient(circle at 100% 0, var(--gallery-chrome) 0 2px, transparent 3px),
+    radial-gradient(circle at 0 100%, var(--gallery-chrome) 0 2px, transparent 3px),
+    radial-gradient(circle at 100% 100%, var(--gallery-chrome) 0 2px, transparent 3px);
+  pointer-events: none;
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"])
+  [class*="root"]:not([class*="collapsed"]) button[class*="newSession"]:is(:hover, :focus-visible) {
+  box-shadow: inset 0 0 0 1px var(--gallery-chrome), 0 0 25px color-mix(in srgb, var(--gallery-chrome) 58%, transparent);
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"])
+  [class*="root"]:not([class*="collapsed"]) button[class*="newSession"]:focus-visible {
+  outline: 2px solid var(--gallery-chrome);
+  outline-offset: 2px;
+}
+body[data-dsh-gallery-theme="shanhe"] :is([data-pane="sidebar"], [class*="sidebarCol"])
+  [class*="root"]:not([class*="collapsed"]) button[class*="newSession"] {
+  color: #fff9f2;
+  background: linear-gradient(145deg, #ab4437, #8e3028);
+}
+body[data-dsh-gallery-theme] [data-composer-card] {
+  border: 1px solid var(--gallery-chrome);
+  border-radius: 21px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--gallery-chrome) 9%, transparent), transparent 46%),
+    var(--gallery-card-fill);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--gallery-chrome) 30%, transparent),
+    0 16px 35px color-mix(in srgb, var(--gallery-sidebar-fill) 45%, transparent),
+    0 0 26px color-mix(in srgb, var(--gallery-chrome) 18%, transparent);
+  backdrop-filter: blur(10px);
+}
+body[data-dsh-gallery-theme] [data-composer-card]::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid color-mix(in srgb, var(--gallery-chrome) 30%, transparent);
+  border-radius: 17px;
+  background:
+    radial-gradient(circle at 0 0, var(--gallery-chrome) 0 2px, transparent 3px),
+    radial-gradient(circle at 100% 0, var(--gallery-chrome) 0 2px, transparent 3px),
+    radial-gradient(circle at 0 100%, var(--gallery-chrome) 0 2px, transparent 3px),
+    radial-gradient(circle at 100% 100%, var(--gallery-chrome) 0 2px, transparent 3px);
+  pointer-events: none;
+}
+body[data-dsh-gallery-theme] [data-composer-card]:focus-within {
+  box-shadow: inset 0 0 0 1px var(--gallery-chrome), 0 0 26px color-mix(in srgb, var(--gallery-chrome) 31%, transparent);
+}
+body[data-dsh-gallery-theme] [data-composer-card] button[class*="_primary"] {
+  width: 40px;
+  height: 40px;
+  border: 1px solid color-mix(in srgb, var(--gallery-chrome) 82%, white);
+  color: #fff;
+  background: radial-gradient(circle at 35% 26%, color-mix(in srgb, var(--gallery-chrome) 68%, white), var(--gallery-chrome) 66%);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--gallery-chrome) 42%, transparent), 0 0 19px color-mix(in srgb, var(--gallery-chrome) 75%, transparent);
+}
+body[data-dsh-gallery-theme] [data-composer-card] button[class*="_primary"]:hover:not(:disabled) {
+  box-shadow: 0 0 0 2px var(--gallery-chrome), 0 0 28px var(--gallery-chrome);
+}
+body[data-dsh-gallery-theme] [data-composer-card] button[class*="_primary"]:disabled {
+  opacity: .62;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gallery-chrome) 42%, transparent), 0 0 10px color-mix(in srgb, var(--gallery-chrome) 30%, transparent);
+}
+body[data-dsh-gallery-theme] [data-composer-card] button[class*="_add"] {
+  border: 1px solid color-mix(in srgb, var(--gallery-chrome) 68%, transparent);
+  color: var(--gallery-sidebar-ink);
+  background: color-mix(in srgb, var(--gallery-chrome) 20%, var(--gallery-sidebar-fill));
+}
+body[data-dsh-gallery-theme]:not([data-dsh-gallery-theme="shanhe"]) [class*="_titleGroup"]::after {
+  content: '';
+  display: block;
+  flex: 0 0 min(42vw, 240px);
+  height: 2px;
+  margin: 10px auto 0;
+  background: linear-gradient(90deg, transparent, var(--gallery-chrome), transparent);
+  box-shadow: 0 0 13px var(--gallery-chrome);
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  body[data-dsh-gallery-theme] [data-composer-card] { backdrop-filter: none; }
+  body[data-dsh-gallery-theme] [data-composer-card] button[class*="_primary"] { width: 34px; height: 34px; }
 }
 `;
 const catalog = CATALOG.map(({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, definition }) =>
