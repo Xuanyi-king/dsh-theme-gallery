@@ -33,7 +33,10 @@ test('every gallery scene targets the DSH conversation region and keeps native p
 
 test('gallery paints the existing sidebar and composer using each scene without adding controls', async () => {
   const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
-  assert.ok(client.includes('body[data-dsh-gallery-theme] div:has(> [data-shell-overlay])'));
+  assert.ok(client.includes('[class*=\\"sidebarCol\\"]'));
+  assert.ok(client.includes('[data-row-key^=\\"workspace:\\"]'));
+  assert.ok(client.includes('[data-row-key^=\\"session:\\"]'));
+  assert.ok(client.includes('--gallery-sidebar-fill'));
   assert.ok(client.includes('[data-conversation-region=\\"composer\\"]'));
   assert.ok(client.includes('--dsh-gallery-scene'));
   assert.ok(client.includes('data:image/webp;base64,'));

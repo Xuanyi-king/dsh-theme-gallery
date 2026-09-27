@@ -11,6 +11,18 @@ const sceneMap = {
   'whale-prince': 'ocean-lord.webp',
 };
 let css = await read('../assets/gallery.css');
+// The sidebar is a separate DSH surface. Its palette must be applied to the
+// sidebar root itself: the global theme tokens alone leave workspace rows and
+// controls looking like the stock UI over a themed conversation scene.
+const sidebarPalettes = {
+  shanhe: ['#f3eee4', '#282b2a', '#766c62', '#eee3d2', '#d9bda7'],
+  ultraman: ['#0d1930', '#f1f6ff', '#afc6e8', '#243954', '#74cfff'],
+  'perfect-world': ['#151217', '#f8efda', '#c7b591', '#332b28', '#d6a853'],
+  'flame-emperor': ['#121d23', '#f4efe7', '#b9cbc8', '#283b40', '#45cbc3'],
+  'great-sage': ['#17222b', '#f9f0dd', '#c9c1b0', '#353b3c', '#edba66'],
+  nezha: ['#292332', '#fff2e8', '#d8bbad', '#493442', '#f4a178'],
+  'whale-prince': ['#0a2038', '#f4f7fc', '#a9c2d8', '#193b5b', '#dfc28d'],
+};
 for (const item of CATALOG) {
   const slug = item.slug;
   const originalCss = await read(`../themes/${slug}/assets/theme.css`);
@@ -35,17 +47,63 @@ for (const item of CATALOG) {
     .replaceAll('var(--dsh-shanhe-scene)', 'var(--dsh-gallery-scene)');
   if (scoped.includes('__SCENE_URL__')) throw new Error(`unbundled scene: ${slug}`);
   css += `\n/* ${slug} */\n${scoped}\n`;
-  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; }\n`;
+  const [fill, ink, muted, selected, trim] = sidebarPalettes[slug];
+  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; }\n`;
   const preview = await readScene(`../assets/gallery/${slug}.webp`);
   css += `.dsh-gallery-card[data-theme="${item.id}"] .dsh-gallery-scene { background-image: linear-gradient(0deg, rgba(5,12,20,.45), transparent), url("data:image/webp;base64,${preview.toString('base64')}"); background-size: cover; background-position: center; }\n`;
 }
 css += `
 /* Existing DSH surfaces share the theme scene and accent. No controls are
    inserted: the rules style the native sidebar, conversation and composer. */
-body[data-dsh-gallery-theme] div:has(> [data-shell-overlay]) > div:first-child { border-right: 1px solid color-mix(in srgb, var(--dsh-gallery-accent) 48%, transparent); }
-body[data-dsh-gallery-theme] div:has(> [data-shell-overlay]) > div:first-child > div:first-child { background-image: linear-gradient(180deg, var(--dsw-specific-sidebar-fill) 0%, color-mix(in srgb, var(--dsw-specific-sidebar-fill) 96%, transparent) 40%, color-mix(in srgb, var(--dsw-specific-sidebar-fill) 68%, transparent) 72%, color-mix(in srgb, var(--dsw-specific-sidebar-fill) 48%, transparent)), var(--dsh-gallery-scene); background-size: cover; background-position: left center; }
-body[data-dsh-gallery-theme] div:has(> [data-shell-overlay]) > div:first-child > div:first-child > button:first-of-type { border: 1px solid color-mix(in srgb, var(--dsh-gallery-accent) 60%, transparent); background: color-mix(in srgb, var(--dsh-gallery-accent) 18%, var(--dsw-specific-sidebar-fill)); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--dsh-gallery-accent) 25%, transparent), 0 5px 18px color-mix(in srgb, var(--dsh-gallery-accent) 13%, transparent); }
-body[data-dsh-gallery-theme] div:has(> [data-shell-overlay]) > div:first-child [data-row-key^="session:"][aria-selected="true"] { border-left: 2px solid var(--dsh-gallery-accent); background: color-mix(in srgb, var(--dsh-gallery-accent) 16%, transparent); }
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) { border-right: 1px solid var(--gallery-sidebar-trim); }
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
+  --dsw-specific-sidebar-fill: var(--gallery-sidebar-fill);
+  --dsw-alias-label-primary: var(--gallery-sidebar-ink);
+  --dsw-alias-label-secondary: var(--gallery-sidebar-muted);
+  --dsw-alias-label-tertiary: var(--gallery-sidebar-muted);
+  --dsw-alias-interactive-bg-hover: var(--gallery-sidebar-selected);
+  color: var(--gallery-sidebar-ink);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--gallery-sidebar-fill) 94%, transparent), var(--gallery-sidebar-fill) 42%, color-mix(in srgb, var(--gallery-sidebar-fill) 90%, transparent)), var(--dsh-gallery-scene);
+  background-size: cover;
+  background-position: left center;
+}
+/* The original controls and Workspace tree remain interactive and keep their
+   native focus, menus, collapse state and row positions. */
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) [class*="root"]:not([class*="collapsed"]) button[class*="newSession"] {
+  border: 1px solid var(--gallery-sidebar-trim);
+  color: var(--gallery-sidebar-ink);
+  background: color-mix(in srgb, var(--gallery-sidebar-selected) 70%, var(--gallery-sidebar-fill));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--gallery-sidebar-ink) 12%, transparent), 0 5px 18px color-mix(in srgb, var(--gallery-sidebar-trim) 24%, transparent);
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) [class*="sectionHeader"] {
+  color: var(--gallery-sidebar-muted);
+  border-bottom: 1px solid color-mix(in srgb, var(--gallery-sidebar-trim) 50%, transparent);
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) [data-row-key^="workspace:"] {
+  color: var(--gallery-sidebar-ink);
+  border: 1px solid color-mix(in srgb, var(--gallery-sidebar-trim) 42%, transparent);
+  background: color-mix(in srgb, var(--gallery-sidebar-selected) 38%, transparent);
+  margin-block: 3px;
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) [data-row-key^="workspace:"] [class*="folder"] {
+  color: var(--gallery-sidebar-trim);
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) [data-row-key^="session:"] {
+  color: var(--gallery-sidebar-ink);
+  border-inline-start: 2px solid transparent;
+  transition: background-color .18s ease, border-color .18s ease;
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) :is([data-row-key^="workspace:"], [data-row-key^="session:"]):hover {
+  background: var(--gallery-sidebar-selected);
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) [data-row-key^="session:"][aria-selected="true"] {
+  border-inline-start-color: var(--gallery-sidebar-trim);
+  background: var(--gallery-sidebar-selected);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gallery-sidebar-trim) 38%, transparent);
+}
+body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) [data-slot="sidebar.settings"] button {
+  color: var(--gallery-sidebar-ink);
+}
 body[data-dsh-gallery-theme] [data-conversation-region="chat"] { background: linear-gradient(90deg, color-mix(in srgb, var(--dsw-alias-bg-base) 56%, transparent), transparent 78%); }
 body[data-dsh-gallery-theme] [data-conversation-region="chat"][data-content-phase="hero"] { background: transparent; }
 body[data-dsh-gallery-theme] [data-conversation-scroll] { background: transparent; }
