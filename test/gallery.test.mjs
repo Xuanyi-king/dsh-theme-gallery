@@ -113,3 +113,11 @@ test('host choice survives a fresh browser session and reset persists as default
   assert.equal(third.choice, 'dark');
   third.controller.dispose();
 });
+
+test('a missing host selection does not discard a valid local theme', async () => {
+  const h = harness('gallery-whale-prince', async () => ({ ok: true, json: async () => ({ themeId: null }) }));
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.choice, 'gallery-whale-prince');
+  assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'whale-prince');
+  h.controller.dispose();
+});

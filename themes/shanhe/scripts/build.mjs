@@ -3,9 +3,9 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 const root = new URL('../', import.meta.url);
 const read = path => readFile(new URL(path, root), 'utf8');
 const source = await read('src/client.mjs');
-const svg = await read('assets/landscape.svg');
+const scene = await readFile(new URL('assets/ink-landscape.webp', root));
 const css = (await read('assets/theme.css')).replaceAll(
-  '__SCENE_URL__', `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
+  '__SCENE_URL__', `data:image/webp;base64,${scene.toString('base64')}`,
 );
 const body = source
   .replace("const STYLE_TEXT = '';", `const STYLE_TEXT = ${JSON.stringify(css)};`)

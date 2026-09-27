@@ -13,13 +13,30 @@ test('installable root package declares one bundle with all seven theme assets',
   const module = loaded[0].factory(name => { if (name === 'react') return { createElement() {} }; throw Error(name); });
   assert.equal(module.CATALOG.length, 7);
   assert.equal(module.CATALOG[0].id, 'gallery-shanhe');
-  assert.ok(client.includes('data:image/svg+xml;base64,'));
-  assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, 13);
+  assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, 14);
   assert.ok(client.includes('settings.section'));
   assert.ok(client.includes('prefers-reduced-motion'));
   assert.equal(pkg.dsh.bundle.patch, './cordis.patch.yml');
   assert.ok(pkg.dsh.client.inject.includes('@deepseek-ai/dsh-client-ui-slots'));
   assert.equal(pkg.exports['./client'], './lib/client.js');
+});
+
+test('every gallery scene targets the DSH conversation region and keeps native progress text visible', async () => {
+  const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  const choices = ['shanhe', 'ultraman', 'perfect-world', 'flame-emperor', 'great-sage', 'nezha', 'whale-prince'];
+  for (const slug of choices) assert.ok(client.includes(`body[data-dsh-gallery-theme=\\"${slug}\\"]`), slug);
+  assert.ok(client.includes('[data-conversation-region=\\"chat\\"]'));
+  assert.ok(client.includes('[data-dsh-gallery-running] > span:first-child { opacity: 1 !important; }'));
+  assert.ok(client.includes('[data-dsh-gallery-running]::before,'));
+  assert.ok(client.includes('[data-dsh-gallery-running]::after { display: none !important; }'));
+});
+
+test('gallery paints the existing sidebar and composer using each scene without adding controls', async () => {
+  const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  assert.ok(client.includes('body[data-dsh-gallery-theme] div:has(> [data-shell-overlay])'));
+  assert.ok(client.includes('[data-conversation-region=\\"composer\\"]'));
+  assert.ok(client.includes('--dsh-gallery-scene'));
+  assert.ok(client.includes('data:image/webp;base64,'));
 });
 
 test('bundled plugin registers a settings page whose cards switch and reset themes', async () => {

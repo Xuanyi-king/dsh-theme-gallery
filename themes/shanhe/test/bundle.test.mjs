@@ -12,7 +12,9 @@ test('built client bundle registers with the DSH browser module loader and conta
   const client = modules[0].factory();
   assert.equal(typeof client.apply, 'function');
   assert.equal(client.THEME.id, 'shanhe-jianyi');
-  assert.ok(bundle.includes('data:image/svg+xml;base64,'));
+  assert.ok(bundle.includes('data:image/webp;base64,'));
+  assert.ok(bundle.includes('[data-conversation-region=\\"chat\\"]'));
+  assert.ok(bundle.includes('[data-composer-card]'));
   assert.ok(bundle.includes('prefers-reduced-motion'));
 });
 

@@ -252,6 +252,9 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
         const state = await response.json();
         if (userSelected || disposed) return;
         const serverId = valid.has(state.themeId) ? state.themeId : null;
+        // A fresh or unavailable Host route may report no selection even
+        // though this browser already remembers a valid gallery choice.
+        if (!serverId && valid.has(desired)) return;
         desired = serverId;
         remember(serverId);
         if (serverId) ctx.theme.setTheme(serverId);
