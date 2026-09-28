@@ -107,8 +107,8 @@ test('settings section offers every theme plus DSH default through an accessible
   assert.equal(buttons.length, 13);
   assert.equal(buttons.filter(x => x.props['aria-pressed'] === true).length, 1);
   const ranges = nodes.filter(x => x.type === 'input' && x.props.type === 'range');
-  assert.deepEqual(ranges.map(x => x.props['aria-label']), ['fade', 'blur', 'contrast']);
-  ranges[1].props.onChange({ target: { value: '5' } });
+  assert.deepEqual(ranges.map(x => x.props['aria-label']), ['fade', 'sidebarOpacity', 'blur', 'contrast']);
+  ranges[2].props.onChange({ target: { value: '5' } });
   assert.equal(h.controller.getAdjustments().blur, 5);
   buttons.find(x => x.props['data-theme'] === 'gallery-great-sage').props.onClick();
   assert.equal(h.choice, 'gallery-great-sage');
@@ -117,20 +117,24 @@ test('settings section offers every theme plus DSH default through an accessible
 
 test('scene and text sliders persist, restore, clamp, and clean up visual properties', () => {
   const h = harness('gallery-shanhe');
-  assert.deepEqual(h.controller.getAdjustments(), { fade: 0, blur: 0, contrast: 100 });
+  assert.deepEqual(h.controller.getAdjustments(), { fade: 0, sidebarOpacity: 40, blur: 0, contrast: 100 });
+  h.controller.adjust('sidebarOpacity', 65);
+  assert.equal(h.styles.get('--gallery-sidebar-opacity'), '65%');
   h.controller.adjust('fade', 65);
   h.controller.adjust('blur', 5);
   h.controller.adjust('contrast', 130);
   assert.equal(h.styles.get('--gallery-scene-fade'), '65%');
   assert.equal(h.styles.get('--gallery-scene-blur'), '5px');
   assert.equal(h.styles.get('--gallery-text-contrast'), '1.3');
-  assert.deepEqual(JSON.parse(h.data.get('dsh.themeGallery.visual')), { fade: 65, blur: 5, contrast: 130 });
+  assert.deepEqual(JSON.parse(h.data.get('dsh.themeGallery.visual')), { fade: 65, sidebarOpacity: 65, blur: 5, contrast: 130 });
   h.controller.adjust('blur', 999);
   assert.equal(h.controller.getAdjustments().blur, 12);
   h.controller.adjust('fade', 'invalid');
   assert.equal(h.controller.getAdjustments().fade, 65);
   const restored = harness('gallery-shanhe', null, h.data.get('dsh.themeGallery.visual'));
-  assert.deepEqual(restored.controller.getAdjustments(), { fade: 65, blur: 12, contrast: 130 });
+  assert.deepEqual(restored.controller.getAdjustments(), { fade: 65, sidebarOpacity: 65, blur: 12, contrast: 130 });
+  restored.controller.adjust('sidebarOpacity', 999);
+  assert.equal(restored.styles.get('--gallery-sidebar-opacity'), '90%');
   assert.equal(restored.styles.get('--gallery-scene-blur'), '12px');
   const React = { createElement: (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat() }), useState: initial => [typeof initial === 'function' ? initial() : initial, () => {}], useEffect: () => {} };
   const preview = createGallerySection(React, restored.controller)({ t: key => key });

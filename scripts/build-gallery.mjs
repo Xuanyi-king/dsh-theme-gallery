@@ -29,14 +29,9 @@ const sidebarPalettes = {
   'sunny-watch': ['#e9f3fa', '#173a54', '#496b82', '#d9e9f5', '#6eacd2'],
   'young-goku': ['#edf6f9', '#163d58', '#4e7284', '#d9edf4', '#f3b43f'],
 };
-// Shanhe reveals its fixed scene through the frame and sidebar root. The
-// three recent scenes need the same transparent ladder, including on Windows
-// where the frame itself paints --dsw-specific-sidebar-fill.
-const sidebarGlass = {
-  'jianlai-aliang': 'rgba(23, 37, 50, .46)',
-  'sunny-watch': 'rgba(233, 243, 250, .38)',
-  'young-goku': 'rgba(237, 246, 249, .38)',
-};
+// All scenes use one adjustable mask above the wallpaper. The three recent
+// themes also adopt the older themes' translucent settings surfaces.
+const recentScenes = new Set(['jianlai-aliang', 'sunny-watch', 'young-goku']);
 // Small line-art marks for the native reply status. The marks animate only
 // while DSH reports an active model turn; no standalone decoration is added.
 const statusMarks = {
@@ -100,7 +95,7 @@ for (const item of CATALOG) {
   if (scoped.includes('__SCENE_URL__')) throw new Error(`unbundled scene: ${slug}`);
   css += `\n/* ${slug} */\n${scoped}\n`;
   const [fill, ink, muted, selected, trim] = sidebarPalettes[slug];
-  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-scene-wash: ${slug === 'shanhe' ? '#faf6ed' : fill}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; ${sidebarGlass[slug] ? `--dsw-specific-sidebar-fill: ${sidebarGlass[slug]} !important;` : ''} }\n`;
+  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-scene-wash: ${slug === 'shanhe' ? '#faf6ed' : fill}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; --dsw-specific-sidebar-fill: transparent !important; ${recentScenes.has(slug) ? `--dsw-alias-bg-base: color-mix(in srgb, ${fill} 12%, transparent) !important; --dsw-alias-bg-layer-1: color-mix(in srgb, ${fill} 84%, transparent) !important; --dsw-alias-bg-layer-2: color-mix(in srgb, ${fill} 88%, transparent) !important; --dsw-alias-bg-layer-3: color-mix(in srgb, ${fill} 92%, transparent) !important; --dsw-alias-bg-overlay: color-mix(in srgb, ${fill} 97%, transparent) !important;` : ''} }\n`;
   const mark = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${statusMarks[slug].replaceAll('__ACCENT__', item.accent)}</svg>`;
   css += `body[data-dsh-gallery-theme="${slug}"] { --gallery-status-icon: url("data:image/svg+xml,${encodeURIComponent(mark)}"); --gallery-status-motion: ${statusMotion[slug]}; }\n`;
   const preview = await readScene(`../assets/gallery/${slug}.webp`);
@@ -111,7 +106,7 @@ css += `
    inserted: the rules style the native sidebar, conversation and composer. */
 body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) {
   border-right: 1px solid var(--gallery-sidebar-trim);
-  background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)), var(--dsh-gallery-scene) 18% bottom / auto 100% no-repeat;
+  background: linear-gradient(color-mix(in srgb, var(--gallery-sidebar-fill) var(--gallery-sidebar-opacity, 40%), transparent), color-mix(in srgb, var(--gallery-sidebar-fill) var(--gallery-sidebar-opacity, 40%), transparent)), var(--dsh-gallery-scene) 18% bottom / auto 100% no-repeat;
 }
 body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
   --dsw-specific-sidebar-fill: var(--gallery-sidebar-fill);
@@ -442,8 +437,8 @@ body[data-dsh-gallery-theme]:not([data-dsh-gallery-theme="shanhe"]) [class*="_ti
   body[data-dsh-gallery-theme] [data-composer-card] button[class*="_primary"] { width: 34px; height: 34px; }
 }
 `;
-for (const [slug, glass] of Object.entries(sidebarGlass)) {
-  css += `body[data-dsh-gallery-theme="${slug}"] [class*="sidebarCol"] > * { --dsw-specific-sidebar-fill: ${glass} !important; background: transparent !important; }\n`;
+for (const { slug } of CATALOG) {
+  css += `body[data-dsh-gallery-theme="${slug}"] [class*="sidebarCol"] > * { --dsw-specific-sidebar-fill: transparent !important; background: transparent !important; }\n`;
 }
 css += `
 /* Keep the real, accessible DSH headline and replace its text in place.

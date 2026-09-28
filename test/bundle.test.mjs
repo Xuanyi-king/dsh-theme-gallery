@@ -62,22 +62,37 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('content: none !important;\\n  display: none !important;\\n  background: none !important;'));
 });
 
-test('recent scenes use Shanhe-style translucent sidebar layers so the scene can show through', async () => {
+test('recent scenes use translucent settings surfaces and sidebar layers', async () => {
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const encoded = bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/);
   assert.ok(encoded, 'built gallery contains CSS');
   const css = JSON.parse(encoded[1]);
   for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku']) {
     const tokens = [...css.matchAll(new RegExp(`body\\[data-dsh-gallery-theme="${slug}"\\] \\{([^}]+)\\}`, 'g'))];
-    assert.ok(tokens.some(token => /--dsw-specific-sidebar-fill:\s*rgba\([^)]+\) !important;/.test(token[1])), `${slug} provides a translucent sidebar fill at the frame`);
+    assert.ok(tokens.some(token => /--dsw-specific-sidebar-fill:\s*transparent !important;/.test(token[1])), `${slug} does not add a second mask at the frame`);
+    assert.ok(tokens.some(token => /--dsw-alias-bg-layer-1:\s*color-mix\(/.test(token[1])), `${slug} provides translucent settings surfaces`);
     const root = `body[data-dsh-gallery-theme="${slug}"] [class*="sidebarCol"] > *`;
     const block = css.slice(css.indexOf(root));
     assert.ok(block.startsWith(root), `${slug} targets the actual sidebar child without assuming a class name`);
     const declaration = block.slice(block.indexOf('{') + 1, block.indexOf('}'));
-    assert.match(declaration, /--dsw-specific-sidebar-fill:\s*rgba\([^)]+\) !important;/, `${slug} does not reset the fill to opaque on the sidebar root`);
+    assert.match(declaration, /--dsw-specific-sidebar-fill:\s*transparent !important;/, `${slug} does not reset the fill to opaque on the sidebar root`);
     assert.match(declaration, /background:\s*transparent !important;/, `${slug} exposes the scene painted on the sidebar column`);
   }
   assert.ok(css.includes('body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) {'), 'the sidebar column paints the scene behind its transparent child');
+});
+
+test('all ten themes expose wallpaper through the adjustable sidebar mask', async () => {
+  const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
+  for (const slug of ['shanhe', 'ultraman', 'perfect-world', 'flame-emperor', 'great-sage', 'nezha', 'whale-prince', 'jianlai-aliang', 'sunny-watch', 'young-goku']) {
+    const target = `body[data-dsh-gallery-theme="${slug}"] [class*="sidebarCol"] > *`;
+    const block = css.slice(css.lastIndexOf(target));
+    assert.ok(block.startsWith(target), `${slug} reaches the actual sidebar child`);
+    const rule = block.slice(block.indexOf('{') + 1, block.indexOf('}'));
+    assert.match(rule, /background:\s*transparent !important;/, `${slug} leaves the sidebar child transparent`);
+    assert.match(rule, /--dsw-specific-sidebar-fill:\s*transparent !important;/, `${slug} does not add a second mask on the child`);
+  }
+  assert.match(css, /var\(--gallery-sidebar-opacity, 40%\)/, 'sidebar opacity affects the painted mask');
 });
 
 test('the hero hides its native fish without hiding the themed title mark', async () => {
