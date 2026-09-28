@@ -48,7 +48,6 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('backdrop-filter: blur(var(--gallery-scene-blur, 0px));'));
   assert.ok(client.includes('--gallery-scene-fade'));
   assert.ok(client.includes('filter: contrast(var(--gallery-text-contrast, 1));'));
-  assert.ok(client.includes('color-mix(in srgb, var(--gallery-sidebar-fill) 26%, transparent)'));
   assert.ok(client.includes('--gallery-chrome'));
   assert.ok(client.includes('button[class*=\\"newSession\\"]::before'));
   assert.ok(client.includes('[data-composer-card] button[class*=\\"_primary\\"]'));
@@ -69,6 +68,7 @@ test('recent scene themes paint the sidebar root beneath the readable wash', asy
   const encoded = bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/);
   assert.ok(encoded, 'built gallery contains CSS');
   const css = JSON.parse(encoded[1]);
+  assert.ok(!/body\[data-dsh-gallery-theme\]:not\(\[data-dsh-gallery-theme="shanhe"\]\) :is\(\[data-pane="sidebar"\], \[class\*="sidebarCol"\]\) > \[class\*="root"\] \{[^}]*background:/.test(css), 'generic sidebar wash must not outrank themed scene art');
   for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku']) {
     const selector = `body[data-dsh-gallery-theme="${slug}"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"]`;
     const block = css.slice(css.indexOf(selector));
@@ -78,6 +78,22 @@ test('recent scene themes paint the sidebar root beneath the readable wash', asy
     assert.match(declaration, /linear-gradient/, `${slug} keeps a text readability wash`);
     assert.match(declaration, /var\(--gallery-scene-fade/, `${slug} responds to the background depth slider`);
   }
+});
+
+test('the hero hides its native fish without hiding the themed title mark', async () => {
+  const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
+  assert.match(css, /body\[data-dsh-gallery-theme\] \[class\*="_fishHitbox"\] \{\s*display: none !important;/);
+  assert.match(css, /\[class\*="_titleGroup"\]::before \{\s*content: '' !important;/);
+});
+
+test('shanhe sword divider displays its opaque blade inside the visible conversation column', async () => {
+  const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
+  const sword = css.match(/body\[data-dsh-gallery-theme="shanhe"\] :is\(\[data-pane="conversation"\], \[class\*="centerCol"\]\)::after \{([^}]+)\}/);
+  assert.ok(sword);
+  assert.match(sword[1], /left:\s*0;/);
+  assert.ok(/background: url\("data:image\/png;base64,[^"]+"\) center \/ 320px 100% no-repeat;/.test(sword[1]), 'the sword has sufficient image scale to show its blade');
 });
 
 test('bundled plugin registers a settings page whose cards switch and reset themes', async () => {

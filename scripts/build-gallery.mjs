@@ -190,6 +190,9 @@ body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) :
   filter: contrast(var(--gallery-text-contrast, 1));
 }
 body[data-dsh-gallery-theme] [class*="composerHero"] { padding-bottom: clamp(64px, 11vh, 150px); }
+/* DSH's native hero fish is separate from the app logo. The themed mark in
+   the title group supplies the scene's own icon instead. */
+body[data-dsh-gallery-theme] [class*="_fishHitbox"] { display: none !important; }
 /* The existing headline becomes the scene's calligraphy. The generic
    'inspired theme' pill is removed from every theme. */
 body[data-dsh-gallery-theme] [class*="_titleGroup"]::before { content: none !important; display: none !important; }
@@ -233,15 +236,14 @@ body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="c
   content: '';
   position: absolute;
   z-index: 3;
-  left: -28px;
+  left: 0;
   top: 0;
-  width: 56px;
+  width: 80px;
   height: 100%;
-  background: url("data:image/png;base64,${sword.toString('base64')}") center / 56px 100% no-repeat;
+  /* The source sword occupies only its middle fifth; enlarge the image within
+     the narrow strip to show its hilt and blade at the actual sidebar edge. */
+  background: url("data:image/png;base64,${sword.toString('base64')}") center / 320px 100% no-repeat;
   pointer-events: none;
-}
-body[data-dsh-gallery-theme]:not([data-dsh-gallery-theme="shanhe"]) :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--gallery-sidebar-fill) 79%, transparent), color-mix(in srgb, var(--gallery-sidebar-fill) 54%, transparent) 48%, color-mix(in srgb, var(--gallery-sidebar-fill) 26%, transparent));
 }
 @media (max-width: 700px) {
   body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child::before { font-size: clamp(26px, 7vw, 42px); white-space: normal; }
