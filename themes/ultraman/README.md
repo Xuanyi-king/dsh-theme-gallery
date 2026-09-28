@@ -12,10 +12,10 @@ DSH 正在回复时，运行提示会显示「光能解析 · 聚焦中」；计
 
 ## 安装与切换
 
-在 DSH 桌面应用「插件 → 添加插件」中粘贴 `https://github.com/xuanyi-niubi/dsh-theme-gallery` 安装统一主题库，然后到「设置 → 主题」选择「光之巨人」。也可用 Web profile 一条命令安装：
+在 DSH 桌面应用「插件 → 添加插件」中粘贴 `https://github.com/Xuanyi-king/dsh-theme-gallery` 安装统一主题库，然后到「设置 → 主题」选择「光之巨人」。也可用 Web profile 一条命令安装：
 
 ```bash
-dsh plugin --profile web add https://github.com/xuanyi-niubi/dsh-theme-gallery
+dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery
 ```
 
 在「设置 → 主题」中可随时切换其他主题或选择「跟随 DSH」恢复默认。完整说明见[仓库首页](../../README.md)。

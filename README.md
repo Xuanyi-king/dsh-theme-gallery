@@ -25,13 +25,13 @@
 在 DSH 桌面应用中打开「插件 → 添加插件」，在输入框粘贴下面的仓库地址，点击「安装」：
 
 ```text
-https://github.com/xuanyi-niubi/dsh-theme-gallery
+https://github.com/Xuanyi-king/dsh-theme-gallery
 ```
 
 通过 Web profile 的命令行安装时，也只需一条命令：
 
 ```bash
-dsh plugin --profile web add https://github.com/xuanyi-niubi/dsh-theme-gallery
+dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery
 ```
 
 安装后打开「设置 → 主题」，点击喜欢的主题卡片即可切换，不需要为每款主题分别安装插件。
