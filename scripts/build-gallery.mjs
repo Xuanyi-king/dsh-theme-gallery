@@ -29,6 +29,14 @@ const sidebarPalettes = {
   'sunny-watch': ['#e9f3fa', '#173a54', '#496b82', '#d9e9f5', '#6eacd2'],
   'young-goku': ['#edf6f9', '#163d58', '#4e7284', '#d9edf4', '#f3b43f'],
 };
+// Shanhe reveals its fixed scene through the frame and sidebar root. The
+// three recent scenes need the same transparent ladder, including on Windows
+// where the frame itself paints --dsw-specific-sidebar-fill.
+const sidebarGlass = {
+  'jianlai-aliang': 'rgba(23, 37, 50, .46)',
+  'sunny-watch': 'rgba(233, 243, 250, .38)',
+  'young-goku': 'rgba(237, 246, 249, .38)',
+};
 // Small line-art marks for the native reply status. The marks animate only
 // while DSH reports an active model turn; no standalone decoration is added.
 const statusMarks = {
@@ -92,7 +100,7 @@ for (const item of CATALOG) {
   if (scoped.includes('__SCENE_URL__')) throw new Error(`unbundled scene: ${slug}`);
   css += `\n/* ${slug} */\n${scoped}\n`;
   const [fill, ink, muted, selected, trim] = sidebarPalettes[slug];
-  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-scene-wash: ${slug === 'shanhe' ? '#faf6ed' : fill}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; }\n`;
+  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-scene-wash: ${slug === 'shanhe' ? '#faf6ed' : fill}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; ${sidebarGlass[slug] ? `--dsw-specific-sidebar-fill: ${sidebarGlass[slug]} !important;` : ''} }\n`;
   const mark = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${statusMarks[slug].replaceAll('__ACCENT__', item.accent)}</svg>`;
   css += `body[data-dsh-gallery-theme="${slug}"] { --gallery-status-icon: url("data:image/svg+xml,${encodeURIComponent(mark)}"); --gallery-status-motion: ${statusMotion[slug]}; }\n`;
   const preview = await readScene(`../assets/gallery/${slug}.webp`);
@@ -434,6 +442,9 @@ body[data-dsh-gallery-theme]:not([data-dsh-gallery-theme="shanhe"]) [class*="_ti
   body[data-dsh-gallery-theme] [data-composer-card] button[class*="_primary"] { width: 34px; height: 34px; }
 }
 `;
+for (const [slug, glass] of Object.entries(sidebarGlass)) {
+  css += `body[data-dsh-gallery-theme="${slug}"] [class*="sidebarCol"] > * { --dsw-specific-sidebar-fill: ${glass} !important; background: transparent !important; }\n`;
+}
 css += `
 /* Keep the real, accessible DSH headline and replace its text in place.
    The group pseudo-elements supply only a themed mark and a fine rule. */
@@ -525,13 +536,6 @@ body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="sidebar"], [class*
   background-position: 7% center;
   border-right: 1px solid rgba(218,190,145,.28);
 }
-/* Follow the sidebar surface used by the working Shanhe scene. Its DSH
-   component root can be nested in a slot wrapper and hides the column image. */
-body[data-dsh-gallery-theme="jianlai-aliang"] div:has(> [data-shell-overlay]) > div:first-child > div:first-child {
-  background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)),
-    linear-gradient(180deg, rgba(20,34,45,.35), rgba(20,35,45,.26) 57%, rgba(20,35,45,.16)),
-    var(--dsh-gallery-scene) 7% center / auto 100% no-repeat;
-}
 body[data-dsh-gallery-theme="jianlai-aliang"] [class*="_titleGroup"]::before {
   width: 34px; height: 34px; margin-bottom: 9px; opacity: .9;
   filter: drop-shadow(0 1px 5px rgba(8,22,31,.6));
@@ -563,11 +567,6 @@ body[data-dsh-gallery-theme="sunny-watch"] { --gallery-chrome: #397faf; --galler
 body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="conversation"], [class*="centerCol"]) { overflow: hidden; }
 body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 50% center; }
 body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="sidebar"], [class*="sidebarCol"]) { background-position: 0 center; border-right-color: rgba(79,139,184,.3); }
-body[data-dsh-gallery-theme="sunny-watch"] div:has(> [data-shell-overlay]) > div:first-child > div:first-child {
-  background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)),
-    linear-gradient(180deg, rgba(238,247,253,.25), rgba(232,244,251,.18) 48%, rgba(229,243,251,.10)),
-    var(--dsh-gallery-scene) 0 center / auto 100% no-repeat;
-}
 body[data-dsh-gallery-theme="sunny-watch"] [data-conversation-region="chat"] { background: linear-gradient(90deg, rgba(246,251,255,.28), transparent 75%); }
 body[data-dsh-gallery-theme="sunny-watch"] [class*="_titleGroup"] > span:first-child {
   color: #193c60 !important; text-shadow: 0 2px 18px rgba(245,251,255,.82) !important;
@@ -587,11 +586,6 @@ css += `
 /* Nimbus journey: sky blue controls with warm cloud highlights. */
 body[data-dsh-gallery-theme="young-goku"] { --gallery-chrome: #2a83b7; --gallery-card-fill: rgba(247,252,255,.88); }
 body[data-dsh-gallery-theme="young-goku"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 62% center; }
-body[data-dsh-gallery-theme="young-goku"] div:has(> [data-shell-overlay]) > div:first-child > div:first-child {
-  background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)),
-    linear-gradient(180deg, rgba(243,250,254,.25), rgba(232,244,249,.18) 55%, rgba(232,244,249,.10)),
-    var(--dsh-gallery-scene) 0 center / auto 100% no-repeat;
-}
 body[data-dsh-gallery-theme="young-goku"] [data-conversation-region="chat"] { background: linear-gradient(90deg, rgba(247,252,255,.35), transparent 75%); }
 body[data-dsh-gallery-theme="young-goku"] [data-composer-card] { background: rgba(251,254,255,.91); border-color: rgba(55,141,190,.45); box-shadow: 0 14px 38px rgba(25,91,131,.17), inset 0 1px 0 white; }
 body[data-dsh-gallery-theme="young-goku"] button[data-turn-process][data-dsh-gallery-running] { background-image: linear-gradient(90deg, transparent, #f4b447 46%, #52aee0 64%, transparent) !important; }

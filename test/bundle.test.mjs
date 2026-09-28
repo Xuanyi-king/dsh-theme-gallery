@@ -62,21 +62,22 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('content: none !important;\\n  display: none !important;\\n  background: none !important;'));
 });
 
-test('recent scenes paint the sidebar surface used by the working Shanhe theme', async () => {
+test('recent scenes use Shanhe-style translucent sidebar layers so the scene can show through', async () => {
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const encoded = bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/);
   assert.ok(encoded, 'built gallery contains CSS');
   const css = JSON.parse(encoded[1]);
-  const surface = 'div:has(> [data-shell-overlay]) > div:first-child > div:first-child';
   for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku']) {
-    const selector = `body[data-dsh-gallery-theme="${slug}"] ${surface}`;
-    const block = css.slice(css.indexOf(selector));
-    assert.ok(block.startsWith(selector), `${slug} has a sidebar root rule`);
+    const tokens = [...css.matchAll(new RegExp(`body\\[data-dsh-gallery-theme="${slug}"\\] \\{([^}]+)\\}`, 'g'))];
+    assert.ok(tokens.some(token => /--dsw-specific-sidebar-fill:\s*rgba\([^)]+\) !important;/.test(token[1])), `${slug} provides a translucent sidebar fill at the frame`);
+    const root = `body[data-dsh-gallery-theme="${slug}"] [class*="sidebarCol"] > *`;
+    const block = css.slice(css.indexOf(root));
+    assert.ok(block.startsWith(root), `${slug} targets the actual sidebar child without assuming a class name`);
     const declaration = block.slice(block.indexOf('{') + 1, block.indexOf('}'));
-    assert.match(declaration, /var\(--dsh-gallery-scene\)/, `${slug} paints art on the visible sidebar root`);
-    assert.match(declaration, /linear-gradient/, `${slug} keeps a text readability wash`);
-    assert.match(declaration, /var\(--gallery-scene-fade/, `${slug} responds to the background depth slider`);
+    assert.match(declaration, /--dsw-specific-sidebar-fill:\s*rgba\([^)]+\) !important;/, `${slug} does not reset the fill to opaque on the sidebar root`);
+    assert.match(declaration, /background:\s*transparent !important;/, `${slug} exposes the scene painted on the sidebar column`);
   }
+  assert.ok(css.includes('body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) {'), 'the sidebar column paints the scene behind its transparent child');
 });
 
 test('the hero hides its native fish without hiding the themed title mark', async () => {
