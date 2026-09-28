@@ -5,6 +5,7 @@ import { THEME as flameEmperor } from '../themes/flame-emperor/src/client.mjs';
 import { THEME as greatSage } from '../themes/great-sage/src/client.mjs';
 import { THEME as nezha } from '../themes/nezha/src/client.mjs';
 import { THEME as whalePrince } from '../themes/whale-prince/src/client.mjs';
+import { THEME as jianlaiAliang } from '../themes/jianlai-aliang/src/client.mjs';
 
 const HERO_COPY = Object.freeze({
   shanhe: ['山河入墨，剑意问心', '一念为始 · 万里山河'],
@@ -14,6 +15,7 @@ const HERO_COPY = Object.freeze({
   'great-sage': ['踏云而来，万法皆通', '执一棒 · 问天地'],
   nezha: ['莲心未改，破浪而行', '燃一盏莲火 · 问乾坤'],
   'whale-prince': ['听潮问道，鲸游万象', '潮声为序 · 深海为章'],
+  'jianlai-aliang': ['雨落江湖，执剑同行', '且行江湖路 · 静候一剑鸣'],
 });
 
 const entry = (slug, zh, en, detail, accent, intro, elapsed, english, placeholder, original) => Object.freeze({
@@ -30,4 +32,5 @@ export const CATALOG = Object.freeze([
   entry('great-sage', '齐天大圣', 'Great Sage', '火眼 · 金箍棒 · 云海', '#edba66', '腾云思索 · 正在推演', '腾云思索 · 已行', 'Cloudbound thinking', '且问天地，写下你的问题…', greatSage),
   entry('nezha', '哪吒 · 莲身破浪', 'Nezha', '莲火 · 混天绫 · 风火轮', '#e89c6e', '莲火推演 · 正在凝神', '莲火推演 · 已历', 'Lotus flame insight', '以心为火，写下你的问题…', nezha),
   entry('whale-prince', '鲸少 · 沧海之主', 'Whale Prince', '巨鲸 · 深海 · 冷金', '#49bde2', '鲸息推演 · 潮声渐起', '鲸息推演 · 已航', 'Deep sea thinking', '把问题交给深海…', whalePrince),
+  entry('jianlai-aliang', '阿良 · 雨夜行', 'A Liang · Rain Road', '斗笠 · 雨夜 · 江湖', '#cfab74', '雨落江湖 · 问剑中', '雨落江湖 · 已行', 'Rain road · thinking', '说说这一路遇见的事…', jianlaiAliang),
 ]);

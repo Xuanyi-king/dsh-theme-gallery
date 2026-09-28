@@ -1,0 +1,43 @@
+/* A Liang's rainy road: the original DSH surfaces remain interactive. */
+body[data-jianlai-aliang-theme] {
+  --dsw-focus-ring-color: #cfab74;
+  --dsw-elevation-stroke-color: rgba(207,171,116,.42);
+  color: #f2f0e9;
+  background: #172532;
+}
+body[data-jianlai-aliang-theme]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(16,31,42,.30), rgba(16,31,42,.03) 67%), url("__SCENE_URL__") 65% center / cover no-repeat;
+  pointer-events: none;
+}
+body[data-jianlai-aliang-theme] #root { position: relative; background: transparent; }
+body[data-jianlai-aliang-theme] :is(main,[role="main"]) :is(h1,h2) {
+  color: #f2eee4;
+  text-shadow: 0 3px 20px rgba(12,28,38,.75);
+  font-family: "STKaiti", "KaiTi", "Songti SC", serif;
+}
+body[data-jianlai-aliang-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="true"]) { caret-color: #cfab74; }
+body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-running] {
+  position: relative;
+  color: #e4c596;
+  background: linear-gradient(90deg, transparent, #d7b989, transparent) 100% 100% / 230% 1px no-repeat;
+  animation: aliang-progress 3s linear infinite;
+}
+body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-running] > span:first-child { opacity: 0; }
+body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-running]::before {
+  content: '╱'; position: absolute; top: 0; left: 0; color: #e6c798; font-size: 22px;
+  animation: aliang-blade 2.7s ease-in-out infinite;
+}
+body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-running]::after {
+  content: attr(data-jianlai-aliang-label); position: absolute; left: 26px; top: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: calc(100% - 26px); pointer-events: none;
+}
+@keyframes aliang-progress { from { background-position: 100% 100%; } to { background-position: -100% 100%; } }
+@keyframes aliang-blade { 0%, 100% { opacity: .56; transform: translate(-2px,2px); } 50% { opacity: 1; transform: translate(2px,-2px); } }
+@media (prefers-reduced-motion: reduce) {
+  body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-running],
+  body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-running]::before { animation: none; }
+}

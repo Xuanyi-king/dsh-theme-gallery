@@ -26,12 +26,12 @@ function harness(saved = null, fetchImpl = null, visualSaved = null) {
   return { ctx, controller, attrs, styles, data, definitions, elements, get choice() { return choice; } };
 }
 
-test('one gallery registers all seven unique themes and restores a saved selection', () => {
-  assert.equal(CATALOG.length, 7);
-  const h = harness('gallery-whale-prince');
-  assert.equal(h.definitions.size, 9);
-  assert.equal(h.choice, 'gallery-whale-prince');
-  assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'whale-prince');
+test('one gallery registers eight unique themes and restores the A Liang selection', () => {
+  assert.equal(CATALOG.length, 8);
+  const h = harness('gallery-jianlai-aliang');
+  assert.equal(h.definitions.size, 10);
+  assert.equal(h.choice, 'gallery-jianlai-aliang');
+  assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'jianlai-aliang');
   h.controller.dispose();
   assert.equal(h.definitions.size, 2);
   assert.equal(h.choice, 'dark');
@@ -66,6 +66,9 @@ test('bad saved ids are ignored, and an active gallery theme survives late host 
 
 test('live reply wording tracks selected theme and leaves other statuses intact', () => {
   const whale = CATALOG.find(x => x.slug === 'whale-prince');
+  const aliang = CATALOG.find(x => x.slug === 'jianlai-aliang');
+  assert.equal(formatRunningStatus('深度求索中', '深度求索中', aliang), '雨落江湖 · 问剑中');
+  assert.equal(formatRunningStatus('深度求索中', '深度求索中，用时 12 秒', aliang), '雨落江湖 · 已行 12 秒');
   assert.equal(formatRunningStatus('深度求索中', '深度求索中', whale), '鲸息推演 · 潮声渐起');
   assert.equal(formatRunningStatus('深度求索中', '深度求索中，用时 12 秒', whale), '鲸息推演 · 已航 12 秒');
   assert.equal(formatRunningStatus('已完成工作', '用时 12 秒', whale), null);
@@ -98,7 +101,7 @@ test('settings section offers every theme plus DSH default through an accessible
   const walk = x => { if (!x || typeof x !== 'object') return; nodes.push(x); x.children?.forEach(walk); };
   walk(root);
   const buttons = nodes.filter(x => x.type === 'button');
-  assert.equal(buttons.length, 10);
+  assert.equal(buttons.length, 11);
   assert.equal(buttons.filter(x => x.props['aria-pressed'] === true).length, 1);
   const ranges = nodes.filter(x => x.type === 'input' && x.props.type === 'range');
   assert.deepEqual(ranges.map(x => x.props['aria-label']), ['fade', 'blur', 'contrast']);

@@ -9,6 +9,7 @@ const sceneMap = {
   'perfect-world': 'emperor-scene.webp', 'flame-emperor': 'flame-scene.webp',
   'great-sage': 'cloud-palace.webp', nezha: 'lotus-sea.webp',
   'whale-prince': 'ocean-lord.webp',
+  'jianlai-aliang': 'rainy-road.webp',
 };
 let css = await read('../assets/gallery.css');
 const sword = await readScene('../assets/gallery/shanhe-sword.png');
@@ -23,6 +24,7 @@ const sidebarPalettes = {
   'great-sage': ['#17222b', '#f9f0dd', '#c9c1b0', '#353b3c', '#edba66'],
   nezha: ['#292332', '#fff2e8', '#d8bbad', '#493442', '#f4a178'],
   'whale-prince': ['#0a2038', '#f4f7fc', '#a9c2d8', '#193b5b', '#dfc28d'],
+  'jianlai-aliang': ['#172532', '#f2f0e9', '#bdc9cd', '#344553', '#c9a775'],
 };
 // Small line-art marks for the native reply status. The marks animate only
 // while DSH reports an active model turn; no standalone decoration is added.
@@ -34,6 +36,7 @@ const statusMarks = {
   'great-sage': '<path d="M4 19L19 4" stroke="__ACCENT__" stroke-width="2.6" stroke-linecap="round"/><path d="M3 17l4 4M17 3l4 4" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round"/><path d="M2 10c2-2 4-2 6-1M15 20c2 1 5 0 7-2" fill="none" stroke="__ACCENT__" stroke-width="1"/>',
   nezha: '<path d="M12 19c-4-3-6-7-5-11 3 1 5 4 5 6 0-2 2-5 5-6 1 4-1 8-5 11zM12 16c-2-2-2-7 0-11 2 4 2 9 0 11zM5 13c-1 2 0 5 7 7 7-2 8-5 7-7" fill="none" stroke="__ACCENT__" stroke-width="1.4" stroke-linejoin="round"/>',
   'whale-prince': '<path d="M3 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0M12 14c-1-3 0-5 0-5-4 0-5-3-5-5 3 .5 4 2 5 3 1-1 2-2.5 5-3 0 2-1 5-5 5" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+  'jianlai-aliang': '<path d="M3 19 19 3M16 3h3v3M5 20l-2 1 1-2M4 9l2-2m5 11 1-3m8 2 2-1" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
 };
 const statusMotion = {
   shanhe: 'gallery-ink 3.6s ease-in-out infinite',
@@ -43,6 +46,7 @@ const statusMotion = {
   'great-sage': 'gallery-staff 3s ease-in-out infinite',
   nezha: 'gallery-lotus 3.6s ease-in-out infinite',
   'whale-prince': 'gallery-tide 3.4s ease-in-out infinite',
+  'jianlai-aliang': 'gallery-blade 2.7s ease-in-out infinite',
 };
 const heroLooks = {
   shanhe: ['"STXingkai", "STKaiti", "KaiTi", serif', '#2d2924', '#66574b', '.16em', '700'],
@@ -52,6 +56,7 @@ const heroLooks = {
   'great-sage': ['"STXingkai", "KaiTi", "Songti SC", serif', '#fff2d5', '#e9c887', '.17em', '700'],
   nezha: ['"STKaiti", "KaiTi", "Songti SC", serif', '#fff1e6', '#ffd0ad', '.15em', '700'],
   'whale-prince': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#e9f7ff', '#b6dbea', '.14em', '600'],
+  'jianlai-aliang': ['"STKaiti", "KaiTi", "Songti SC", serif', '#f2eee4', '#d4c7b0', '.13em', '650'],
 };
 for (const item of CATALOG) {
   const slug = item.slug;
@@ -406,6 +411,7 @@ body[data-dsh-gallery-theme="shanhe"] button[data-turn-process][data-dsh-gallery
 @keyframes gallery-staff { 0%, 100% { transform: rotate(-10deg) translateY(1px); } 50% { transform: rotate(10deg) translateY(-1px); } }
 @keyframes gallery-lotus { 0%, 100% { transform: scale(.86) rotate(-8deg); opacity: .7; } 50% { transform: scale(1.08) rotate(8deg); opacity: 1; } }
 @keyframes gallery-tide { 0%, 100% { transform: translateY(2px); opacity: .64; } 50% { transform: translateY(-2px); opacity: 1; } }
+@keyframes gallery-blade { 0%, 100% { transform: translate(-2px, 2px); opacity: .55; filter: drop-shadow(0 0 0 transparent); } 50% { transform: translate(2px, -2px); opacity: 1; filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
 @media (prefers-reduced-motion: reduce) {
   body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running] {
     animation: none !important;
@@ -506,6 +512,47 @@ body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"]::before {
 @media (max-width: 700px) {
   body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child { font-size: clamp(26px, 7vw, 39px) !important; }
   body[data-dsh-gallery-theme] [class*="_titleGroup"]::before { width: 28px; height: 28px; background-size: 26px 26px; margin-bottom: 8px; }
+}
+`;
+css += `
+/* Rain-road composition: preserve A Liang at the right edge while the
+   misty middle stays clear for DSH's actual heading, text and composer. */
+body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="conversation"], [class*="centerCol"])::before {
+  background-position: 65% center;
+}
+body[data-dsh-gallery-theme="jianlai-aliang"] [data-conversation-region="chat"] {
+  background: linear-gradient(90deg, rgba(15,30,42,.27), transparent 75%);
+}
+body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="sidebar"], [class*="sidebarCol"]) {
+  background-position: 7% center;
+  border-right: 1px solid rgba(218,190,145,.28);
+}
+body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
+  background: linear-gradient(180deg, rgba(20,34,45,.88), rgba(20,35,45,.72) 57%, rgba(20,35,45,.59));
+}
+body[data-dsh-gallery-theme="jianlai-aliang"] [class*="_titleGroup"]::before {
+  width: 34px; height: 34px; margin-bottom: 9px; opacity: .9;
+  filter: drop-shadow(0 1px 5px rgba(8,22,31,.6));
+}
+body[data-dsh-gallery-theme="jianlai-aliang"] [class*="_titleGroup"] > span:first-child {
+  text-shadow: 0 2px 18px rgba(8,22,31,.8), 0 0 25px rgba(203,176,136,.18) !important;
+}
+body[data-dsh-gallery-theme="jianlai-aliang"] [class*="_titleGroup"] > span:first-child::after {
+  letter-spacing: .18em; text-shadow: 0 2px 14px rgba(8,22,31,.76);
+}
+body[data-dsh-gallery-theme="jianlai-aliang"] [data-composer-card] {
+  border-color: rgba(216,184,134,.55);
+  background: linear-gradient(100deg, rgba(42,56,63,.88), rgba(29,48,61,.82));
+  box-shadow: inset 0 1px 0 rgba(246,227,191,.18), 0 16px 38px rgba(7,19,27,.42), 0 0 28px rgba(227,183,111,.08);
+}
+body[data-dsh-gallery-theme="jianlai-aliang"] [data-composer-card]::before {
+  background: none; border-color: rgba(214,181,132,.26);
+}
+body[data-dsh-gallery-theme="jianlai-aliang"] button[data-turn-process][data-dsh-gallery-running] {
+  background-size: 230% 1px !important;
+}
+@media (max-width: 700px) {
+  body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 66% center; }
 }
 `;
 for (const item of CATALOG) {
