@@ -11,6 +11,7 @@ const sceneMap = {
   'whale-prince': 'ocean-lord.webp',
   'jianlai-aliang': 'rainy-road.webp',
   'sunny-watch': 'sunrise-city.webp',
+  'young-goku': 'nimbus-journey.webp',
 };
 let css = await read('../assets/gallery.css');
 const sword = await readScene('../assets/gallery/shanhe-sword.png');
@@ -27,6 +28,7 @@ const sidebarPalettes = {
   'whale-prince': ['#0a2038', '#f4f7fc', '#a9c2d8', '#193b5b', '#dfc28d'],
   'jianlai-aliang': ['#172532', '#f2f0e9', '#bdc9cd', '#344553', '#c9a775'],
   'sunny-watch': ['#e9f3fa', '#173a54', '#496b82', '#d9e9f5', '#6eacd2'],
+  'young-goku': ['#edf6f9', '#163d58', '#4e7284', '#d9edf4', '#f3b43f'],
 };
 // Small line-art marks for the native reply status. The marks animate only
 // while DSH reports an active model turn; no standalone decoration is added.
@@ -40,6 +42,7 @@ const statusMarks = {
   'whale-prince': '<path d="M3 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0M12 14c-1-3 0-5 0-5-4 0-5-3-5-5 3 .5 4 2 5 3 1-1 2-2.5 5-3 0 2-1 5-5 5" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
   'jianlai-aliang': '<path d="M3 19 19 3M16 3h3v3M5 20l-2 1 1-2M4 9l2-2m5 11 1-3m8 2 2-1" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
   'sunny-watch': '<path d="M3 18h18M7 14a5 5 0 0 1 10 0M12 2v3M4 7l2 2m14-2-2 2M2 14h2m16 0h2" fill="none" stroke="__ACCENT__" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+  'young-goku': '<path d="M2 17c0-2 1.5-3 3.5-3 0-2 1.5-3 3.3-3 1.5 0 2.5.8 3.1 2 1.4-1.8 4.6-1.3 5.1 1.3 2.4-.5 4.7 1 4.7 3.2 0 1.5-1.1 2.8-3.5 2.8H5c-2 0-3-1.1-3-2.3z" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 6 20 3" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round"/>',
 };
 const statusMotion = {
   shanhe: 'gallery-ink 3.6s ease-in-out infinite',
@@ -51,6 +54,7 @@ const statusMotion = {
   'whale-prince': 'gallery-tide 3.4s ease-in-out infinite',
   'jianlai-aliang': 'gallery-blade 2.7s ease-in-out infinite',
   'sunny-watch': 'gallery-sunrise 3.2s ease-in-out infinite',
+  'young-goku': 'gallery-nimbus 2.9s ease-in-out infinite',
 };
 const heroLooks = {
   shanhe: ['"STXingkai", "STKaiti", "KaiTi", serif', '#2d2924', '#66574b', '.16em', '700'],
@@ -62,6 +66,7 @@ const heroLooks = {
   'whale-prince': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#e9f7ff', '#b6dbea', '.14em', '600'],
   'jianlai-aliang': ['"STKaiti", "KaiTi", "Songti SC", serif', '#f2eee4', '#d4c7b0', '.13em', '650'],
   'sunny-watch': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#17395b', '#385e79', '.08em', '720'],
+  'young-goku': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#143956', '#3b6680', '.09em', '740'],
 };
 for (const item of CATALOG) {
   const slug = item.slug;
@@ -418,6 +423,7 @@ body[data-dsh-gallery-theme="shanhe"] button[data-turn-process][data-dsh-gallery
 @keyframes gallery-tide { 0%, 100% { transform: translateY(2px); opacity: .64; } 50% { transform: translateY(-2px); opacity: 1; } }
 @keyframes gallery-blade { 0%, 100% { transform: translate(-2px, 2px); opacity: .55; filter: drop-shadow(0 0 0 transparent); } 50% { transform: translate(2px, -2px); opacity: 1; filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
 @keyframes gallery-sunrise { 0%, 100% { opacity: .65; filter: drop-shadow(0 0 0 var(--gallery-chrome)); } 50% { opacity: 1; filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
+@keyframes gallery-nimbus { 0%, 100% { opacity: .78; transform: translateX(-2px) translateY(1px); } 50% { opacity: 1; transform: translateX(3px) translateY(-1px); } }
 @media (prefers-reduced-motion: reduce) {
   body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running] {
     animation: none !important;
@@ -584,6 +590,16 @@ body[data-dsh-gallery-theme="sunny-watch"] [data-composer-card]::before { backgr
 body[data-dsh-gallery-theme="sunny-watch"] button[data-turn-process][data-dsh-gallery-running] {
   background-image: linear-gradient(90deg, transparent, #e58a4a 46%, #6aaed4 64%, transparent) !important;
 }
+`;
+css += `
+/* Nimbus journey: sky blue controls with warm cloud highlights. */
+body[data-dsh-gallery-theme="young-goku"] { --gallery-chrome: #2a83b7; --gallery-card-fill: rgba(247,252,255,.88); }
+body[data-dsh-gallery-theme="young-goku"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 62% center; }
+body[data-dsh-gallery-theme="young-goku"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] { background: linear-gradient(180deg, rgba(243,250,254,.86), rgba(232,244,249,.68) 55%, rgba(232,244,249,.48)); }
+body[data-dsh-gallery-theme="young-goku"] [data-conversation-region="chat"] { background: linear-gradient(90deg, rgba(247,252,255,.35), transparent 75%); }
+body[data-dsh-gallery-theme="young-goku"] [data-composer-card] { background: rgba(251,254,255,.91); border-color: rgba(55,141,190,.45); box-shadow: 0 14px 38px rgba(25,91,131,.17), inset 0 1px 0 white; }
+body[data-dsh-gallery-theme="young-goku"] button[data-turn-process][data-dsh-gallery-running] { background-image: linear-gradient(90deg, transparent, #f4b447 46%, #52aee0 64%, transparent) !important; }
+@media (max-width: 700px) { body[data-dsh-gallery-theme="young-goku"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 69% center; } }
 `;
 for (const item of CATALOG) {
   const [font, ink, muted, tracking, weight] = heroLooks[item.slug];

@@ -26,10 +26,10 @@ function harness(saved = null, fetchImpl = null, visualSaved = null) {
   return { ctx, controller, attrs, styles, data, definitions, elements, get choice() { return choice; } };
 }
 
-test('one gallery registers nine unique themes and restores the Sunny Watch selection', () => {
-  assert.equal(CATALOG.length, 9);
+test('one gallery registers ten unique themes and restores the Sunny Watch selection', () => {
+  assert.equal(CATALOG.length, 10);
   const h = harness('gallery-sunny-watch');
-  assert.equal(h.definitions.size, 11);
+  assert.equal(h.definitions.size, 12);
   assert.equal(h.choice, 'gallery-sunny-watch');
   assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'sunny-watch');
   h.controller.dispose();
@@ -104,7 +104,7 @@ test('settings section offers every theme plus DSH default through an accessible
   const walk = x => { if (!x || typeof x !== 'object') return; nodes.push(x); x.children?.forEach(walk); };
   walk(root);
   const buttons = nodes.filter(x => x.type === 'button');
-  assert.equal(buttons.length, 12);
+  assert.equal(buttons.length, 13);
   assert.equal(buttons.filter(x => x.props['aria-pressed'] === true).length, 1);
   const ranges = nodes.filter(x => x.type === 'input' && x.props.type === 'range');
   assert.deepEqual(ranges.map(x => x.props['aria-label']), ['fade', 'blur', 'contrast']);
@@ -172,5 +172,19 @@ test('a missing host selection does not discard a valid local theme', async () =
   await new Promise(resolve => setImmediate(resolve));
   assert.equal(h.choice, 'gallery-whale-prince');
   assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'whale-prince');
+  h.controller.dispose();
+});
+
+
+test('child Goku theme selects, persists and retains its sky palette', () => {
+  const goku = CATALOG.find(item => item.slug === 'young-goku');
+  assert.equal(goku?.zh, '少年悟空 · 筋斗云之旅');
+  assert.equal(goku?.definition.colorScheme, 'light');
+  const h = harness();
+  h.controller.select('gallery-young-goku');
+  assert.equal(h.choice, 'gallery-young-goku');
+  assert.equal(h.data.get('dsh.themeGallery.selection'), 'gallery-young-goku');
+  assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'young-goku');
+  assert.equal(formatRunningStatus('深度求索中', '深度求索中', goku), '乘云思索 · 勇敢向前');
   h.controller.dispose();
 });

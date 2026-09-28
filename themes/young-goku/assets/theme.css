@@ -1,0 +1,43 @@
+/* Nimbus and mountain scenery on the native DSH interface. */
+body[data-young-goku-theme] {
+  --dsw-focus-ring-color: #f4b447;
+  --dsw-elevation-stroke-color: rgba(38,106,159,.33);
+  color: #173a54;
+  background: #f4f9fc;
+}
+body[data-young-goku-theme]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(241,248,253,.18), rgba(255,255,255,.05)), url("__SCENE_URL__") center / cover no-repeat;
+}
+body[data-young-goku-theme] #root { position: relative; z-index: 1; background: transparent; }
+body[data-young-goku-theme] :is(main,[role="main"]) :is(h1,h2) {
+  color: #153e60;
+  text-shadow: 0 2px 12px rgba(242,249,254,.75);
+  font-family: "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+}
+body[data-young-goku-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="true"]) { caret-color: #f4b447; }
+body[data-young-goku-theme] button[data-turn-process][data-young-goku-running] {
+  position: relative;
+  color: #234e73;
+  background: linear-gradient(90deg, transparent, #f4b447 48%, transparent) 100% 100% / 220% 1px no-repeat;
+  background-position: 100% 100%;
+}
+body[data-young-goku-theme] button[data-turn-process][data-young-goku-running] > span:first-child { opacity: 0; }
+body[data-young-goku-theme] button[data-turn-process][data-young-goku-running]::before {
+  content: '☁'; position: absolute; top: 0; left: 0; color: #f4b447; font-size: 17px;
+  animation: young-goku-glow 3.2s ease-in-out infinite;
+}
+body[data-young-goku-theme] button[data-turn-process][data-young-goku-running]::after {
+  content: attr(data-young-goku-label); position: absolute; left: 26px; top: 0;
+  max-width: calc(100% - 26px); overflow: hidden; white-space: nowrap;
+  text-overflow: ellipsis; pointer-events: none;
+}
+@keyframes young-goku-glow { 0%,100% { opacity: .7; transform: translateX(0); } 50% { opacity: 1; transform: translateX(5px); } }
+@media (prefers-reduced-motion: reduce) {
+  body[data-young-goku-theme] button[data-turn-process][data-young-goku-running],
+  body[data-young-goku-theme] button[data-turn-process][data-young-goku-running]::before { animation: none; }
+}

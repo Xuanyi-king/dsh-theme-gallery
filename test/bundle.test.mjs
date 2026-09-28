@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
-test('installable root package declares one bundle with all nine theme assets', async () => {
+test('installable root package declares one bundle with all ten theme assets', async () => {
   const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url)));
   const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const loaded = [];
@@ -11,9 +11,9 @@ test('installable root package declares one bundle with all nine theme assets', 
   assert.equal(loaded.length, 1);
   assert.equal(loaded[0].id, 'dsh-theme-gallery');
   const module = loaded[0].factory(name => { if (name === 'react') return { createElement() {} }; throw Error(name); });
-  assert.equal(module.CATALOG.length, 9);
+  assert.equal(module.CATALOG.length, 10);
   assert.equal(module.CATALOG[0].id, 'gallery-shanhe');
-  assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, 18);
+  assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, 20);
   assert.ok(client.includes('settings.section'));
   assert.ok(client.includes('prefers-reduced-motion'));
   assert.equal(pkg.dsh.bundle.patch, './cordis.patch.yml');
@@ -23,16 +23,16 @@ test('installable root package declares one bundle with all nine theme assets', 
 
 test('every gallery scene styles its own animated native progress label', async () => {
   const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
-  const choices = ['shanhe', 'ultraman', 'perfect-world', 'flame-emperor', 'great-sage', 'nezha', 'whale-prince', 'jianlai-aliang', 'sunny-watch'];
+  const choices = ['shanhe', 'ultraman', 'perfect-world', 'flame-emperor', 'great-sage', 'nezha', 'whale-prince', 'jianlai-aliang', 'sunny-watch', 'young-goku'];
   for (const slug of choices) assert.ok(client.includes(`body[data-dsh-gallery-theme=\\"${slug}\\"]`), slug);
   assert.ok(client.includes('[data-conversation-region=\\"chat\\"]'));
   assert.ok(client.includes('opacity: 0 !important;'));
   assert.ok(client.includes('content: attr(data-dsh-gallery-label) !important;'));
   assert.ok(client.includes('animation: gallery-progress-flow 3.2s linear infinite !important;'));
-  for (const motion of ['ink', 'light', 'rune', 'flame', 'staff', 'lotus', 'tide', 'blade', 'sunrise']) {
+  for (const motion of ['ink', 'light', 'rune', 'flame', 'staff', 'lotus', 'tide', 'blade', 'sunrise', 'nimbus']) {
     assert.ok(client.includes(`@keyframes gallery-${motion}`), motion);
   }
-  assert.equal((client.match(/--gallery-status-icon: url\(/g) ?? []).length, 9);
+  assert.equal((client.match(/--gallery-status-icon: url\(/g) ?? []).length, 10);
   assert.ok(client.includes('animation: var(--gallery-status-motion) !important;'));
   assert.ok(client.includes("content: '墨' !important;"));
   assert.ok(client.includes('animation: gallery-ink-seal 3.6s ease-in-out infinite !important;'));
@@ -105,7 +105,7 @@ test('bundled plugin registers a settings page whose cards switch and reset them
   const visit = node => { if (!node || typeof node !== 'object') return; nodes.push(node); node.children?.forEach(visit); };
   visit(rendered);
   const buttons = nodes.filter(node => node.type === 'button');
-  assert.equal(buttons.length, 12);
+  assert.equal(buttons.length, 13);
   buttons.find(node => node.props['data-theme'] === 'gallery-ultraman').props.onClick();
   assert.equal(preference, 'gallery-ultraman');
   assert.equal(attrs.get('data-dsh-gallery-theme'), 'ultraman');
