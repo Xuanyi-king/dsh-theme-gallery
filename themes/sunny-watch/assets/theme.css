@@ -1,0 +1,43 @@
+/* Morning city scene and sunrise accents on the native DSH interface. */
+body[data-sunny-watch-theme] {
+  --dsw-focus-ring-color: #e58a4a;
+  --dsw-elevation-stroke-color: rgba(38,106,159,.33);
+  color: #173a54;
+  background: #f4f9fc;
+}
+body[data-sunny-watch-theme]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(241,248,253,.18), rgba(255,255,255,.05)), url("__SCENE_URL__") center / cover no-repeat;
+}
+body[data-sunny-watch-theme] #root { position: relative; z-index: 1; background: transparent; }
+body[data-sunny-watch-theme] :is(main,[role="main"]) :is(h1,h2) {
+  color: #153e60;
+  text-shadow: 0 2px 12px rgba(242,249,254,.75);
+  font-family: "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+}
+body[data-sunny-watch-theme] :is(main,[role="main"]) :is(textarea,[contenteditable="true"]) { caret-color: #e58a4a; }
+body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running] {
+  position: relative;
+  color: #234e73;
+  background: linear-gradient(90deg, transparent, #e58a4a 48%, transparent) 100% 100% / 220% 1px no-repeat;
+  animation: sunny-watch-glow 3.2s ease-in-out infinite;
+}
+body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running] > span:first-child { opacity: 0; }
+body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running]::before {
+  content: '☀'; position: absolute; top: 0; left: 0; color: #e58a4a; font-size: 17px;
+  animation: sunny-watch-glow 3.2s ease-in-out infinite;
+}
+body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running]::after {
+  content: attr(data-sunny-watch-label); position: absolute; left: 26px; top: 0;
+  max-width: calc(100% - 26px); overflow: hidden; white-space: nowrap;
+  text-overflow: ellipsis; pointer-events: none;
+}
+@keyframes sunny-watch-glow { 0%,100% { opacity: .7; background-position: 100% 100%; } 50% { opacity: 1; background-position: 0 100%; } }
+@media (prefers-reduced-motion: reduce) {
+  body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running],
+  body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running]::before { animation: none; }
+}

@@ -1,7 +1,7 @@
 {
   "name": "dsh-theme-gallery",
-  "version": "0.3.8",
-  "description": "One installable DeepSeek Harness plugin with eight switchable themes",
+  "version": "0.3.9",
+  "description": "One installable DeepSeek Harness plugin with nine switchable themes",
   "license": "MIT",
   "type": "module",
   "main": "./lib/index.js",
@@ -36,6 +36,7 @@
     "pack:great-sage": "npm pack -w themes/great-sage",
     "pack:nezha": "npm pack -w themes/nezha",
     "pack:whale-prince": "npm pack -w themes/whale-prince",
-    "pack:jianlai-aliang": "npm pack -w themes/jianlai-aliang"
+    "pack:jianlai-aliang": "npm pack -w themes/jianlai-aliang",
+    "pack:sunny-watch": "npm pack -w themes/sunny-watch"
   }
 }

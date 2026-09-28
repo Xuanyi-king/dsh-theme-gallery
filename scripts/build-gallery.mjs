@@ -10,6 +10,7 @@ const sceneMap = {
   'great-sage': 'cloud-palace.webp', nezha: 'lotus-sea.webp',
   'whale-prince': 'ocean-lord.webp',
   'jianlai-aliang': 'rainy-road.webp',
+  'sunny-watch': 'sunrise-city.webp',
 };
 let css = await read('../assets/gallery.css');
 const sword = await readScene('../assets/gallery/shanhe-sword.png');
@@ -25,6 +26,7 @@ const sidebarPalettes = {
   nezha: ['#292332', '#fff2e8', '#d8bbad', '#493442', '#f4a178'],
   'whale-prince': ['#0a2038', '#f4f7fc', '#a9c2d8', '#193b5b', '#dfc28d'],
   'jianlai-aliang': ['#172532', '#f2f0e9', '#bdc9cd', '#344553', '#c9a775'],
+  'sunny-watch': ['#e9f3fa', '#173a54', '#496b82', '#d9e9f5', '#6eacd2'],
 };
 // Small line-art marks for the native reply status. The marks animate only
 // while DSH reports an active model turn; no standalone decoration is added.
@@ -37,6 +39,7 @@ const statusMarks = {
   nezha: '<path d="M12 19c-4-3-6-7-5-11 3 1 5 4 5 6 0-2 2-5 5-6 1 4-1 8-5 11zM12 16c-2-2-2-7 0-11 2 4 2 9 0 11zM5 13c-1 2 0 5 7 7 7-2 8-5 7-7" fill="none" stroke="__ACCENT__" stroke-width="1.4" stroke-linejoin="round"/>',
   'whale-prince': '<path d="M3 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0M12 14c-1-3 0-5 0-5-4 0-5-3-5-5 3 .5 4 2 5 3 1-1 2-2.5 5-3 0 2-1 5-5 5" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
   'jianlai-aliang': '<path d="M3 19 19 3M16 3h3v3M5 20l-2 1 1-2M4 9l2-2m5 11 1-3m8 2 2-1" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+  'sunny-watch': '<path d="M3 18h18M7 14a5 5 0 0 1 10 0M12 2v3M4 7l2 2m14-2-2 2M2 14h2m16 0h2" fill="none" stroke="__ACCENT__" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
 };
 const statusMotion = {
   shanhe: 'gallery-ink 3.6s ease-in-out infinite',
@@ -47,6 +50,7 @@ const statusMotion = {
   nezha: 'gallery-lotus 3.6s ease-in-out infinite',
   'whale-prince': 'gallery-tide 3.4s ease-in-out infinite',
   'jianlai-aliang': 'gallery-blade 2.7s ease-in-out infinite',
+  'sunny-watch': 'gallery-sunrise 3.2s ease-in-out infinite',
 };
 const heroLooks = {
   shanhe: ['"STXingkai", "STKaiti", "KaiTi", serif', '#2d2924', '#66574b', '.16em', '700'],
@@ -57,6 +61,7 @@ const heroLooks = {
   nezha: ['"STKaiti", "KaiTi", "Songti SC", serif', '#fff1e6', '#ffd0ad', '.15em', '700'],
   'whale-prince': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#e9f7ff', '#b6dbea', '.14em', '600'],
   'jianlai-aliang': ['"STKaiti", "KaiTi", "Songti SC", serif', '#f2eee4', '#d4c7b0', '.13em', '650'],
+  'sunny-watch': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#17395b', '#385e79', '.08em', '720'],
 };
 for (const item of CATALOG) {
   const slug = item.slug;
@@ -412,6 +417,7 @@ body[data-dsh-gallery-theme="shanhe"] button[data-turn-process][data-dsh-gallery
 @keyframes gallery-lotus { 0%, 100% { transform: scale(.86) rotate(-8deg); opacity: .7; } 50% { transform: scale(1.08) rotate(8deg); opacity: 1; } }
 @keyframes gallery-tide { 0%, 100% { transform: translateY(2px); opacity: .64; } 50% { transform: translateY(-2px); opacity: 1; } }
 @keyframes gallery-blade { 0%, 100% { transform: translate(-2px, 2px); opacity: .55; filter: drop-shadow(0 0 0 transparent); } 50% { transform: translate(2px, -2px); opacity: 1; filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
+@keyframes gallery-sunrise { 0%, 100% { opacity: .65; filter: drop-shadow(0 0 0 var(--gallery-chrome)); } 50% { opacity: 1; filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
 @media (prefers-reduced-motion: reduce) {
   body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running] {
     animation: none !important;
@@ -553,6 +559,30 @@ body[data-dsh-gallery-theme="jianlai-aliang"] button[data-turn-process][data-dsh
 }
 @media (max-width: 700px) {
   body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 66% center; }
+}
+`;
+css += `
+/* Bright city daylight across the native conversation, sidebar and composer. */
+body[data-dsh-gallery-theme="sunny-watch"] { --gallery-chrome: #397faf; --gallery-card-fill: rgba(248,252,255,.86); }
+body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="conversation"], [class*="centerCol"]) { overflow: hidden; }
+body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 50% center; }
+body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="sidebar"], [class*="sidebarCol"]) { background-position: 0 center; border-right-color: rgba(79,139,184,.3); }
+body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
+  background: linear-gradient(180deg, rgba(238,247,253,.83), rgba(232,244,251,.63) 48%, rgba(229,243,251,.43));
+}
+body[data-dsh-gallery-theme="sunny-watch"] [data-conversation-region="chat"] { background: linear-gradient(90deg, rgba(246,251,255,.28), transparent 75%); }
+body[data-dsh-gallery-theme="sunny-watch"] [class*="_titleGroup"] > span:first-child {
+  color: #193c60 !important; text-shadow: 0 2px 18px rgba(245,251,255,.82) !important;
+}
+body[data-dsh-gallery-theme="sunny-watch"] [class*="_titleGroup"] > span:first-child::after { color: #3b6681; }
+body[data-dsh-gallery-theme="sunny-watch"] [data-composer-card] {
+  background: rgba(250,253,255,.89);
+  border-color: rgba(71,138,185,.46);
+  box-shadow: 0 14px 38px rgba(42,90,129,.18), inset 0 1px 0 white;
+}
+body[data-dsh-gallery-theme="sunny-watch"] [data-composer-card]::before { background: none; border-color: rgba(71,138,185,.16); }
+body[data-dsh-gallery-theme="sunny-watch"] button[data-turn-process][data-dsh-gallery-running] {
+  background-image: linear-gradient(90deg, transparent, #e58a4a 46%, #6aaed4 64%, transparent) !important;
 }
 `;
 for (const item of CATALOG) {
