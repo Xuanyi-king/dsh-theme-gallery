@@ -540,7 +540,9 @@ body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="sidebar"], [class*
   border-right: 1px solid rgba(218,190,145,.28);
 }
 body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
-  background: linear-gradient(180deg, rgba(20,34,45,.88), rgba(20,35,45,.72) 57%, rgba(20,35,45,.59));
+  background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)),
+    linear-gradient(180deg, rgba(20,34,45,.58), rgba(20,35,45,.43) 57%, rgba(20,35,45,.32)),
+    var(--dsh-gallery-scene) 7% center / auto 100% no-repeat;
 }
 body[data-dsh-gallery-theme="jianlai-aliang"] [class*="_titleGroup"]::before {
   width: 34px; height: 34px; margin-bottom: 9px; opacity: .9;
@@ -574,7 +576,9 @@ body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="conversation"], [clas
 body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 50% center; }
 body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="sidebar"], [class*="sidebarCol"]) { background-position: 0 center; border-right-color: rgba(79,139,184,.3); }
 body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
-  background: linear-gradient(180deg, rgba(238,247,253,.83), rgba(232,244,251,.63) 48%, rgba(229,243,251,.43));
+  background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)),
+    linear-gradient(180deg, rgba(238,247,253,.65), rgba(232,244,251,.48) 48%, rgba(229,243,251,.35)),
+    var(--dsh-gallery-scene) 0 center / auto 100% no-repeat;
 }
 body[data-dsh-gallery-theme="sunny-watch"] [data-conversation-region="chat"] { background: linear-gradient(90deg, rgba(246,251,255,.28), transparent 75%); }
 body[data-dsh-gallery-theme="sunny-watch"] [class*="_titleGroup"] > span:first-child {
@@ -595,7 +599,11 @@ css += `
 /* Nimbus journey: sky blue controls with warm cloud highlights. */
 body[data-dsh-gallery-theme="young-goku"] { --gallery-chrome: #2a83b7; --gallery-card-fill: rgba(247,252,255,.88); }
 body[data-dsh-gallery-theme="young-goku"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 62% center; }
-body[data-dsh-gallery-theme="young-goku"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] { background: linear-gradient(180deg, rgba(243,250,254,.86), rgba(232,244,249,.68) 55%, rgba(232,244,249,.48)); }
+body[data-dsh-gallery-theme="young-goku"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
+  background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)),
+    linear-gradient(180deg, rgba(243,250,254,.62), rgba(232,244,249,.47) 55%, rgba(232,244,249,.34)),
+    var(--dsh-gallery-scene) 0 center / auto 100% no-repeat;
+}
 body[data-dsh-gallery-theme="young-goku"] [data-conversation-region="chat"] { background: linear-gradient(90deg, rgba(247,252,255,.35), transparent 75%); }
 body[data-dsh-gallery-theme="young-goku"] [data-composer-card] { background: rgba(251,254,255,.91); border-color: rgba(55,141,190,.45); box-shadow: 0 14px 38px rgba(25,91,131,.17), inset 0 1px 0 white; }
 body[data-dsh-gallery-theme="young-goku"] button[data-turn-process][data-dsh-gallery-running] { background-image: linear-gradient(90deg, transparent, #f4b447 46%, #52aee0 64%, transparent) !important; }

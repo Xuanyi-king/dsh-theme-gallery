@@ -64,6 +64,22 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('content: none !important;\\n  display: none !important;\\n  background: none !important;'));
 });
 
+test('recent scene themes paint the sidebar root beneath the readable wash', async () => {
+  const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  const encoded = bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/);
+  assert.ok(encoded, 'built gallery contains CSS');
+  const css = JSON.parse(encoded[1]);
+  for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku']) {
+    const selector = `body[data-dsh-gallery-theme="${slug}"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"]`;
+    const block = css.slice(css.indexOf(selector));
+    assert.ok(block.startsWith(selector), `${slug} has a sidebar root rule`);
+    const declaration = block.slice(block.indexOf('{') + 1, block.indexOf('}'));
+    assert.match(declaration, /var\(--dsh-gallery-scene\)/, `${slug} paints art on the visible sidebar root`);
+    assert.match(declaration, /linear-gradient/, `${slug} keeps a text readability wash`);
+    assert.match(declaration, /var\(--gallery-scene-fade/, `${slug} responds to the background depth slider`);
+  }
+});
+
 test('bundled plugin registers a settings page whose cards switch and reset themes', async () => {
   const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const loaded = [];
