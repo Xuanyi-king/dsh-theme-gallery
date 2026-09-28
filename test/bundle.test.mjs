@@ -34,6 +34,8 @@ test('every gallery scene styles its own animated native progress label', async 
   }
   assert.equal((client.match(/--gallery-status-icon: url\(/g) ?? []).length, 7);
   assert.ok(client.includes('animation: var(--gallery-status-motion) !important;'));
+  assert.ok(client.includes("content: '墨' !important;"));
+  assert.ok(client.includes('animation: gallery-ink-seal 3.6s ease-in-out infinite !important;'));
   assert.ok(client.includes('@media (prefers-reduced-motion: reduce)'));
 });
 
@@ -58,6 +60,8 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('content: none !important;\\n  display: none !important;'));
   assert.ok(client.includes('山河入墨，剑意问心'));
   assert.ok(client.includes('诸天为卷，问道而行'));
+  assert.ok(client.includes("content: '山' !important;"));
+  assert.ok(client.includes('content: none !important;\\n  display: none !important;\\n  background: none !important;'));
 });
 
 test('bundled plugin registers a settings page whose cards switch and reset themes', async () => {

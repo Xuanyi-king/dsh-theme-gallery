@@ -377,11 +377,29 @@ body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running]
   text-shadow: 0 1px 7px color-mix(in srgb, var(--gallery-sidebar-fill) 82%, transparent);
   pointer-events: none;
 }
+/* Ink theme: a clear vermilion seal stays legible against the painted hills.
+   Its small rise is tied to the real running indicator. */
+body[data-dsh-gallery-theme="shanhe"] button[data-turn-process][data-dsh-gallery-running]::before {
+  content: '墨' !important;
+  inset: 5px auto auto 0;
+  display: grid !important;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  border: 1px solid #aa493a;
+  border-radius: 3px;
+  background: rgba(250, 246, 237, .9) !important;
+  color: #8f382e;
+  font: 700 15px/1 "STKaiti", "KaiTi", serif;
+  box-shadow: 0 1px 5px rgba(77, 40, 29, .2);
+  animation: gallery-ink-seal 3.6s ease-in-out infinite !important;
+}
 @keyframes gallery-progress-flow {
   from { background-position: 100% 100%; }
   to { background-position: -100% 100%; }
 }
 @keyframes gallery-ink { 0%, 100% { opacity: .48; transform: translateX(-2px); } 50% { opacity: 1; transform: translateX(2px); } }
+@keyframes gallery-ink-seal { 0%, 100% { transform: translateY(1px) rotate(-4deg); opacity: .85; } 50% { transform: translateY(-1px) rotate(-4deg); opacity: 1; } }
 @keyframes gallery-light { 0%, 100% { opacity: .62; transform: scale(.88); filter: drop-shadow(0 0 1px var(--gallery-chrome)); } 50% { opacity: 1; transform: scale(1.08); filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
 @keyframes gallery-rune { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes gallery-flame { from { opacity: .78; transform: translateY(1px) scale(.92, .93) rotate(-5deg); filter: drop-shadow(0 0 2px var(--gallery-chrome)); } to { opacity: 1; transform: translateY(-2px) scale(1.06, 1.1) rotate(5deg); filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
@@ -466,19 +484,24 @@ body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child::after {
   text-shadow: none;
 }
 body[data-dsh-gallery-theme] [class*="_titleGroup"]::after {
-  content: '' !important;
-  display: block !important;
-  position: static;
-  flex: none;
-  width: clamp(110px, 20vw, 240px);
-  height: 2px;
-  margin: 16px auto 0;
-  border: 0;
-  border-radius: 0;
-  background: linear-gradient(90deg, transparent, var(--gallery-chrome), transparent);
-  box-shadow: 0 0 9px color-mix(in srgb, var(--gallery-chrome) 30%, transparent);
-  transform: none;
-  pointer-events: none;
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"]::before {
+  content: '山' !important;
+  display: grid !important;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #a43d32;
+  border-radius: 3px;
+  background: rgba(252, 247, 236, .86) !important;
+  color: #a43d32;
+  font: 700 24px/1 "STXingkai", "STKaiti", "KaiTi", serif;
+  box-shadow: 0 2px 8px rgba(70, 43, 32, .1);
+  transform: rotate(-6deg);
 }
 @media (max-width: 700px) {
   body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child { font-size: clamp(26px, 7vw, 39px) !important; }
