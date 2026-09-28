@@ -41,3 +41,23 @@ body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-ru
   body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-running],
   body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-running]::before { animation: none; }
 }
+
+/* DSH 0.2 live status: preserve its accessible text and native clock. */
+body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningIcon"] {
+  position: relative; width: 22px; height: 22px; flex: none;
+}
+body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningIcon"] svg,
+body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningText"] { display: none !important; }
+body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningIcon"]::before {
+  content: '╱'; position: absolute; top: 0; left: 0; color: #e6c798; font-size: 22px;
+  animation: aliang-blade 2.7s ease-in-out infinite;
+
+}
+body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningContent"]::after {
+  content: attr(data-jianlai-aliang-live-label);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: inherit; line-height: 24px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningIcon"]::before { animation: none !important; }
+}

@@ -185,3 +185,33 @@ body[data-ultra-theme] [data-ultra-orn-glyph]::before { content: ''; width: 26px
   body[data-ultra-theme] [data-ultra-orn-ring], body[data-ultra-theme] [data-ultra-orn-text], body[data-ultra-theme] [data-ultra-orn-glyph], body[data-ultra-theme] [data-ultra-orn-glyph]::before { animation: none; }
   body[data-ultra-theme][data-ultra-busy]::before { animation: none; }
 }
+
+/* DSH 0.2 live status: preserve its accessible text and native clock. */
+body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningIcon"] {
+  position: relative; width: 22px; height: 22px; flex: none;
+}
+body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningIcon"] svg,
+body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningText"] { display: none !important; }
+body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningIcon"]::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 1px;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #7bdaff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(70, 207, 255, .8), inset 0 0 5px rgba(70, 207, 255, .6);
+  pointer-events: none;
+  animation: ultra-core-pulse 2.4s ease-in-out infinite;
+
+}
+body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningContent"]::after {
+  content: attr(data-ultra-live-label);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: inherit; line-height: 24px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningIcon"]::before { animation: none !important; }
+}

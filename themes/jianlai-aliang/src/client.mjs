@@ -83,6 +83,23 @@ export function decorateRunningStatuses(root) {
       button.setAttribute('data-jianlai-aliang-label', label);
     }
   }
+  // DSH 0.2 places the live status outside the completed process button.
+  for (const row of root.querySelectorAll('[data-chat-running]')) {
+    if (!row.matches?.('[data-chat-running]')) continue;
+    const content = row.querySelector?.('[class*="runningContent"]');
+    const native = row.querySelector?.('[class*="runningText"]');
+    const visible = (native?.textContent ?? '').trim().replace(/(?:\.{3}|…)$/, '');
+    const announcement = visible.startsWith('深度求索中') ? '深度求索中'
+      : visible.toLowerCase().startsWith('deep diving') ? 'Deep diving...' : '';
+    const themed = content && announcement ? formatRunningStatus(announcement, visible === 'Deep diving' ? 'Deep diving...' : visible) : null;
+    if (themed === null) {
+      row.removeAttribute('data-jianlai-aliang-running');
+      content?.removeAttribute('data-jianlai-aliang-live-label');
+    } else {
+      if (row.getAttribute?.('data-jianlai-aliang-running') !== '') row.setAttribute('data-jianlai-aliang-running', '');
+      if (content.getAttribute?.('data-jianlai-aliang-live-label') !== themed) content.setAttribute('data-jianlai-aliang-live-label', themed);
+    }
+  }
 }
 
 export function apply(ctx) {
@@ -110,6 +127,11 @@ export function apply(ctx) {
     }
     return () => {
       observer?.disconnect();
+
+      for (const row of document.body.querySelectorAll('[data-chat-running][data-jianlai-aliang-running]')) {
+        row.removeAttribute('data-jianlai-aliang-running');
+        row.querySelector?.('[class*="runningContent"]')?.removeAttribute('data-jianlai-aliang-live-label');
+      }
       for (const button of document.body.querySelectorAll('button[data-jianlai-aliang-running]')) {
         button.removeAttribute('data-jianlai-aliang-running');
         button.removeAttribute('data-jianlai-aliang-label');

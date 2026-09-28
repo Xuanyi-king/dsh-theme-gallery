@@ -389,6 +389,49 @@ body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running]
   text-shadow: 0 1px 7px color-mix(in srgb, var(--gallery-sidebar-fill) 82%, transparent);
   pointer-events: none;
 }
+/* DSH 0.2 shows live Turns in a separate running row. Keep its clock and
+   hidden screen-reader announcement; replace only the visible icon and copy. */
+body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] {
+  color: var(--gallery-sidebar-ink);
+}
+body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"] {
+  width: 22px;
+  height: 22px;
+  background: var(--gallery-status-icon) center / contain no-repeat;
+  animation: var(--gallery-status-motion);
+}
+body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"] svg,
+body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningText"] {
+  display: none !important;
+}
+body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningContent"]::after {
+  content: attr(data-dsh-gallery-live-label);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--gallery-sidebar-ink);
+  font-size: var(--dsh-content-font-size-secondary, 13px);
+  line-height: 24px;
+  letter-spacing: .05em;
+  text-shadow: 0 1px 7px color-mix(in srgb, var(--gallery-sidebar-fill) 82%, transparent);
+}
+body[data-dsh-gallery-theme="shanhe"] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"] {
+  position: relative;
+  border: 1px solid #aa493a;
+  border-radius: 3px;
+  background: rgba(250, 246, 237, .9);
+  animation: gallery-ink-seal 3.6s ease-in-out infinite;
+}
+body[data-dsh-gallery-theme="shanhe"] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"]::after {
+  content: '墨';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #8f382e;
+  font: 700 15px/1 "STKaiti", "KaiTi", serif;
+}
 /* Ink theme: a clear vermilion seal stays legible against the painted hills.
    Its small rise is tied to the real running indicator. */
 body[data-dsh-gallery-theme="shanhe"] button[data-turn-process][data-dsh-gallery-running]::before {
@@ -427,6 +470,9 @@ body[data-dsh-gallery-theme="shanhe"] button[data-turn-process][data-dsh-gallery
     background-position: center bottom !important;
   }
   body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running]::before {
+    animation: none !important;
+  }
+  body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"] {
     animation: none !important;
   }
 }

@@ -41,3 +41,23 @@ body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running]
   body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running],
   body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running]::before { animation: none; }
 }
+
+/* DSH 0.2 live status: preserve its accessible text and native clock. */
+body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningIcon"] {
+  position: relative; width: 22px; height: 22px; flex: none;
+}
+body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningIcon"] svg,
+body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningText"] { display: none !important; }
+body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningIcon"]::before {
+  content: '☀'; position: absolute; top: 0; left: 0; color: #e58a4a; font-size: 17px;
+  animation: sunny-watch-glow 3.2s ease-in-out infinite;
+
+}
+body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningContent"]::after {
+  content: attr(data-sunny-watch-live-label);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: inherit; line-height: 24px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningIcon"]::before { animation: none !important; }
+}

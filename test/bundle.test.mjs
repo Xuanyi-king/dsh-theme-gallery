@@ -107,6 +107,16 @@ test('Windows caption is a solid theme color while the sidebar stays translucent
   assert.match(css, /\[class\*="sidebarCol"\] > \* \{ --dsw-specific-sidebar-fill: transparent !important; background: transparent !important;/);
 });
 
+test('DSH 0.2 running row uses theme icon and label without removing the native status', async () => {
+  const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
+  assert.match(css, /\[data-chat-running\]\[data-dsh-gallery-running\] \[class\*="runningIcon"\]/);
+  assert.match(css, /\[data-chat-running\]\[data-dsh-gallery-running\] \[class\*="runningContent"\]::after/);
+  assert.match(css, /content:\s*attr\(data-dsh-gallery-live-label\)/);
+  assert.match(css, /var\(--gallery-status-motion\)/);
+  assert.match(css, /prefers-reduced-motion: reduce/);
+});
+
 test('the hero hides its native fish without hiding the themed title mark', async () => {
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);

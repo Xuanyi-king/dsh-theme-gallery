@@ -10,6 +10,7 @@ const VISUAL_RANGES = Object.freeze({ fade: [0, 80], sidebarOpacity: [0, 90], bl
 const ATTR = 'data-dsh-gallery-theme';
 const RUNNING = 'data-dsh-gallery-running';
 const LABEL = 'data-dsh-gallery-label';
+const LIVE_LABEL = 'data-dsh-gallery-live-label';
 const NS = 'settings.dshThemeGallery';
 const ROUTE = '/dsh-theme-gallery/selection';
 const ORN = 'data-dsh-gallery-orn';
@@ -43,6 +44,17 @@ export function formatRunningStatus(announcement, visible, selected) {
   return null;
 }
 
+/** DSH 0.2 renders live Turns in a separate running row, not a process button. */
+export function formatLiveRunningStatus(visible, selected) {
+  if (!selected) return null;
+  const label = visible.trim().replace(/(?:\.{3}|…)$/, '');
+  const chinese = /^深度求索中(?:[，,]\s*用时\s*(.+))?$/.exec(label);
+  if (chinese) return chinese[1] ? `${selected.elapsed} ${chinese[1]}` : selected.intro;
+  if (label === 'Deep diving') return selected.english;
+  const english = /^Deep diving for\s+(.+)$/i.exec(label);
+  return english ? `${selected.english} · ${english[1]}` : null;
+}
+
 export function decorateRunningStatuses(root, selected) {
   for (const button of root.querySelectorAll('button[data-turn-process]')) {
     const announcement = button.previousElementSibling;
@@ -55,6 +67,18 @@ export function decorateRunningStatuses(root, selected) {
     } else {
       button.setAttribute(RUNNING, '');
       button.setAttribute(LABEL, label);
+    }
+  }
+  for (const row of root.querySelectorAll('[data-chat-running]')) {
+    const content = row.querySelector?.('[class*="runningContent"]');
+    const native = row.querySelector?.('[class*="runningText"]');
+    const label = content && native ? formatLiveRunningStatus(native.textContent ?? '', selected) : null;
+    if (label === null) {
+      row.removeAttribute(RUNNING);
+      content?.removeAttribute(LIVE_LABEL);
+    } else {
+      if (row.getAttribute?.(RUNNING) !== '') row.setAttribute(RUNNING, '');
+      if (content.getAttribute?.(LIVE_LABEL) !== label) content.setAttribute(LIVE_LABEL, label);
     }
   }
   decorateHero(root, selected);

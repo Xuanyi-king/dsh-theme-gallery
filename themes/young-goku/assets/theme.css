@@ -41,3 +41,23 @@ body[data-young-goku-theme] button[data-turn-process][data-young-goku-running]::
   body[data-young-goku-theme] button[data-turn-process][data-young-goku-running],
   body[data-young-goku-theme] button[data-turn-process][data-young-goku-running]::before { animation: none; }
 }
+
+/* DSH 0.2 live status: preserve its accessible text and native clock. */
+body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningIcon"] {
+  position: relative; width: 22px; height: 22px; flex: none;
+}
+body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningIcon"] svg,
+body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningText"] { display: none !important; }
+body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningIcon"]::before {
+  content: '☁'; position: absolute; top: 0; left: 0; color: #f4b447; font-size: 17px;
+  animation: young-goku-glow 3.2s ease-in-out infinite;
+
+}
+body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningContent"]::after {
+  content: attr(data-young-goku-live-label);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: inherit; line-height: 24px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningIcon"]::before { animation: none !important; }
+}

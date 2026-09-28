@@ -146,3 +146,26 @@ body[data-nezha-theme] [data-nezha-orn-glyph] { background: no-repeat center / c
   body[data-nezha-theme] [data-nezha-orn-ring], body[data-nezha-theme] [data-nezha-orn-text], body[data-nezha-theme] [data-nezha-orn-glyph], body[data-nezha-theme] [data-nezha-orn-glyph]::before { animation: none; }
   body[data-nezha-theme][data-nezha-busy]::before { animation: none; }
 }
+
+/* DSH 0.2 live status: preserve its accessible text and native clock. */
+body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningIcon"] {
+  position: relative; width: 22px; height: 22px; flex: none;
+}
+body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningIcon"] svg,
+body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningText"] { display: none !important; }
+body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningIcon"]::before {
+  content: ''; position: absolute; top: 2px; left: 0; width: 20px; height: 20px;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffb392' d='M12 3C9 7 9 11 12 15c3-4 3-8 0-12ZM3 9c0 5 3 8 8 9-1-4-4-7-8-9Zm18 0c-4 2-7 5-8 9 5-1 8-4 8-9ZM2 17c3 4 6 5 10 5s7-1 10-5c-4 2-7 2-10 2s-6 0-10-2Z'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 0 5px #df654c);
+  pointer-events: none;
+  animation: nezha-lotus-glow 2.7s ease-in-out infinite;
+
+}
+body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningContent"]::after {
+  content: attr(data-nezha-live-label);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: inherit; line-height: 24px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningIcon"]::before { animation: none !important; }
+}

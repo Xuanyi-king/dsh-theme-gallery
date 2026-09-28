@@ -146,3 +146,26 @@ body[data-huangtian-theme] [data-huangtian-orn-glyph]::before { content: '✧'; 
   body[data-huangtian-theme] [data-huangtian-orn-ring], body[data-huangtian-theme] [data-huangtian-orn-text], body[data-huangtian-theme] [data-huangtian-orn-glyph], body[data-huangtian-theme] [data-huangtian-orn-glyph]::before { animation: none; }
   body[data-huangtian-theme][data-huangtian-busy]::before { animation: none; }
 }
+
+/* DSH 0.2 live status: preserve its accessible text and native clock. */
+body[data-huangtian-theme] [data-chat-running][data-huangtian-running] [class*="runningIcon"] {
+  position: relative; width: 22px; height: 22px; flex: none;
+}
+body[data-huangtian-theme] [data-chat-running][data-huangtian-running] [class*="runningIcon"] svg,
+body[data-huangtian-theme] [data-chat-running][data-huangtian-running] [class*="runningText"] { display: none !important; }
+body[data-huangtian-theme] [data-chat-running][data-huangtian-running] [class*="runningIcon"]::before {
+  content: '✧'; position: absolute; top: 1px; left: 1px; width: 20px; height: 20px;
+  line-height: 20px; text-align: center; color: #ffdf9b;
+  text-shadow: 0 0 5px #f0aa55, 0 0 13px #b84926;
+  pointer-events: none;
+  animation: huangtian-rune-turn 3.4s ease-in-out infinite;
+
+}
+body[data-huangtian-theme] [data-chat-running][data-huangtian-running] [class*="runningContent"]::after {
+  content: attr(data-huangtian-live-label);
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: inherit; line-height: 24px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-huangtian-theme] [data-chat-running][data-huangtian-running] [class*="runningIcon"]::before { animation: none !important; }
+}

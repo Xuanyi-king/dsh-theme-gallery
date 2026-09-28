@@ -235,6 +235,23 @@ export function decorateRunningStatuses(root) {
       button.setAttribute('data-whale-prince-label', label);
     }
   }
+  // DSH 0.2 places the live status outside the completed process button.
+  for (const row of root.querySelectorAll('[data-chat-running]')) {
+    if (!row.matches?.('[data-chat-running]')) continue;
+    const content = row.querySelector?.('[class*="runningContent"]');
+    const native = row.querySelector?.('[class*="runningText"]');
+    const visible = (native?.textContent ?? '').trim().replace(/(?:\.{3}|…)$/, '');
+    const announcement = visible.startsWith('深度求索中') ? '深度求索中'
+      : visible.toLowerCase().startsWith('deep diving') ? 'Deep diving...' : '';
+    const themed = content && announcement ? formatRunningStatus(announcement, visible === 'Deep diving' ? 'Deep diving...' : visible) : null;
+    if (themed === null) {
+      row.removeAttribute('data-whale-prince-running');
+      content?.removeAttribute('data-whale-prince-live-label');
+    } else {
+      if (row.getAttribute?.('data-whale-prince-running') !== '') row.setAttribute('data-whale-prince-running', '');
+      if (content.getAttribute?.('data-whale-prince-live-label') !== themed) content.setAttribute('data-whale-prince-live-label', themed);
+    }
+  }
 }
 
 export function installRunningStatus(root, Observer) {
@@ -243,6 +260,10 @@ export function installRunningStatus(root, Observer) {
   observer.observe(root, { childList: true, characterData: true, subtree: true });
   return () => {
     observer.disconnect();
+    for (const row of root.querySelectorAll('[data-chat-running][data-whale-prince-running]')) {
+      row.removeAttribute('data-whale-prince-running');
+      row.querySelector?.('[class*="runningContent"]')?.removeAttribute('data-whale-prince-live-label');
+    }
     for (const button of root.querySelectorAll('button[data-whale-prince-running]')) {
       button.removeAttribute('data-whale-prince-running');
       button.removeAttribute('data-whale-prince-label');

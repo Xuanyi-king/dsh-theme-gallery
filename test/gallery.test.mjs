@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CATALOG } from '../src/catalog.mjs';
-import { applyGallery, formatRunningStatus, decorateRunningStatuses, decorateHero, createGallerySection } from '../src/client.mjs';
+import { applyGallery, formatRunningStatus, formatLiveRunningStatus, decorateRunningStatuses, decorateHero, createGallerySection } from '../src/client.mjs';
 
 function harness(saved = null, fetchImpl = null, visualSaved = null) {
   const data = new Map(saved ? [['dsh.themeGallery.selection', saved]] : []);
@@ -82,6 +82,29 @@ test('live reply wording tracks selected theme and leaves other statuses intact'
   assert.equal(attrs.get('data-dsh-gallery-label'), '鲸息推演 · 潮声渐起');
   decorateRunningStatuses(root, null);
   assert.equal(attrs.has('data-dsh-gallery-running'), false);
+});
+
+test('new DSH running status keeps elapsed time while switching its visible theme copy', () => {
+  const emperor = CATALOG.find(x => x.slug === 'perfect-world');
+  assert.equal(formatLiveRunningStatus('深度求索中...', emperor), '推演诸天 · 悟道中');
+  assert.equal(formatLiveRunningStatus('深度求索中，用时 3分3秒...', emperor), '推演诸天 · 已历 3分3秒');
+  assert.equal(formatLiveRunningStatus('Deep diving for 3m 3s...', emperor), 'Realm divination · 3m 3s');
+  assert.equal(formatLiveRunningStatus('正在分析请求 · private content', emperor), null);
+  const attrs = new Map();
+  const visual = { textContent: '深度求索中，用时 3分3秒...' };
+  const content = { setAttribute: (k, v) => attrs.set(k, v), removeAttribute: k => attrs.delete(k) };
+  const row = {
+    querySelector: selector => selector === '[class*="runningText"]' ? visual : selector === '[class*="runningContent"]' ? content : null,
+    setAttribute: (k, v) => attrs.set(k, v), removeAttribute: k => attrs.delete(k),
+  };
+  const root = { querySelectorAll: selector => selector === '[data-chat-running]' ? [row] : [] };
+  decorateRunningStatuses(root, emperor);
+  assert.equal(attrs.get('data-dsh-gallery-live-label'), '推演诸天 · 已历 3分3秒');
+  assert.equal(attrs.has('data-dsh-gallery-running'), true);
+  decorateRunningStatuses(root, null);
+  assert.equal(attrs.has('data-dsh-gallery-live-label'), false);
+  assert.equal(attrs.has('data-dsh-gallery-running'), false);
+  assert.equal(visual.textContent, '深度求索中，用时 3分3秒...');
 });
 
 test('native hero heading follows the selected theme and restores its original text', () => {
