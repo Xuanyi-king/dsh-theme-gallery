@@ -14,7 +14,6 @@ const sceneMap = {
   'young-goku': 'nimbus-journey.webp',
 };
 let css = await read('../assets/gallery.css');
-const sword = await readScene('../assets/gallery/shanhe-sword.png');
 // The sidebar is a separate DSH surface. Its palette must be applied to the
 // sidebar root itself: the global theme tokens alone leave workspace rows and
 // controls looking like the stock UI over a themed conversation scene.
@@ -231,24 +230,9 @@ body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"]::after {
   transform: rotate(-5deg);
   pointer-events: none;
 }
-body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"]) { position: relative; }
-body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"])::after {
-  content: '';
-  position: absolute;
-  z-index: 3;
-  left: 0;
-  top: 0;
-  width: 80px;
-  height: 100%;
-  /* The source sword occupies only its middle fifth; enlarge the image within
-     the narrow strip to show its hilt and blade at the actual sidebar edge. */
-  background: url("data:image/png;base64,${sword.toString('base64')}") center / 320px 100% no-repeat;
-  pointer-events: none;
-}
 @media (max-width: 700px) {
   body[data-dsh-gallery-theme] [class*="_titleGroup"] > span:first-child::before { font-size: clamp(26px, 7vw, 42px); white-space: normal; }
   body[data-dsh-gallery-theme] [class*="composerHero"] { padding-bottom: 36px; }
-  body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"])::after { display: none; }
   body[data-dsh-gallery-theme="shanhe"] [class*="_titleGroup"]::after { display: none; }
 }
 `;
@@ -541,9 +525,11 @@ body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="sidebar"], [class*
   background-position: 7% center;
   border-right: 1px solid rgba(218,190,145,.28);
 }
-body[data-dsh-gallery-theme="jianlai-aliang"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
+/* Follow the sidebar surface used by the working Shanhe scene. Its DSH
+   component root can be nested in a slot wrapper and hides the column image. */
+body[data-dsh-gallery-theme="jianlai-aliang"] div:has(> [data-shell-overlay]) > div:first-child > div:first-child {
   background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)),
-    linear-gradient(180deg, rgba(20,34,45,.58), rgba(20,35,45,.43) 57%, rgba(20,35,45,.32)),
+    linear-gradient(180deg, rgba(20,34,45,.35), rgba(20,35,45,.26) 57%, rgba(20,35,45,.16)),
     var(--dsh-gallery-scene) 7% center / auto 100% no-repeat;
 }
 body[data-dsh-gallery-theme="jianlai-aliang"] [class*="_titleGroup"]::before {
@@ -577,9 +563,9 @@ body[data-dsh-gallery-theme="sunny-watch"] { --gallery-chrome: #397faf; --galler
 body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="conversation"], [class*="centerCol"]) { overflow: hidden; }
 body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 50% center; }
 body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="sidebar"], [class*="sidebarCol"]) { background-position: 0 center; border-right-color: rgba(79,139,184,.3); }
-body[data-dsh-gallery-theme="sunny-watch"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
+body[data-dsh-gallery-theme="sunny-watch"] div:has(> [data-shell-overlay]) > div:first-child > div:first-child {
   background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)),
-    linear-gradient(180deg, rgba(238,247,253,.65), rgba(232,244,251,.48) 48%, rgba(229,243,251,.35)),
+    linear-gradient(180deg, rgba(238,247,253,.25), rgba(232,244,251,.18) 48%, rgba(229,243,251,.10)),
     var(--dsh-gallery-scene) 0 center / auto 100% no-repeat;
 }
 body[data-dsh-gallery-theme="sunny-watch"] [data-conversation-region="chat"] { background: linear-gradient(90deg, rgba(246,251,255,.28), transparent 75%); }
@@ -601,9 +587,9 @@ css += `
 /* Nimbus journey: sky blue controls with warm cloud highlights. */
 body[data-dsh-gallery-theme="young-goku"] { --gallery-chrome: #2a83b7; --gallery-card-fill: rgba(247,252,255,.88); }
 body[data-dsh-gallery-theme="young-goku"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 62% center; }
-body[data-dsh-gallery-theme="young-goku"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"] {
+body[data-dsh-gallery-theme="young-goku"] div:has(> [data-shell-overlay]) > div:first-child > div:first-child {
   background: linear-gradient(color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent), color-mix(in srgb, var(--gallery-scene-wash) var(--gallery-scene-fade, 0%), transparent)),
-    linear-gradient(180deg, rgba(243,250,254,.62), rgba(232,244,249,.47) 55%, rgba(232,244,249,.34)),
+    linear-gradient(180deg, rgba(243,250,254,.25), rgba(232,244,249,.18) 55%, rgba(232,244,249,.10)),
     var(--dsh-gallery-scene) 0 center / auto 100% no-repeat;
 }
 body[data-dsh-gallery-theme="young-goku"] [data-conversation-region="chat"] { background: linear-gradient(90deg, rgba(247,252,255,.35), transparent 75%); }

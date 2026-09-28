@@ -52,7 +52,6 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('button[class*=\\"newSession\\"]::before'));
   assert.ok(client.includes('[data-composer-card] button[class*=\\"_primary\\"]'));
   assert.ok(client.includes('content: none !important; display: none !important;'));
-  assert.ok(client.includes('data:image/png;base64,'));
   assert.ok(client.includes('[data-conversation-region=\\"composer\\"]'));
   assert.ok(client.includes('--dsh-gallery-scene'));
   assert.ok(client.includes('data:image/webp;base64,'));
@@ -63,14 +62,14 @@ test('gallery paints the existing sidebar and composer using each scene without 
   assert.ok(client.includes('content: none !important;\\n  display: none !important;\\n  background: none !important;'));
 });
 
-test('recent scene themes paint the sidebar root beneath the readable wash', async () => {
+test('recent scenes paint the sidebar surface used by the working Shanhe theme', async () => {
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const encoded = bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/);
   assert.ok(encoded, 'built gallery contains CSS');
   const css = JSON.parse(encoded[1]);
-  assert.ok(!/body\[data-dsh-gallery-theme\]:not\(\[data-dsh-gallery-theme="shanhe"\]\) :is\(\[data-pane="sidebar"\], \[class\*="sidebarCol"\]\) > \[class\*="root"\] \{[^}]*background:/.test(css), 'generic sidebar wash must not outrank themed scene art');
+  const surface = 'div:has(> [data-shell-overlay]) > div:first-child > div:first-child';
   for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku']) {
-    const selector = `body[data-dsh-gallery-theme="${slug}"] :is([data-pane="sidebar"], [class*="sidebarCol"]) > [class*="root"]`;
+    const selector = `body[data-dsh-gallery-theme="${slug}"] ${surface}`;
     const block = css.slice(css.indexOf(selector));
     assert.ok(block.startsWith(selector), `${slug} has a sidebar root rule`);
     const declaration = block.slice(block.indexOf('{') + 1, block.indexOf('}'));
@@ -87,13 +86,11 @@ test('the hero hides its native fish without hiding the themed title mark', asyn
   assert.match(css, /\[class\*="_titleGroup"\]::before \{\s*content: '' !important;/);
 });
 
-test('shanhe sword divider displays its opaque blade inside the visible conversation column', async () => {
+test('Shanhe no longer draws the sword divider', async () => {
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
-  const sword = css.match(/body\[data-dsh-gallery-theme="shanhe"\] :is\(\[data-pane="conversation"\], \[class\*="centerCol"\]\)::after \{([^}]+)\}/);
-  assert.ok(sword);
-  assert.match(sword[1], /left:\s*0;/);
-  assert.ok(/background: url\("data:image\/png;base64,[^"]+"\) center \/ 320px 100% no-repeat;/.test(sword[1]), 'the sword has sufficient image scale to show its blade');
+  assert.ok(!css.includes('data:image/png;base64,'), 'the sword image is not bundled');
+  assert.ok(!css.includes('body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"])::after'), 'the sword pseudo-element is absent');
 });
 
 test('bundled plugin registers a settings page whose cards switch and reset themes', async () => {
