@@ -95,13 +95,21 @@ for (const item of CATALOG) {
   if (scoped.includes('__SCENE_URL__')) throw new Error(`unbundled scene: ${slug}`);
   css += `\n/* ${slug} */\n${scoped}\n`;
   const [fill, ink, muted, selected, trim] = sidebarPalettes[slug];
-  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-scene-wash: ${slug === 'shanhe' ? '#faf6ed' : fill}; --gallery-sidebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; --dsw-specific-sidebar-fill: transparent !important; ${recentScenes.has(slug) ? `--dsw-alias-bg-base: color-mix(in srgb, ${fill} 12%, transparent) !important; --dsw-alias-bg-layer-1: color-mix(in srgb, ${fill} 84%, transparent) !important; --dsw-alias-bg-layer-2: color-mix(in srgb, ${fill} 88%, transparent) !important; --dsw-alias-bg-layer-3: color-mix(in srgb, ${fill} 92%, transparent) !important; --dsw-alias-bg-overlay: color-mix(in srgb, ${fill} 97%, transparent) !important;` : ''} }\n`;
+  css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-scene-wash: ${slug === 'shanhe' ? '#faf6ed' : fill}; --gallery-sidebar-fill: ${fill}; --gallery-titlebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; --dsw-specific-sidebar-fill: transparent !important; ${recentScenes.has(slug) ? `--dsw-alias-bg-base: color-mix(in srgb, ${fill} 12%, transparent) !important; --dsw-alias-bg-layer-1: color-mix(in srgb, ${fill} 84%, transparent) !important; --dsw-alias-bg-layer-2: color-mix(in srgb, ${fill} 88%, transparent) !important; --dsw-alias-bg-layer-3: color-mix(in srgb, ${fill} 92%, transparent) !important; --dsw-alias-bg-overlay: color-mix(in srgb, ${fill} 97%, transparent) !important;` : ''} }\n`;
   const mark = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${statusMarks[slug].replaceAll('__ACCENT__', item.accent)}</svg>`;
   css += `body[data-dsh-gallery-theme="${slug}"] { --gallery-status-icon: url("data:image/svg+xml,${encodeURIComponent(mark)}"); --gallery-status-motion: ${statusMotion[slug]}; }\n`;
   const preview = await readScene(`../assets/gallery/${slug}.webp`);
   css += `.dsh-gallery-card[data-theme="${item.id}"] .dsh-gallery-scene { background-image: linear-gradient(0deg, rgba(5,12,20,.45), transparent), url("data:image/webp;base64,${preview.toString('base64')}"); background-size: cover; background-position: center; }\n`;
 }
 css += `
+/* Windows draws its caption on the app frame, not inside the sidebar.
+   Keep this row opaque while the sidebar's scene and mask remain adjustable. */
+html[data-windows-titlebar] body[data-dsh-gallery-theme] div:has(> [data-shell-overlay]) {
+  background: var(--gallery-titlebar-fill) !important;
+}
+html[data-windows-titlebar] body[data-dsh-gallery-theme] div:has(> [data-shell-overlay])::before {
+  background: var(--gallery-titlebar-fill) !important;
+}
 /* Existing DSH surfaces share the theme scene and accent. No controls are
    inserted: the rules style the native sidebar, conversation and composer. */
 body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) {

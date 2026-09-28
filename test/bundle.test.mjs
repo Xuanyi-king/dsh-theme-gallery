@@ -95,6 +95,18 @@ test('all ten themes expose wallpaper through the adjustable sidebar mask', asyn
   assert.match(css, /var\(--gallery-sidebar-opacity, 40%\)/, 'sidebar opacity affects the painted mask');
 });
 
+test('Windows caption is a solid theme color while the sidebar stays translucent', async () => {
+  const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
+  for (const slug of ['shanhe', 'ultraman', 'perfect-world', 'flame-emperor', 'great-sage', 'nezha', 'whale-prince', 'jianlai-aliang', 'sunny-watch', 'young-goku']) {
+    const rules = [...css.matchAll(new RegExp(`body\\[data-dsh-gallery-theme="${slug}"\\] \\{([^}]+)\\}`, 'g'))];
+    assert.ok(rules.some(([, properties]) => /--gallery-titlebar-fill:\s*#[0-9a-f]{6};/i.test(properties)), `${slug} sets a solid titlebar color`);
+  }
+  assert.match(css, /html\[data-windows-titlebar\] body\[data-dsh-gallery-theme\] div:has\(> \[data-shell-overlay\]\)::before\s*\{\s*background:\s*var\(--gallery-titlebar-fill\) !important;/);
+  assert.match(css, /html\[data-windows-titlebar\] body\[data-dsh-gallery-theme\] div:has\(> \[data-shell-overlay\]\)\s*\{\s*background:\s*var\(--gallery-titlebar-fill\) !important;/);
+  assert.match(css, /\[class\*="sidebarCol"\] > \* \{ --dsw-specific-sidebar-fill: transparent !important; background: transparent !important;/);
+});
+
 test('the hero hides its native fish without hiding the themed title mark', async () => {
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
