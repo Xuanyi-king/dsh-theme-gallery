@@ -21,6 +21,8 @@ test('Chinese is the default README and the English guide covers the same themes
     assert.ok(guide.includes('dsh-theme-gallery/selection.json'));
     assert.ok(guide.includes('1.5'));
     assert.ok(guide.includes('Esc'));
+    assert.ok(guide.includes('theme-intros.html'), 'document the all-theme chooser');
+    assert.ok(guide.includes('/tmp/dsh-theme-intros-preview/'));
   }
   assert.ok(pkg.files.includes('README.md'));
   assert.ok(pkg.files.includes('README.en.md'), 'the packaged language switch must not lead to a missing guide');
