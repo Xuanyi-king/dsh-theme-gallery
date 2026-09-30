@@ -236,6 +236,20 @@ test('host choice survives a fresh browser session and reset persists as default
   third.controller.dispose();
 });
 
+test('startup readiness resolves only after host selection has restored', async () => {
+  let respond;
+  const h = harness('gallery-shanhe', () => new Promise(resolve => { respond = resolve; }));
+  let ready = false;
+  const restored = h.controller.whenReady().then(() => { ready = true; });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(ready, false);
+  respond({ ok: true, json: async () => ({ themeId: 'gallery-nezha' }) });
+  await restored;
+  assert.equal(ready, true);
+  assert.equal(h.choice, 'gallery-nezha');
+  h.controller.dispose();
+});
+
 test('a missing host selection does not discard a valid local theme', async () => {
   const h = harness('gallery-whale-prince', async () => ({ ok: true, json: async () => ({ themeId: null }) }));
   await new Promise(resolve => setImmediate(resolve));
