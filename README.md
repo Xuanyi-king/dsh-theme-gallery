@@ -46,6 +46,14 @@ dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery
 
 选择会写入 DSH 本机配置目录中的 `dsh-theme-gallery/selection.json`；页面同时保存本地副本，供宿主未提供配置接口时恢复。重启 DSH 后会重新读取选择。如果此前安装过旧版单款主题插件，请先移除那些旧插件，避免旧版装饰同时运行。
 
+## 山河启动动画（样板）
+
+选中「山河剑意」并保存后，重新打开或刷新 DSH 页面，会展示约 4 秒的水墨开场：现有壁纸缓慢推进，墨线展开，朱砂印章与主题文案依次出现。它是图片与代码动画，不需要视频或联网素材。
+
+点右上角「跳过」或按 Esc 可以立即关闭。动画只在页面启动时播放一次，切换主题和打开新对话不会重播；其他九款主题暂不播放。系统启用「减少动态效果」时，不显示开场。
+
+播放前会等待已保存的主题恢复。如果宿主配置请求超过 1.5 秒仍未完成，则按本地已保存的主题决定是否播放；稍后收到配置也不会再次弹出。
+
 ## 开发与验证
 
 ```bash
@@ -54,4 +62,12 @@ npm test
 npm run pack:gallery
 ```
 
-仓库根目录是统一安装包。各款主题的原始资源与测试保留在 `themes/<name>/`，便于继续迭代。
+仓库根目录是统一安装包。各款主题的原始资源与测试保留在 `themes/<name>/`，便于继续迭代；本次启动动画只接入统一安装包，不改动单款主题包。
+
+可选浏览器验证使用真实 React 和已构建的 `lib/client.js`，覆盖桌面、手机、跳过、Esc、自动关闭、减少动态效果和主题恢复。先在仓库外安装 `playwright`、`react@18` 和 `react-dom@18`，并安装 Playwright Chromium，再运行：
+
+```bash
+DSH_INTRO_BROWSER_TOOLS=/你的浏览器工具目录 node scripts/verify-startup-browser.mjs
+```
+
+默认截图保存到 `/tmp/dsh-shanhe-intro-preview/`。浏览器测试使用模拟 DSH 服务，安装到实际 DSH 后仍需检查宿主内效果。

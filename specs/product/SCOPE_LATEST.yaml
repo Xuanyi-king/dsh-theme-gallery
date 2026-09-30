@@ -1,0 +1,31 @@
+feature_name: Shanhe startup intro sample
+core_value: Give the saved Shanhe theme a brief themed opening without requiring video assets.
+summary: >-
+  The user approved an image-and-code intro on application startup, with Shanhe as the first sample.
+  Other themes will remain unchanged until the sample is accepted.
+in_scope:
+  - story_id: e01s01
+    requirement: Restore the theme before deciding whether to play one startup intro.
+  - story_id: e01s01
+    requirement: Show the existing Shanhe artwork, ink lines, vermilion seal, and theme copy for about four seconds.
+  - story_id: e01s01
+    requirement: Allow Skip and Escape and respect reduced-motion preferences.
+out_of_scope:
+  - item: Other nine theme intros
+    reason: Deferred until the sample is accepted.
+  - item: Video generation, audio, and media library
+    reason: User selected image-and-code animation.
+  - item: New-conversation and theme-switch autoplay
+    reason: User selected startup only.
+  - item: GitHub push and release publishing
+    reason: Not authorized.
+constraints:
+  - No new runtime dependencies or external image requests.
+  - Existing theme settings and standalone packages must stay compatible.
+success_criteria:
+  - Startup uses restored Shanhe selection and does not replay on later changes.
+  - Animation dismisses within four seconds or immediately on user cancellation.
+  - Reduced-motion mode and non-Shanhe themes show no intro.
+  - Full existing tests and bundle tests pass.
+references:
+  - https://github.com/NativeDog1/dsh-boot-animation

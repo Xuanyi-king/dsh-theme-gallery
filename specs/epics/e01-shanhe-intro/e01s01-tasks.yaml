@@ -1,0 +1,30 @@
+story_id: e01s01
+title: Shanhe startup intro
+status: failing
+bcps: 3
+manual_uat: pending
+tasks:
+  - id: 1
+    description: Restore readiness and bounded one-shot playback
+    risk: P1
+    status: passing
+    verify: node --test test/startup-intro.test.mjs test/gallery.test.mjs
+    allure:
+      severity: high
+      categories: [startup, unit]
+  - id: 2
+    description: Accessible Shanhe view and offline bundle integration
+    risk: P1
+    status: passing
+    verify: npm run build && node --test test/startup-intro.test.mjs test/bundle.test.mjs
+    allure:
+      severity: high
+      categories: [startup, integration]
+  - id: 3
+    description: Regression and browser verification
+    risk: P2
+    status: passing
+    verify: npm test && git diff --check
+    allure:
+      severity: normal
+      categories: [regression, visual]

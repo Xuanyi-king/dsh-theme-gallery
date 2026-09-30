@@ -1,0 +1,51 @@
+story_id: e01s01
+status: automation_passed_uat_pending
+base_commit: 9e6dc95
+phases:
+  build:
+    passed: true
+    command: npm run build
+  syntax:
+    passed: true
+    command: node --check src/client.mjs && node --check src/startup-intro.mjs && node --check scripts/build-gallery.mjs && node --check scripts/verify-startup-browser.mjs && node --check lib/client.js
+  whitespace:
+    passed: true
+    command: git diff --check
+  tests:
+    passed: true
+    total: 100
+    root_suite: 45
+    skipped: 0
+  terminal_verdict:
+    command: npm test
+    exit_code: 0
+    output_file: e01s01-test-output.log
+    note: One contiguous full npm test run; not merged with earlier runs.
+  browser:
+    passed: true
+    fixture: simulated DSH services with real React 18 and the shipped lib/client.js
+    command: DSH_INTRO_BROWSER_TOOLS=<external-tools> node scripts/verify-startup-browser.mjs
+    checked:
+      - desktop full-frame coverage and mobile heading fit
+      - focus trap and restoration
+      - four-second automatic close
+      - Skip and Escape
+      - no replay after switching themes
+      - reduced-motion bypass
+      - other theme and default bypass
+      - restored host selection supersedes stale local selection
+      - plugin disposal
+      - no runtime page errors
+    screenshot_directory: /home/xuanyi/dsh-theme-gallery-shanhe-preview
+  package:
+    passed: true
+    command: npm pack --workspaces=false --pack-destination /home/xuanyi/dsh-theme-gallery-shanhe-preview
+    artifact: /home/xuanyi/dsh-theme-gallery-shanhe-preview/dsh-theme-gallery-0.3.18.tgz
+    note: Local sample only. Version unchanged; not published or pushed.
+  typecheck:
+    status: not_configured
+  lint:
+    status: not_configured
+  manual:
+    passed: null
+    note: User must install the sample in actual DSH and confirm the steps in the story spec.

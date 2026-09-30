@@ -1,0 +1,232 @@
+
+> dsh-theme-gallery@0.3.18 test
+> npm run test --workspaces && node --test test/*.test.mjs
+
+
+> dsh-flame-emperor-theme@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ built client bundle registers with the DSH browser module loader and contains scenery (4.883772ms)
+✔ package declares the installable DSH bundle and browser client (0.844158ms)
+✔ registers the obsidian-and-turquoise fire palette and restores previous selection on unload (0.63573ms)
+✔ unload does not override a theme selected by the user afterward (0.145702ms)
+✔ relabels only live DSH process statuses and preserves elapsed duration (0.573665ms)
+✔ decorates only the button paired with a live status announcement (0.338685ms)
+✔ observer disconnects and removes theme attributes on unload (0.173224ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 39.478344
+
+> dsh-great-sage-theme@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ built client bundle registers with the DSH browser module loader and contains scenery (6.781128ms)
+✔ package declares the installable DSH bundle and browser client (0.947274ms)
+✔ registers the indigo-and-sunlit-gold palette and restores previous selection on unload (0.639355ms)
+✔ unload does not override a theme selected by the user afterward (0.135741ms)
+✔ relabels only live DSH process statuses and preserves elapsed duration (0.562349ms)
+✔ decorates only the button paired with a live status announcement (0.181457ms)
+✔ observer disconnects and removes theme attributes on unload (0.189639ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 45.174487
+
+> dsh-jianlai-aliang-theme@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ native running status uses rain-road wording only for active replies (0.521749ms)
+✔ standalone bundle embeds the rain scene and registers with DSH (10.715268ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43.898377
+
+> dsh-nezha-theme@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ built client bundle registers with the DSH browser module loader and contains scenery (7.129335ms)
+✔ package declares the installable DSH bundle and browser client (0.969198ms)
+✔ registers the midnight-teal-and-vermilion palette and restores previous selection on unload (0.746503ms)
+✔ unload does not override a theme selected by the user afterward (0.136873ms)
+✔ relabels only live DSH process statuses and preserves elapsed duration (0.539073ms)
+✔ decorates only the button paired with a live status announcement (0.21408ms)
+✔ observer disconnects and removes theme attributes on unload (0.204262ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 45.45445
+
+> dsh-perfect-world-theme@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ built client bundle registers with the DSH browser module loader and contains scenery (9.010419ms)
+✔ package declares the installable DSH bundle and browser client (0.784555ms)
+✔ registers the dark gold-and-cinnabar palette and restores previous selection on unload (0.634352ms)
+✔ unload does not override a theme selected by the user afterward (0.135541ms)
+✔ relabels only live DSH process statuses and preserves elapsed duration (0.621188ms)
+✔ decorates only the button paired with a live status announcement (0.198335ms)
+✔ observer disconnects and removes theme attributes on unload (0.187456ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 41.483021
+
+> dsh-shanhe-theme@0.1.1 test
+> node --test test/*.test.mjs
+
+✔ built client bundle registers with the DSH browser module loader and contains scenery (9.44653ms)
+✔ package declares the installable DSH bundle and browser client (1.099433ms)
+✔ registers the paper-and-cinnabar palette and restores previous selection on unload (0.633234ms)
+✔ unload does not override a theme selected by the user afterward (0.123098ms)
+✔ relabels only live DSH process statuses and preserves elapsed duration (0.541937ms)
+✔ decorates only the button paired with a live status announcement (0.202289ms)
+✔ observer disconnects and removes theme attributes on unload (0.194147ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42.43351
+
+> dsh-sunny-watch-theme@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ native running status uses daylight wording only for active replies (0.497657ms)
+✔ standalone bundle embeds the sunlit city and registers with DSH (4.600871ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 35.241801
+
+> dsh-ultraman-theme@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ built client bundle registers with the DSH browser module loader and contains scenery (4.471173ms)
+✔ package declares the installable DSH bundle and browser client (1.135217ms)
+✔ registers the cosmic red-and-cyan palette and restores previous selection on unload (0.701811ms)
+✔ unload does not override a theme selected by the user afterward (0.158225ms)
+✔ relabels only live DSH process statuses and preserves elapsed duration (0.580598ms)
+✔ decorates only the button paired with a live status announcement (0.188236ms)
+✔ observer disconnects and removes theme attributes on unload (0.17413ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42.478539
+
+> dsh-whale-prince-theme@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ built client bundle registers with the DSH browser module loader and contains scenery (6.15741ms)
+✔ package declares the installable DSH bundle and browser client (0.750799ms)
+✔ registers the abyss-blue-and-sea-gold palette and restores previous selection on unload (0.871251ms)
+✔ unload does not override a theme selected by the user afterward (0.291765ms)
+✔ relabels only live DSH process statuses and preserves elapsed duration (0.528647ms)
+✔ decorates only the button paired with a live status announcement (0.185876ms)
+✔ observer disconnects and removes theme attributes on unload (0.165638ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 37.887522
+
+> dsh-young-goku-theme@0.1.0 test
+> node --test test/*.test.mjs
+
+✔ native running status uses nimbus wording only for active replies (0.492236ms)
+✔ standalone bundle embeds the nimbus journey and registers with DSH (4.986314ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 35.987031
+✔ installable root package declares one bundle with all ten theme assets (42.047077ms)
+✔ every gallery scene styles its own animated native progress label (15.054691ms)
+✔ gallery paints the existing sidebar and composer using each scene without adding controls (11.040773ms)
+✔ recent scenes use translucent settings surfaces and sidebar layers (34.097776ms)
+✔ all ten themes expose wallpaper through the adjustable sidebar mask (27.561709ms)
+✔ Windows caption is a solid theme color while the sidebar stays translucent (25.119498ms)
+✔ DSH 0.2 running row uses theme icon and label without removing the native status (24.408935ms)
+✔ live gallery status hides the entire native icon and has one dedicated theme mark (25.915314ms)
+✔ the hero hides its native fish without hiding the themed title mark (22.126253ms)
+✔ Shanhe no longer draws the sword divider (25.031536ms)
+✔ bundled plugin registers a settings page whose cards switch and reset themes (8.992431ms)
+✔ one gallery registers ten unique themes and restores the Sunny Watch selection (1.290338ms)
+✔ switching is immediate and built-in selection removes the stored override (0.230626ms)
+✔ bad saved ids are ignored, and an active gallery theme survives late host adoption (2.408073ms)
+✔ startup adoption restores the palette after later theme presenters consume the host snapshot (0.579229ms)
+✔ a pending startup restore respects a user reset and disposal (0.374001ms)
+✔ live reply wording tracks selected theme and leaves other statuses intact (0.361405ms)
+✔ new DSH running status keeps elapsed time while switching its visible theme copy (0.281431ms)
+✔ native hero heading follows the selected theme and restores its original text (0.100541ms)
+✔ settings section offers every theme plus DSH default through an accessible click target (0.978859ms)
+✔ scene and text sliders persist, restore, clamp, and clean up visual properties (0.474147ms)
+✔ host choice survives a fresh browser session and reset persists as default (1.04467ms)
+✔ startup readiness resolves only after host selection has restored (0.328056ms)
+✔ a missing host selection does not discard a valid local theme (0.288661ms)
+✔ child Goku theme selects, persists and retains its sky palette (0.16346ms)
+✔ host stores a selected theme across independent reads and supports reset (7.834787ms)
+✔ route validates origin and theme ids, and reads back the selected theme (4.086291ms)
+✔ shanhe standalone theme decorates the DSH 0.2 live status (4.508349ms)
+✔ ultraman standalone theme decorates the DSH 0.2 live status (1.154328ms)
+✔ perfect-world standalone theme decorates the DSH 0.2 live status (1.261893ms)
+✔ flame-emperor standalone theme decorates the DSH 0.2 live status (1.012888ms)
+✔ great-sage standalone theme decorates the DSH 0.2 live status (0.758445ms)
+✔ nezha standalone theme decorates the DSH 0.2 live status (0.906445ms)
+✔ whale-prince standalone theme decorates the DSH 0.2 live status (0.920832ms)
+✔ jianlai-aliang standalone theme decorates the DSH 0.2 live status (1.048311ms)
+✔ sunny-watch standalone theme decorates the DSH 0.2 live status (0.704299ms)
+✔ young-goku standalone theme decorates the DSH 0.2 live status (0.717755ms)
+✔ saved Shanhe plays once at startup and closes at four seconds without replay on theme changes (3.66851ms)
+✔ startup waits for the host and uses its restored selection instead of a stale local choice (0.570584ms)
+✔ stalled restoration falls back to the local theme at 1.5 seconds and never reopens (0.468607ms)
+✔ choosing a theme during startup never interrupts the user with a delayed opening (0.568463ms)
+✔ reduced motion and every non-Shanhe choice bypass the opening (0.481446ms)
+✔ skip, theme change, and disposal cancel the opening and its timers (0.420797ms)
+✔ the opening view exposes theme copy, a modal label, and a working Skip button (0.496583ms)
+✔ disposing before restoration prevents both fallback and late autoplay (0.311946ms)
+ℹ tests 45
+ℹ suites 0
+ℹ pass 45
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 298.864326

@@ -1,0 +1,7 @@
+id: e01
+title: Shanhe startup intro sample
+stories:
+  - id: e01s01
+    title: Saved Shanhe theme gets a bounded startup animation
+    delta: ADDED
+    bcps: 3

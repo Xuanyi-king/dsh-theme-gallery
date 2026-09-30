@@ -1,0 +1,9 @@
+desktop: frame coverage, focus trap, auto-close, focus restoration, no replay PASS
+Escape dismissal PASS
+Skip button PASS
+mobile: heading fits and Skip remains usable PASS
+reduced motion bypass PASS
+other theme, default, and differing restored Host selection bypass PASS
+plugin disposal removes the opening PASS
+self-contained offline HTML preview PASS
+Screenshots: /home/xuanyi/dsh-theme-gallery-shanhe-preview
