@@ -94,6 +94,22 @@ test('stalled restoration falls back to the local theme at 1.5 seconds and never
   h.dispose();
 });
 
+test('choosing a theme during startup never interrupts the user with a delayed opening', async () => {
+  for (const finish of ['ready', 'timeout']) {
+    let respond;
+    const h = fixture(null, () => new Promise(resolve => { respond = resolve; }));
+    await tick();
+    h.gallery.select('gallery-shanhe');
+    if (finish === 'ready') {
+      respond({ ok: true, json: async () => ({ themeId: 'gallery-shanhe' }) });
+      await tick();
+    } else h.time.advance(1500);
+    assert.equal(h.intro.getSnapshot(), null, finish);
+    assert.equal(h.time.pending, 0);
+    h.dispose();
+  }
+});
+
 test('reduced motion and every non-Shanhe choice bypass the opening', async () => {
   for (const choice of ['system', 'dark', 'gallery-nezha', 'gallery-unknown', null]) {
     const h = fixture(choice);
