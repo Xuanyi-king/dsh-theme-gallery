@@ -14,6 +14,7 @@ Turn the existing Shanhe wallpaper into a four-second startup opening. The user 
 - ADDED: Show a scene push-in, ink-line reveal, vermilion seal, and existing headline/tagline. No audio or video.
 - ADDED: Dismiss after 4 seconds, Skip, Escape, theme changes, or plugin disposal.
 - ADDED: Skip the opening when reduced motion is requested.
+- ADDED: Keep README.md in Chinese by default, provide a linked README.en.md with matching usage instructions, and include both guides in the package. The user requested this before merging.
 
 ## Design and contracts
 `applyGallery` remains the owner of selection and persistence; add `whenReady()` to expose completion of its existing asynchronous restore and `hasUserSelection()` to suppress late openings after user interaction. Existing callers and return methods remain compatible.

@@ -3,7 +3,7 @@
 ## Scope
 Base: `9e6dc9588590cb7c3461a530136d34d3a7880a73`.
 Production implementation reviewed: `a2a2f4b8b74e31b2b1893dafd02c8bcd333520aa`.
-The subsequent pre-merge changes add a keyboard regression test and review evidence only; they do not alter the reviewed production code.
+The subsequent pre-merge changes add keyboard and documentation tests, bilingual guides, an English-guide packaging entry, and review evidence. They do not alter the reviewed runtime code.
 
 ## Findings
 No confirmed findings at confidence >= 8. No unresolved HIGH or CRITICAL findings.
