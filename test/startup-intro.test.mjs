@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyGallery } from '../src/client.mjs';
-import { createStartupIntro } from '../src/startup-intro.mjs';
+import * as opening from '../src/startup-intro.mjs';
+const { createStartupIntro } = opening;
 
 function clock() {
   let now = 0;
@@ -123,6 +124,32 @@ test('skip, theme change, and disposal cancel the opening and its timers', async
     stop();
     h.dispose();
   }
+});
+
+test('the opening view exposes theme copy, a modal label, and a working Skip button', async () => {
+  const h = fixture();
+  const React = {
+    createElement: (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat() }),
+    useSyncExternalStore: (_subscribe, read) => read(),
+    useRef: () => ({ current: null }),
+    useEffect() {},
+  };
+  const View = opening.createStartupIntroView(React, h.intro, { document: null, window: null });
+  assert.equal(View(), null);
+  await tick();
+  const tree = View();
+  assert.equal(tree.props.role, 'dialog');
+  assert.equal(tree.props['aria-modal'], true);
+  const nodes = [];
+  const visit = node => { if (!node || typeof node !== 'object') return; nodes.push(node); node.children.forEach(visit); };
+  visit(tree);
+  assert.equal(nodes.find(node => node.type === 'h1').children[0], '山河入墨，剑意问心');
+  assert.ok(nodes.some(node => node.children.includes('一念为始 · 万里山河')));
+  const skip = nodes.find(node => node.type === 'button');
+  assert.equal(skip.children[0], '跳过');
+  skip.props.onClick();
+  assert.equal(View(), null);
+  h.dispose();
 });
 
 test('disposing before restoration prevents both fallback and late autoplay', async () => {
