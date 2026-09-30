@@ -190,6 +190,35 @@ test('the opening view exposes theme copy, a modal label, and a working Skip but
   h.dispose();
 });
 
+test('each new opening view exposes the correct artwork and text instead of the Shanhe sample', async () => {
+  const React = {
+    createElement: (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat() }),
+    useSyncExternalStore: (_subscribe, read) => read(),
+    useRef: () => ({ current: null }),
+    useEffect() {},
+  };
+  const text = node => typeof node === 'string' ? node : (node?.children ?? []).map(text).join('');
+  for (const theme of CATALOG.filter(item => item.slug !== 'shanhe')) {
+    const h = fixture(theme.id);
+    await tick();
+    const View = opening.createStartupIntroView(React, h.intro, { document: null, window: null });
+    const tree = View();
+    const nodes = [];
+    const visit = node => { if (!node || typeof node !== 'object') return; nodes.push(node); node.children.forEach(visit); };
+    visit(tree);
+    assert.equal(tree.props['data-intro-theme'], theme.slug);
+    assert.equal(tree.props['data-intro-tone'], theme.definition.colorScheme);
+    assert.equal(text(nodes.find(node => node.type === 'h1')), theme.hero);
+    assert.ok(nodes.some(node => node.props['data-intro-artwork'] === theme.slug));
+    assert.ok(!nodes.some(node => node.props.className === 'dsh-gallery-intro-seal'));
+    assert.ok(text(tree).includes('Esc 跳过 · 即将开启对话'));
+    assert.equal(nodes.filter(node => node.type === 'button').length, 1);
+    nodes.find(node => node.type === 'button').props.onClick();
+    assert.equal(View(), null);
+    h.dispose();
+  }
+});
+
 test('the modal traps Tab, closes on Escape, and restores connected prior focus', async () => {
   for (const connected of [true, false]) {
     const h = fixture();
