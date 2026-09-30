@@ -77,15 +77,28 @@ Select **DSH default** to remove the gallery override. You can select a gallery 
 
 The plugin saves the selection in `dsh-theme-gallery/selection.json` inside the local DSH configuration directory. The browser also keeps a local copy for hosts without the selection endpoint. DSH reads the saved selection after a restart.
 
-## Shanhe startup intro sample
+## Theme startup intros
 
-Select **Mountains & Ink** and then reopen or refresh the DSH page. The saved Shanhe theme displays an ink-style opening for about 4 seconds.
+Each saved gallery theme displays its own opening for about 4 seconds after a page restart or refresh. All ten openings use existing wallpapers and code animation. They need no video, audio, or remote media. Shanhe retains the accepted ink-style sample.
 
-The existing wallpaper slowly zooms in. Ink lines appear, followed by a vermilion seal and the theme text. The opening uses an image and code animation. It needs no video file or remote media.
+| Theme | Opening effect |
+| --- | --- |
+| Mountains & Ink | Ink lines, a vermilion seal, and theme text |
+| Giant of Light | A blue energy core and slow orbital arcs |
+| Immortal Emperor | A gold sun ring, rune marks, and a central star |
+| Flame Emperor | A cyan fire lotus and warm rising embers |
+| Great Sage | Cloud bands and a golden staff trail |
+| Nezha | Red ribbons, lotus petals, and a fire wheel |
+| Whale Prince | Deep-sea rays, tide rings, and rising bubbles |
+| A Liang | Fine rain, a warm lamp glow, and a brief sword glint |
+| Sunny Watch | Sunrise light, a sun symbol, and a city outline |
+| Young Goku | Light cloud trails, gold arcs, and bright theme text |
 
-Select **Skip** at the top right, or press **Esc**, to close the opening immediately. The opening plays once per page startup. Theme changes and new conversations do not replay it. The other nine themes do not have startup intros yet.
+Desktop layouts place the text in the scene whitespace on the left. Narrow layouts place the text near the bottom. The wallpaper crop helps keep character faces visible.
 
-With system reduced motion enabled, the plugin skips the opening.
+Select **Skip** at the top right, or press **Esc**, to close the opening immediately. The opening plays once per page startup. Theme changes and new conversations do not replay it.
+
+With a built-in DSH theme or system reduced motion enabled, the plugin skips the opening.
 
 Before playback, the plugin waits for the saved theme to restore. If the host request remains incomplete after 1.5 seconds, the plugin uses the local selection. A later response does not reopen the intro. A manual theme selection during startup also suppresses delayed playback.
 
@@ -99,11 +112,11 @@ npm test
 npm run pack:gallery
 ```
 
-The root package contains the combined gallery. `themes/<name>/` retains the original resources and tests for each theme. The startup sample applies only to the combined gallery. It does not change standalone theme packages.
+The root package contains the combined gallery. `themes/<name>/` retains the original resources and tests for each theme. The startup intros apply only to the combined gallery. It does not change standalone theme packages.
 
 ### Optional browser verification
 
-The browser script uses real React and the built `lib/client.js`. It covers desktop and mobile layouts, Skip, Esc, automatic dismissal, reduced motion, and theme restoration.
+The browser script uses real React and the built `lib/client.js`. It covers all ten themes at desktop, mobile, and 320px widths. It also covers Skip, Esc, automatic dismissal, reduced motion, and theme restoration.
 
 1. Install `playwright`, `react@18`, and `react-dom@18` in a directory outside this repository.
 2. Install Chromium through Playwright.
@@ -113,7 +126,13 @@ The browser script uses real React and the built `lib/client.js`. It covers desk
 DSH_INTRO_BROWSER_TOOLS=/path/to/browser-tools node scripts/verify-startup-browser.mjs
 ```
 
-The script saves screenshots and `shanhe-preview.html` in `/tmp/dsh-shanhe-intro-preview/` by default. Open the HTML file in a browser to view the offline sample. After the opening ends, select the replay button to view it again.
+The script saves screenshots and offline previews in `/tmp/dsh-theme-intros-preview/` by default.
+
+1. Open `theme-intros.html` in a browser.
+2. Select a theme from the menu or a theme card.
+3. After the opening ends, select the replay button to view it again.
+
+The preview keeps its theme selection in memory. It does not read or change existing browser settings. Theme selection and replay apply only to this preview, not to the installed plugin. The script also retains `shanhe-preview.html`.
 
 The browser fixture simulates DSH services. It does not replace verification inside the actual DSH app.
 

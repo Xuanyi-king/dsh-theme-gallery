@@ -45,7 +45,8 @@
   text-transform: uppercase;
   animation: intro-copy 900ms 400ms ease-out both;
 }
-.dsh-gallery-intro-themed h1 {
+/* The title must win over legacy native main h1 rules, even inside a main slot. */
+.dsh-gallery-intro-themed #dsh-gallery-intro-title {
   color: var(--intro-ink);
   font: 700 clamp(32px, 4.3vw, 70px)/1.35 var(--intro-font);
   letter-spacing: .07em;
@@ -154,14 +155,14 @@
   background: linear-gradient(90deg, rgba(250,252,243,.88), rgba(250,252,243,.68) 32%, transparent 70%),
     linear-gradient(0deg, rgba(250,252,243,.78), transparent 34%);
 }
-.dsh-gallery-intro-themed[data-intro-tone="light"] h1 { text-shadow: 0 2px 24px rgba(255,255,255,.4); }
+.dsh-gallery-intro-themed[data-intro-tone="light"] #dsh-gallery-intro-title { text-shadow: 0 2px 24px rgba(255,255,255,.4); }
 .dsh-gallery-intro-themed[data-intro-tone="light"] .dsh-gallery-intro-skip { color: #28475b; background: rgba(249,253,255,.92); border-color: #738fa380; }
 .dsh-gallery-intro-themed[data-intro-tone="light"] .dsh-gallery-intro-skip:hover { background: #fff; }
-.dsh-gallery-intro-themed[data-intro-theme="sunny-watch"] { --intro-font: system-ui, "Noto Sans CJK SC", sans-serif; --intro-accent: #a9602e; }
+.dsh-gallery-intro-themed[data-intro-theme="sunny-watch"] { --intro-font: system-ui, "Noto Sans CJK SC", sans-serif; --intro-accent: #8e4f25; }
 [data-intro-theme="sunny-watch"] .dsh-intro-stage { right: 14%; top: 5%; width: 38vw; opacity: .18; animation: themed-sunrise 4s ease-out both; }
 [data-intro-theme="sunny-watch"] .dsh-intro-rays { --intro-accent: #ffdd98; opacity: .28; }
 [data-intro-theme="sunny-watch"] .intro-city-line { stroke-width: 2; }
-.dsh-gallery-intro-themed[data-intro-theme="young-goku"] { --intro-font: "YouYuan", "Noto Sans CJK SC", system-ui, sans-serif; --intro-accent: #9b6418; }
+.dsh-gallery-intro-themed[data-intro-theme="young-goku"] { --intro-font: "YouYuan", "Noto Sans CJK SC", system-ui, sans-serif; --intro-accent: #875017; }
 [data-intro-theme="young-goku"] .dsh-intro-stage { right: -4%; top: auto; bottom: 3%; opacity: .24; animation: themed-nimbus 4s ease-out both; }
 [data-intro-theme="young-goku"] .intro-nimbus { fill: #ffe18d; fill-opacity: .6; stroke-width: 3; }
 [data-intro-theme="young-goku"] .dsh-intro-stage :is(.intro-nimbus, .intro-nimbus-curl) { display: none; }
@@ -198,7 +199,7 @@
   .dsh-intro-emblem { width: 48px; height: 48px; }
   .dsh-gallery-intro-themed .dsh-gallery-intro-name { margin-top: 8px; font-size: 12px; }
   .dsh-intro-chapter { margin-bottom: 16px; font-size: 9px; }
-  .dsh-gallery-intro-themed h1 { font-size: clamp(27px, 8.5vw, 40px); line-height: 1.4; letter-spacing: .04em; }
+  .dsh-gallery-intro-themed #dsh-gallery-intro-title { font-size: clamp(27px, 8.5vw, 40px); line-height: 1.4; letter-spacing: .04em; }
   .dsh-intro-rule { margin: 18px 0 14px; width: 76px; }
   .dsh-gallery-intro-themed .dsh-gallery-intro-tagline { font-size: 12px; letter-spacing: .1em; }
   .dsh-gallery-intro-themed .dsh-intro-stage { width: 92vw; right: -28%; top: 15%; bottom: auto; opacity: .12; }
@@ -209,7 +210,7 @@
   .dsh-intro-emblem { display: none; }
   .dsh-gallery-intro-themed .dsh-gallery-intro-name { margin: 0 0 6px; }
   .dsh-intro-chapter { margin-bottom: 12px; }
-  .dsh-gallery-intro-themed h1 { font-size: clamp(23px, 4.4vw, 37px); }
+  .dsh-gallery-intro-themed #dsh-gallery-intro-title { font-size: clamp(23px, 4.4vw, 37px); }
   .dsh-intro-rule { margin: 14px 0 10px; }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -1,33 +1,34 @@
-feature_name: Shanhe startup intro sample
-core_value: Give the saved Shanhe theme a brief themed opening without requiring video assets.
+feature_name: Nine themed startup intros
+core_value: Give every saved gallery theme a distinct, polished image-and-code opening.
 summary: >-
-  The user approved an image-and-code intro on application startup, with Shanhe as the first sample.
-  Other themes will remain unchanged until the sample is accepted.
+  The user accepted the Shanhe sample and approved all nine remaining designs.
+  Use existing artwork, scene-specific vector effects, readable typography, and a four-second startup-only opening.
 in_scope:
-  - story_id: e01s01
-    requirement: Restore the theme before deciding whether to play one startup intro.
-  - story_id: e01s01
-    requirement: Show the existing Shanhe artwork, ink lines, vermilion seal, and theme copy for about four seconds.
-  - story_id: e01s01
-    requirement: Allow Skip and Escape and respect reduced-motion preferences.
-  - story_id: e01s01
-    requirement: Provide linked Chinese and English documentation, with Chinese as the default and both guides in the package.
+  - story_id: e02s01
+    requirement: Add dedicated light, emperor, flame, staff, lotus, tide, rain, sunrise, and nimbus designs.
+  - story_id: e02s01
+    requirement: Preserve Shanhe visuals and the shared restore, cancellation, focus, and reduced-motion behavior.
+  - story_id: e02s01
+    requirement: Provide a local offline theme chooser with replay and desktop/mobile screenshots.
+  - story_id: e02s01
+    requirement: Update the linked Chinese-first and English guides.
 out_of_scope:
-  - item: Other nine theme intros
-    reason: Deferred until the sample is accepted.
-  - item: Video generation, audio, and media library
-    reason: User selected image-and-code animation.
-  - item: New-conversation and theme-switch autoplay
-    reason: User selected startup only.
-  - item: GitHub push and release publishing
-    reason: Not authorized.
+  - item: Video generation or audio
+    reason: User selected image-and-code openings.
+  - item: New-conversation or theme-switch autoplay in DSH
+    reason: Startup-only behavior remains approved.
+  - item: Changes to standalone theme packages or native chat controls
+    reason: Work applies to the unified gallery overlay only.
+  - item: GitHub push, merge, registry publishing, and version release
+    reason: Await visual approval for this new batch.
 constraints:
-  - No new runtime dependencies or external image requests.
-  - Existing theme settings and standalone packages must stay compatible.
+  - No new runtime dependencies, remote assets, or duplicated wallpaper bytes.
+  - Effects must be bounded, subtle, and readable at desktop and mobile sizes.
 success_criteria:
-  - Startup uses restored Shanhe selection and does not replay on later changes.
-  - Animation dismisses within four seconds or immediately on user cancellation.
-  - Reduced-motion mode and non-Shanhe themes show no intro.
-  - Full existing tests and bundle tests pass.
+  - Each valid saved gallery theme plays its corresponding intro once.
+  - Each of the nine new themes has distinct artwork and matching copy.
+  - Built-in choices and reduced-motion mode show no intro.
+  - Existing Shanhe visuals and cancellation behavior remain intact.
+  - Full tests, offline bundle checks, and desktop/mobile browser verification pass.
 references:
-  - https://github.com/NativeDog1/dsh-boot-animation
+  - specs/epics/e02-themed-intros/e02s01-themed-intros.md
