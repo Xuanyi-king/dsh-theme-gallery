@@ -46,6 +46,29 @@ function fixture(saved = 'gallery-shanhe', fetchImpl = null, reducedMotion = () 
 
 const tick = () => new Promise(resolve => setImmediate(resolve));
 
+for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku']) {
+  test(`${slug} plays its own opening after Host restoration, once per startup`, async () => {
+    const id = `gallery-${slug}`;
+    const h = fixture(null, async () => ({ ok: true, json: async () => ({ themeId: id }) }));
+    await tick();
+    assert.equal(h.gallery.getSelection(), id);
+    assert.equal(h.intro.getSnapshot()?.slug, slug);
+    h.time.advance(4000);
+    assert.equal(h.intro.getSnapshot(), null);
+    h.gallery.select('gallery-shanhe');
+    h.gallery.select(id);
+    await tick();
+    assert.equal(h.intro.getSnapshot(), null);
+    assert.equal(h.time.pending, 0);
+    h.dispose();
+    const reduced = fixture(id, null, () => true);
+    await tick();
+    assert.equal(reduced.intro.getSnapshot(), null);
+    assert.equal(reduced.time.pending, 0);
+    reduced.dispose();
+  });
+}
+
 test('saved Shanhe plays once at startup and closes at four seconds without replay on theme changes', async () => {
   const h = fixture();
   assert.equal(h.intro.getSnapshot(), null);
@@ -110,7 +133,7 @@ test('choosing a theme during startup never interrupts the user with a delayed o
   }
 });
 
-test('reduced motion and every non-Shanhe choice bypass the opening', async () => {
+test('reduced motion and themes without an intro bypass the opening', async () => {
   for (const choice of ['system', 'dark', 'gallery-nezha', 'gallery-unknown', null]) {
     const h = fixture(choice);
     await tick();

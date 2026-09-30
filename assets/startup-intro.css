@@ -1,4 +1,4 @@
-/* Shanhe sample: reuse the already bundled wallpaper; animate transforms and
+/* Reuse each theme's bundled wallpaper; animate transforms and
    opacity rather than running a particle loop or fetching additional assets. */
 .dsh-gallery-intro {
   position: fixed;
@@ -121,6 +121,41 @@
   letter-spacing: .08em;
   text-align: center;
 }
+/* Recent scenes share the same opening layout and controls, with the palette
+   and icon already used by their home and native reply status. */
+.dsh-gallery-intro:not([data-intro-theme="shanhe"]) {
+  background: var(--gallery-sidebar-fill);
+  color: var(--gallery-sidebar-ink);
+  font-family: var(--gallery-intro-font, "Microsoft YaHei", sans-serif);
+}
+.dsh-gallery-intro:not([data-intro-theme="shanhe"]) .dsh-gallery-intro-mist {
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--gallery-sidebar-fill) 78%, transparent), transparent 85%);
+}
+.dsh-gallery-intro-mark {
+  width: 64px;
+  height: 64px;
+  background: var(--gallery-status-icon) center / contain no-repeat;
+  animation: intro-copy 900ms 200ms ease-out both, var(--gallery-status-motion);
+}
+.dsh-gallery-intro:not([data-intro-theme="shanhe"]) h1 {
+  color: var(--gallery-intro-ink, var(--gallery-sidebar-ink));
+  font-family: var(--gallery-intro-font, "Microsoft YaHei", sans-serif);
+  text-shadow: 0 2px 14px color-mix(in srgb, var(--gallery-sidebar-fill) 90%, transparent);
+}
+.dsh-gallery-intro:not([data-intro-theme="shanhe"]) :is(.dsh-gallery-intro-name, .dsh-gallery-intro-tagline, .dsh-gallery-intro-hint) {
+  color: var(--gallery-intro-muted, var(--gallery-sidebar-muted));
+  text-shadow: 0 1px 8px var(--gallery-sidebar-fill);
+}
+.dsh-gallery-intro:not([data-intro-theme="shanhe"]) .dsh-gallery-intro-ink path {
+  stroke: var(--dsh-gallery-accent);
+}
+.dsh-gallery-intro:not([data-intro-theme="shanhe"]) .dsh-gallery-intro-skip {
+  border-color: var(--gallery-sidebar-trim);
+  color: var(--gallery-sidebar-ink);
+  background: color-mix(in srgb, var(--gallery-sidebar-fill) 92%, transparent);
+}
+.dsh-gallery-intro:not([data-intro-theme="shanhe"]) .dsh-gallery-intro-skip:hover { background: var(--gallery-sidebar-selected); }
+.dsh-gallery-intro:not([data-intro-theme="shanhe"]) .dsh-gallery-intro-skip:focus-visible { outline-color: var(--dsh-gallery-accent); }
 @keyframes intro-frame { 0% { opacity: 0; } 10%, 86% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes intro-scene { from { transform: scale(1); } to { transform: scale(1.055); } }
 @keyframes intro-mist { from { opacity: .8; transform: translateX(-1%); } to { opacity: .25; transform: translateX(1%); } }

@@ -5,6 +5,17 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { readSelection, writeSelection, registerSelectionRoute } from '../lib/selection-route.js';
+import { CATALOG } from '../src/catalog.mjs';
+
+test('every selectable gallery theme can be stored and read back by the Host', async () => {
+  const home = await mkdtemp(join(tmpdir(), 'dsh-gallery-catalog-'));
+  try {
+    for (const { id } of CATALOG) {
+      await writeSelection(id, home);
+      assert.equal(await readSelection(home), id);
+    }
+  } finally { await rm(home, { recursive: true, force: true }); }
+});
 
 test('host stores a selected theme across independent reads and supports reset', async () => {
   const home = await mkdtemp(join(tmpdir(), 'dsh-theme-gallery-'));

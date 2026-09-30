@@ -513,6 +513,7 @@ for (const { slug } of CATALOG) {
 css += `
 /* Keep the real, accessible DSH headline and replace its text in place.
    The group pseudo-elements supply only a themed mark and a fine rule. */
+body[data-dsh-gallery-theme] [class*="_previewBadge"] { display: none !important; }
 body[data-dsh-gallery-theme] [class*="_titleGroup"] {
   display: flex;
   flex-direction: column;
@@ -658,6 +659,7 @@ body[data-dsh-gallery-theme="young-goku"] button[data-turn-process][data-dsh-gal
 `;
 for (const item of CATALOG) {
   const [font, ink, muted, tracking, weight] = heroLooks[item.slug];
+  css += `body[data-dsh-gallery-theme="${item.slug}"] { --gallery-intro-font: ${font}; --gallery-intro-ink: ${ink}; --gallery-intro-muted: ${muted}; }\n`;
   css += `body[data-dsh-gallery-theme="${item.slug}"] [class*="_titleGroup"] > span:first-child { font-family: ${font}; font-weight: ${weight}; letter-spacing: ${tracking}; color: ${ink} !important; text-shadow: 0 2px 14px color-mix(in srgb, var(--gallery-sidebar-fill) 74%, transparent), 0 0 22px color-mix(in srgb, var(--gallery-chrome) 22%, transparent); -webkit-text-fill-color: currentColor; background-image: none; }\n`;
   css += `body[data-dsh-gallery-theme="${item.slug}"] [class*="_titleGroup"] > span:first-child::after { content: ${JSON.stringify(item.tagline)} !important; font-family: ${font}; font-weight: 400; color: ${muted}; -webkit-text-fill-color: ${muted}; }\n`;
 }

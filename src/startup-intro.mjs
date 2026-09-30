@@ -2,6 +2,7 @@ import { CATALOG } from './catalog.mjs';
 
 const STARTUP_RESTORE_TIMEOUT_MS = 1500;
 const STARTUP_DURATION_MS = 4000;
+const STARTUP_THEMES = new Set(['shanhe', 'jianlai-aliang', 'sunny-watch', 'young-goku']);
 
 /** One startup decision per plugin mount; this is not a conversation listener. */
 export function createStartupIntro(gallery, {
@@ -31,7 +32,7 @@ export function createStartupIntro(gallery, {
     decided = true;
     clearTimer(restoreTimer);
     if (gallery.hasUserSelection() || reducedMotion()) return;
-    const theme = CATALOG.find(item => item.id === gallery.getSelection() && item.slug === 'shanhe');
+    const theme = CATALOG.find(item => item.id === gallery.getSelection() && STARTUP_THEMES.has(item.slug));
     if (!theme) return;
     playbackTimer = setTimer(skip, STARTUP_DURATION_MS);
     publish(theme);
@@ -61,7 +62,7 @@ export function createStartupIntroView(React, intro, {
   document: doc = globalThis.document,
   window: win = globalThis.window,
   skipLabel = '跳过',
-  hint = 'Esc 跳过 · 山河即将入卷',
+  hint = 'Esc 跳过 · 即将启程',
 } = {}) {
   const h = React.createElement;
   return function StartupIntro() {
@@ -93,7 +94,9 @@ export function createStartupIntroView(React, intro, {
       h('div', { className: 'dsh-gallery-intro-scene', 'aria-hidden': true }),
       h('div', { className: 'dsh-gallery-intro-mist', 'aria-hidden': true }),
       h('div', { className: 'dsh-gallery-intro-copy' },
-        h('span', { className: 'dsh-gallery-intro-seal', 'aria-hidden': true }, '山', h('br'), '河'),
+        theme.slug === 'shanhe'
+          ? h('span', { className: 'dsh-gallery-intro-seal', 'aria-hidden': true }, '山', h('br'), '河')
+          : h('span', { className: 'dsh-gallery-intro-mark', 'aria-hidden': true }),
         h('p', { className: 'dsh-gallery-intro-name' }, theme.zh),
         h('h1', { id: 'dsh-gallery-intro-title' }, theme.hero),
         h('svg', { className: 'dsh-gallery-intro-ink', viewBox: '0 0 440 36', 'aria-hidden': true },
