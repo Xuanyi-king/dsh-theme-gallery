@@ -155,6 +155,7 @@ test('bundled plugin registers a settings page whose cards switch and reset them
   vm.runInNewContext(client, {
     window: { __ModuleLoader__: { load: entry => loaded.push(entry) } }, document,
     localStorage: { getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value), removeItem: key => data.delete(key) },
+    setTimeout, clearTimeout,
   });
   const plugin = loaded[0].factory(name => { if (name === 'react') return React; throw Error(name); });
   const registered = new Map();
@@ -174,9 +175,15 @@ test('bundled plugin registers a settings page whose cards switch and reset them
     slots: { inject: (_slot, register) => register(), register: (descriptor, component) => { slots.push({ descriptor, component }); return () => {}; } },
   };
   plugin.apply(ctx);
-  assert.equal(slots.length, 1);
-  assert.equal(slots[0].descriptor.id, 'dsh-theme-gallery');
-  const rendered = slots[0].component({});
+  assert.equal(slots.length, 2);
+  const settings = slots.find(slot => slot.descriptor.name === 'settings.section');
+  const overlay = slots.find(slot => slot.descriptor.name === 'shell.overlay');
+  assert.equal(settings.descriptor.id, 'dsh-theme-gallery');
+  assert.equal(overlay.descriptor.id, 'dsh-theme-gallery-startup');
+  assert.ok(client.includes('.dsh-gallery-intro'));
+  assert.ok(client.includes('intro-ink-reveal'));
+  assert.ok(!plugin.inject.includes('uiSession'), 'startup needs no conversation service');
+  const rendered = settings.component({});
   const nodes = [];
   const visit = node => { if (!node || typeof node !== 'object') return; nodes.push(node); node.children?.forEach(visit); };
   visit(rendered);

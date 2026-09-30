@@ -1,0 +1,124 @@
+# DSH Theme Gallery
+
+[简体中文（默认）](README.md) | **English**
+
+One plugin, ten themes for DeepSeek Harness. Open **Settings → Themes** to choose a theme. Select **DSH default** to restore the built-in appearance. DSH restores your saved theme after a restart.
+
+## Themes and appearance
+
+Each theme includes a color palette, scene wallpaper, headline, and input hint. The wallpaper covers the actual conversation area. A gradient behind the text keeps messages readable.
+
+| Theme | Preview | Style |
+| --- | --- | --- |
+| Mountains & Ink · 山河剑意 | [View preview](themes/shanhe/assets/concept-preview.webp) | Paper, ink landscapes, vermilion, flowing ink lines |
+| Giant of Light · 光之巨人 | [View preview](themes/ultraman/assets/concept-preview.webp) | Ultraman-inspired red and silver, stars, blue energy |
+| Immortal Emperor · 荒天帝意象 | [View preview](themes/perfect-world/assets/concept-preview.webp) | Perfect World-inspired black and gold armor, red cape, celestial palaces |
+| Flame Emperor · 炎帝意象 | [View preview](themes/flame-emperor/assets/concept-preview.webp) | Battle Through the Heavens-inspired black robes, heavy blade, cyan fire lotus, volcanoes |
+| Great Sage · 齐天大圣 | [View preview](themes/great-sage/assets/concept-preview.webp) | Golden eyes, staff, clouds, celestial palaces |
+| Nezha · 哪吒 · 莲身破浪 | [View preview](themes/nezha/assets/concept-preview.webp) | Red ribbon, ring, spear, fire wheels, lotus and waves |
+| Whale Prince · 鲸少 · 沧海之主 | [View preview](themes/whale-prince/assets/concept-preview.webp) | Ocean guardian, giant whale, deep-sea kingdom |
+| A Liang · Rain Road · 阿良 · 雨夜行 | [View preview](themes/jianlai-aliang/assets/concept-preview.webp) | Traveler, bamboo hat, rainy night, warm lamps, sword light |
+| Sunny Watch · 晴空守望 | [View preview](themes/sunny-watch/assets/concept-preview.webp) | Morning city, clear sky, warm sunlight |
+| Young Goku · Nimbus Journey · 少年悟空 | [View preview](themes/young-goku/assets/concept-preview.webp) | Young Goku, Flying Nimbus, Power Pole, bright landscapes. Unofficial fan theme. |
+
+The plugin uses newly made visual assets. Character themes are unofficial fan designs. New artwork does not mean original ownership of the characters or permission from their rights holders.
+
+Four sliders adjust the appearance across all ten themes:
+
+| Control | Default | Effect |
+| --- | --- | --- |
+| Background depth | 0% | Adjusts the color mask over the conversation wallpaper |
+| Sidebar mask | 40% | Adjusts the color mask over the sidebar wallpaper |
+| Scene blur | 0 px | Adjusts wallpaper blur |
+| Text contrast | 100% | Adjusts text contrast |
+
+Slider changes take effect immediately and remain on the current device after a restart. These controls do not change built-in DSH themes. The settings page uses its own translucent background.
+
+During a model response, each theme shows its own text, elapsed time, and small animated mark in the native status area. The plugin supports the separate DSH 0.2 status row. With reduced motion enabled, the mark stays still.
+
+Version 0.3.18 fixed duplicate native whale effects and theme marks on DSH 0.2.0-rc.2. It also fixed old startup colors that overrode the saved theme and made text black. The compact status row keeps its text and timer clear.
+
+On Windows desktop, the title bar uses a solid theme color. The sidebar wallpaper and mask remain adjustable. The plugin styles the existing sidebar, conversation, and input card without replacing their functional buttons.
+
+Shanhe uses a WebP ink landscape instead of the older abstract SVG mountains.
+
+## Installation
+
+### Desktop app
+
+1. Open **Plugins → Add plugin** in DSH.
+2. Paste this repository address into the input field:
+
+```text
+https://github.com/Xuanyi-king/dsh-theme-gallery
+```
+
+3. Select **Install**.
+4. Open **Settings → Themes**.
+5. Select a theme card.
+
+### Web profile
+
+Run:
+
+```bash
+dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery
+```
+
+Then open **Settings → Themes**. One installation includes all ten themes.
+
+After an upgrade, close and reopen DSH to load the new plugin. DSH restores your saved theme. If older standalone theme plugins remain installed, remove them to prevent competing styles.
+
+## Theme selection and storage
+
+**Settings → Themes** includes ten gallery themes and three built-in choices: **DSH default**, **DSH Light**, and **DSH Dark**.
+
+Select **DSH default** to remove the gallery override. You can select a gallery theme again at any time.
+
+The plugin saves the selection in `dsh-theme-gallery/selection.json` inside the local DSH configuration directory. The browser also keeps a local copy for hosts without the selection endpoint. DSH reads the saved selection after a restart.
+
+## Shanhe startup intro sample
+
+Select **Mountains & Ink** and then reopen or refresh the DSH page. The saved Shanhe theme displays an ink-style opening for about 4 seconds.
+
+The existing wallpaper slowly zooms in. Ink lines appear, followed by a vermilion seal and the theme text. The opening uses an image and code animation. It needs no video file or remote media.
+
+Select **Skip** at the top right, or press **Esc**, to close the opening immediately. The opening plays once per page startup. Theme changes and new conversations do not replay it. The other nine themes do not have startup intros yet.
+
+With system reduced motion enabled, the plugin skips the opening.
+
+Before playback, the plugin waits for the saved theme to restore. If the host request remains incomplete after 1.5 seconds, the plugin uses the local selection. A later response does not reopen the intro. A manual theme selection during startup also suppresses delayed playback.
+
+## Development and verification
+
+Run from the repository root:
+
+```bash
+npm run build
+npm test
+npm run pack:gallery
+```
+
+The root package contains the combined gallery. `themes/<name>/` retains the original resources and tests for each theme. The startup sample applies only to the combined gallery. It does not change standalone theme packages.
+
+### Optional browser verification
+
+The browser script uses real React and the built `lib/client.js`. It covers desktop and mobile layouts, Skip, Esc, automatic dismissal, reduced motion, and theme restoration.
+
+1. Install `playwright`, `react@18`, and `react-dom@18` in a directory outside this repository.
+2. Install Chromium through Playwright.
+3. Run:
+
+```bash
+DSH_INTRO_BROWSER_TOOLS=/path/to/browser-tools node scripts/verify-startup-browser.mjs
+```
+
+The script saves screenshots and `shanhe-preview.html` in `/tmp/dsh-shanhe-intro-preview/` by default. Open the HTML file in a browser to view the offline sample. After the opening ends, select the replay button to view it again.
+
+The browser fixture simulates DSH services. It does not replace verification inside the actual DSH app.
+
+## License and character rights
+
+The code uses the MIT license. See [LICENSE](LICENSE).
+
+Character themes are unofficial fan designs without a claim of official permission. Character rights and related intellectual property remain with their respective owners.
