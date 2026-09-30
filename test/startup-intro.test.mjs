@@ -168,6 +168,48 @@ test('the opening view exposes theme copy, a modal label, and a working Skip but
   h.dispose();
 });
 
+test('the modal traps Tab, closes on Escape, and restores connected prior focus', async () => {
+  for (const connected of [true, false]) {
+    const h = fixture();
+    await tick();
+    const events = new Map();
+    const cleanups = [];
+    let skipFocus = 0;
+    let restoredFocus = 0;
+    const doc = { activeElement: { isConnected: connected, focus() { restoredFocus += 1; } } };
+    const win = {
+      addEventListener(name, fn, capture) { assert.equal(capture, true); events.set(name, fn); },
+      removeEventListener(name, fn, capture) { assert.equal(capture, true); assert.equal(events.get(name), fn); events.delete(name); },
+    };
+    const React = {
+      createElement: (type, props, ...children) => ({ type, props, children }),
+      useSyncExternalStore: (_subscribe, read) => read(),
+      useRef: () => ({ current: { focus() { skipFocus += 1; } } }),
+      useEffect(fn) { cleanups.push(fn()); },
+    };
+    const View = opening.createStartupIntroView(React, h.intro, { document: doc, window: win });
+    assert.ok(View());
+    assert.equal(skipFocus, 1);
+    let prevented = 0;
+    let stopped = 0;
+    const key = value => events.get('keydown')({ key: value, preventDefault() { prevented += 1; }, stopPropagation() { stopped += 1; } });
+    key('a');
+    assert.equal(prevented, 0);
+    key('Tab');
+    assert.equal(skipFocus, 2);
+    key('Escape');
+    assert.equal(h.intro.getSnapshot(), null);
+    assert.equal(prevented, 2);
+    assert.equal(stopped, 2);
+    cleanups.pop()();
+    assert.equal(events.size, 0);
+    assert.equal(restoredFocus, connected ? 1 : 0);
+    assert.equal(View(), null);
+    assert.equal(cleanups.pop(), undefined);
+    h.dispose();
+  }
+});
+
 test('disposing before restoration prevents both fallback and late autoplay', async () => {
   let respond;
   const h = fixture('gallery-shanhe', () => new Promise(resolve => { respond = resolve; }));

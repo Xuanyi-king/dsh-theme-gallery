@@ -1,0 +1,41 @@
+story_id: e01s01
+status: automation_passed_real_host_uat_pending
+production_commit: a2a2f4b8b74e31b2b1893dafd02c8bcd333520aa
+base_commit: 9e6dc9588590cb7c3461a530136d34d3a7880a73
+terminal_verdict:
+  command: npm test
+  exit_code: 0
+  total_tests: 101
+  root_suite_tests: 46
+  skipped: 0
+  output_file: /tmp/dsh-gallery-merge-tests.log
+  note: One contiguous new full-suite run before merge.
+coverage:
+  gallery_source_modules:
+    command: node --test --experimental-test-coverage --test-coverage-include='src/*.mjs' --test-coverage-lines=80 test/*.test.mjs
+    line_percent: 85.24
+    required_line_percent: 80
+    passed: true
+  startup_intro:
+    command: node --test --experimental-test-coverage --test-coverage-include='src/startup-intro.mjs' --test-coverage-lines=95 test/startup-intro.test.mjs
+    line_percent: 100
+    branch_percent: 100
+    function_percent: 88.24
+    required_line_percent: 95
+    passed: true
+other_checks:
+  deterministic_build: passing
+  syntax: passing
+  diff_whitespace: passing
+  changed_path_secret_scan: zero_matches
+  security_review: specs/security/REVIEW.md
+  traceability: WAIVED
+  traceability_reason: No traceability matrix or trace generator configured in this repository; existing story spec, tests, and verification evidence were checked directly.
+ci:
+  status: not_configured
+  note: No tracked .github workflows or CI configuration were found. Local tests are not a claim of GitHub CI success.
+real_host_uat:
+  status: pending
+  note: User authorized merging the preview sample. Actual DSH/native desktop validation is not claimed complete.
+registry_publishing:
+  status: not_requested
