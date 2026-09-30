@@ -4,8 +4,10 @@ import { CATALOG } from '../src/catalog.mjs';
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const readScene = path => readFile(new URL(path, import.meta.url));
 const body = await read('../src/client.mjs');
+const artwork = await read('../src/intro-scenes.mjs');
 const startup = (await read('../src/startup-intro.mjs'))
-  .replace("import { CATALOG } from './catalog.mjs';", '');
+  .replace("import { CATALOG } from './catalog.mjs';", '')
+  .replace("import { createIntroArtwork, createIntroEmblem } from './intro-scenes.mjs';", '');
 const sceneMap = {
   shanhe: 'ink-landscape.webp', ultraman: 'cosmic-scene.webp',
   'perfect-world': 'emperor-scene.webp', 'flame-emperor': 'flame-scene.webp',
@@ -17,6 +19,7 @@ const sceneMap = {
 };
 let css = await read('../assets/gallery.css');
 css += '\n' + await read('../assets/startup-intro.css');
+css += '\n' + await read('../assets/themed-intros.css');
 // The sidebar is a separate DSH surface. Its palette must be applied to the
 // sidebar root itself: the global theme tokens alone leave workspace rows and
 // controls looking like the stock UI over a themed conversation scene.
@@ -663,7 +666,7 @@ for (const item of CATALOG) {
 }
 const catalog = CATALOG.map(({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, hero, tagline, definition }) =>
   ({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, hero, tagline, definition }));
-const client = (startup + '\n' + body)
+const client = (artwork + '\n' + startup + '\n' + body)
   .replace("import { createStartupIntro, createStartupIntroView } from './startup-intro.mjs';", '')
   .replace("import { CATALOG } from './catalog.mjs';", `const CATALOG = ${JSON.stringify(catalog)};`)
   .replace("const STYLE_TEXT = '';", `const STYLE_TEXT = ${JSON.stringify(css)};`)
@@ -671,6 +674,6 @@ const client = (startup + '\n' + body)
   .replaceAll('export const ', 'const ')
   .replaceAll('export function ', 'function ');
 if (client.includes('export ') || client.includes("import { CATALOG }")) throw new Error('untransformed client module');
-const bundle = `window.__ModuleLoader__.load({\n  id: 'dsh-theme-gallery',\n  factory: (require) => {\n${client}\n    return { apply, inject, CATALOG, formatRunningStatus, createGallerySection, applyGallery, createStartupIntro, createStartupIntroView };\n  }\n});\n`;
+const bundle = `window.__ModuleLoader__.load({\n  id: 'dsh-theme-gallery',\n  factory: (require) => {\n${client}\n    return { apply, inject, CATALOG, formatRunningStatus, createGallerySection, applyGallery, createStartupIntro, createStartupIntroView, createIntroArtwork, createIntroEmblem };\n  }\n});\n`;
 await mkdir(new URL('../lib/', import.meta.url), { recursive: true });
 await writeFile(new URL('../lib/client.js', import.meta.url), bundle);
