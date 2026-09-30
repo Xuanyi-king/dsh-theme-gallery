@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyGallery } from '../src/client.mjs';
+import { CATALOG } from '../src/catalog.mjs';
 import * as opening from '../src/startup-intro.mjs';
 const { createStartupIntro } = opening;
 
@@ -63,6 +64,24 @@ test('saved Shanhe plays once at startup and closes at four seconds without repl
   h.dispose();
 });
 
+test('every saved gallery theme plays its own opening once and uses the same four-second boundary', async () => {
+  for (const theme of CATALOG) {
+    const h = fixture(theme.id);
+    await tick();
+    assert.equal(h.intro.getSnapshot()?.slug, theme.slug, theme.id);
+    h.time.advance(3999);
+    assert.equal(h.intro.getSnapshot()?.slug, theme.slug);
+    h.time.advance(1);
+    assert.equal(h.intro.getSnapshot(), null);
+    h.gallery.select('system');
+    h.gallery.select(theme.id);
+    await tick();
+    assert.equal(h.intro.getSnapshot(), null);
+    assert.equal(h.time.pending, 0);
+    h.dispose();
+  }
+});
+
 test('startup waits for the host and uses its restored selection instead of a stale local choice', async () => {
   let respond;
   const h = fixture('gallery-shanhe', () => new Promise(resolve => { respond = resolve; }));
@@ -72,6 +91,7 @@ test('startup waits for the host and uses its restored selection instead of a st
   assert.equal(h.intro.getSnapshot(), null);
   respond({ ok: true, json: async () => ({ themeId: 'gallery-nezha' }) });
   await tick();
+  assert.equal(h.intro.getSnapshot()?.slug, 'nezha');
   h.time.advance(10000);
   assert.equal(h.intro.getSnapshot(), null);
   assert.equal(h.time.pending, 0);
@@ -110,19 +130,21 @@ test('choosing a theme during startup never interrupts the user with a delayed o
   }
 });
 
-test('reduced motion and every non-Shanhe choice bypass the opening', async () => {
-  for (const choice of ['system', 'dark', 'gallery-nezha', 'gallery-unknown', null]) {
+test('reduced motion and built-in or invalid choices bypass the opening', async () => {
+  for (const choice of ['system', 'light', 'dark', 'gallery-unknown', null]) {
     const h = fixture(choice);
     await tick();
     assert.equal(h.intro.getSnapshot(), null, String(choice));
     assert.equal(h.time.pending, 0);
     h.dispose();
   }
-  const reduced = fixture('gallery-shanhe', null, () => true);
-  await tick();
-  assert.equal(reduced.intro.getSnapshot(), null);
-  assert.equal(reduced.time.pending, 0);
-  reduced.dispose();
+  for (const theme of CATALOG) {
+    const reduced = fixture(theme.id, null, () => true);
+    await tick();
+    assert.equal(reduced.intro.getSnapshot(), null, theme.id);
+    assert.equal(reduced.time.pending, 0);
+    reduced.dispose();
+  }
 });
 
 test('skip, theme change, and disposal cancel the opening and its timers', async () => {
