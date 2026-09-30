@@ -239,6 +239,7 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
   let disposed = false;
   let restoreQueued = false;
   let writeQueue = Promise.resolve();
+  let ready = Promise.resolve();
   const subscribers = new Set();
   const readVisual = () => {
     try {
@@ -318,7 +319,7 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
     } else if (saved !== null) remember(null);
     sync(ctx.theme.getTheme().preference);
     if (typeof fetchImpl === 'function') {
-      Promise.resolve().then(async () => {
+      ready = Promise.resolve().then(async () => {
         const response = await fetchImpl(ROUTE, { credentials: 'same-origin', headers: { accept: 'application/json' } });
         if (!response.ok) throw new Error(`theme selection HTTP ${response.status}`);
         const state = await response.json();
@@ -340,6 +341,8 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
     }
     return {
       getSelection: () => current,
+      // Resolves even when the Host route is absent; local storage is the fallback.
+      whenReady: () => ready,
       getAdjustments: () => ({ ...visual }),
       adjust(key, value) {
         if (!Object.hasOwn(VISUAL_RANGES, key)) throw new Error(`unknown adjustment: ${key}`);
