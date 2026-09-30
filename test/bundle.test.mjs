@@ -117,6 +117,15 @@ test('DSH 0.2 running row uses theme icon and label without removing the native 
   assert.match(css, /prefers-reduced-motion: reduce/);
 });
 
+test('live gallery status hides the entire native icon and has one dedicated theme mark', async () => {
+  const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
+  assert.match(css, /\[class\*="runningIcon"\],[\s\S]*?\[class\*="runningText"\]\s*\{\s*display: none !important;/);
+  assert.match(css, /\[class\*="runningContent"\]::before\s*\{[^}]*background:\s*var\(--gallery-status-icon\)/);
+  assert.ok(!/\[data-chat-running\]\[data-dsh-gallery-running\] \[class\*="runningIcon"\]::before/.test(css), 'standalone icon layers do not enter the gallery');
+  assert.match(css, /content: attr\(data-dsh-gallery-live-label\) !important;/);
+});
+
 test('the hero hides its native fish without hiding the themed title mark', async () => {
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);

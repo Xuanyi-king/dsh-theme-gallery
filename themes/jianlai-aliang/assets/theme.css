@@ -46,7 +46,7 @@ body[data-jianlai-aliang-theme] button[data-turn-process][data-jianlai-aliang-ru
 body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningIcon"] {
   position: relative; width: 22px; height: 22px; flex: none;
 }
-body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningIcon"] svg,
+body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningIcon"] > *,
 body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningText"] { display: none !important; }
 body[data-jianlai-aliang-theme] [data-chat-running][data-jianlai-aliang-running] [class*="runningIcon"]::before {
   content: '╱'; position: absolute; top: 0; left: 0; color: #e6c798; font-size: 22px;

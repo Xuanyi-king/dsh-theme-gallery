@@ -190,7 +190,7 @@ body[data-ultra-theme] [data-ultra-orn-glyph]::before { content: ''; width: 26px
 body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningIcon"] {
   position: relative; width: 22px; height: 22px; flex: none;
 }
-body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningIcon"] svg,
+body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningIcon"] > *,
 body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningText"] { display: none !important; }
 body[data-ultra-theme] [data-chat-running][data-ultra-running] [class*="runningIcon"]::before {
   content: '';

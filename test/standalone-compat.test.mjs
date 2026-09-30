@@ -32,6 +32,7 @@ for (const { slug } of CATALOG) {
     theme.decorateRunningStatuses(root);
     assert.equal(attrs.size, 0);
     const css = await readFile(new URL(`../themes/${slug}/assets/theme.css`, import.meta.url), 'utf8');
+    assert.ok(css.includes('[class*="runningIcon"] > *,'), 'both the native animated mask and SVG are hidden');
     assert.match(css, /\[data-chat-running\]\[data-[\w-]+-running\] \[class\*="runningIcon"\]::before/);
     assert.match(css, /prefers-reduced-motion: reduce/);
   });

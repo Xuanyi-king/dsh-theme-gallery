@@ -151,7 +151,7 @@ body[data-yandi-theme] [data-yandi-orn-glyph] { background: no-repeat center / c
 body[data-yandi-theme] [data-chat-running][data-yandi-running] [class*="runningIcon"] {
   position: relative; width: 22px; height: 22px; flex: none;
 }
-body[data-yandi-theme] [data-chat-running][data-yandi-running] [class*="runningIcon"] svg,
+body[data-yandi-theme] [data-chat-running][data-yandi-running] [class*="runningIcon"] > *,
 body[data-yandi-theme] [data-chat-running][data-yandi-running] [class*="runningText"] { display: none !important; }
 body[data-yandi-theme] [data-chat-running][data-yandi-running] [class*="runningIcon"]::before {
   content: ''; position: absolute; top: 1px; left: 1px; width: 20px; height: 20px;

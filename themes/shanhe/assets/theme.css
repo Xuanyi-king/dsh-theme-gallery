@@ -195,7 +195,7 @@ body[data-shanhe-theme] [data-shanhe-orn] { display: none !important; }
 body[data-shanhe-theme] [data-chat-running][data-shanhe-running] [class*="runningIcon"] {
   position: relative; width: 22px; height: 22px; flex: none;
 }
-body[data-shanhe-theme] [data-chat-running][data-shanhe-running] [class*="runningIcon"] svg,
+body[data-shanhe-theme] [data-chat-running][data-shanhe-running] [class*="runningIcon"] > *,
 body[data-shanhe-theme] [data-chat-running][data-shanhe-running] [class*="runningText"] { display: none !important; }
 body[data-shanhe-theme] [data-chat-running][data-shanhe-running] [class*="runningIcon"]::before {
   content: '道';

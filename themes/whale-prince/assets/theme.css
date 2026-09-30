@@ -151,7 +151,7 @@ body[data-whale-prince-theme] [data-whale-prince-orn-glyph] { background: no-rep
 body[data-whale-prince-theme] [data-chat-running][data-whale-prince-running] [class*="runningIcon"] {
   position: relative; width: 22px; height: 22px; flex: none;
 }
-body[data-whale-prince-theme] [data-chat-running][data-whale-prince-running] [class*="runningIcon"] svg,
+body[data-whale-prince-theme] [data-chat-running][data-whale-prince-running] [class*="runningIcon"] > *,
 body[data-whale-prince-theme] [data-chat-running][data-whale-prince-running] [class*="runningText"] { display: none !important; }
 body[data-whale-prince-theme] [data-chat-running][data-whale-prince-running] [class*="runningIcon"]::before {
   content: ''; position: absolute; top: 2px; left: 0; width: 20px; height: 20px;

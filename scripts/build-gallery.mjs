@@ -37,11 +37,11 @@ const recentScenes = new Set(['jianlai-aliang', 'sunny-watch', 'young-goku']);
 const statusMarks = {
   shanhe: '<path d="M3 17c5-7 8-10 17-13M5 19c6-4 10-4 16-5" stroke="__ACCENT__" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M17 6l3-2-1 3" fill="__ACCENT__"/>',
   ultraman: '<path d="M12 1.5l1.9 8.6L22.5 12l-8.6 1.9L12 22.5l-1.9-8.6L1.5 12l8.6-1.9z" fill="none" stroke="__ACCENT__" stroke-width="1.5"/><circle cx="12" cy="12" r="2.3" fill="__ACCENT__"/>',
-  'perfect-world': '<circle cx="12" cy="12" r="8.8" fill="none" stroke="__ACCENT__" stroke-width="1.1" stroke-dasharray="11 3"/><path d="M12 4.5l1.5 6 6 1.5-6 1.5-1.5 6-1.5-6-6-1.5 6-1.5z" fill="none" stroke="__ACCENT__" stroke-width="1.2"/>',
+  'perfect-world': '<path d="M5 6a9 9 0 0 1 14 0M19 18a9 9 0 0 1-14 0" fill="none" stroke="__ACCENT__" stroke-width="1.2" stroke-linecap="round"/><path d="M12 5.5 14 10l4.5 2-4.5 2-2 4.5L10 14l-4.5-2 4.5-2z" fill="__ACCENT__"/>',
   'flame-emperor': '<path d="M12 2c1.5 4-2 5-1 8 1.5-1 2.8-3 2.8-4C19 11 20 14 18 18c-1.3 2.7-3.5 4-6 4s-5.2-1.8-6-4.5C5 14 8 11 8 8c2 1.2 2.4 3.5 2.4 3.5C13 9 12 6 12 2z" fill="none" stroke="__ACCENT__" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 13c-2 2-2.1 4.5 0 6 2.1-1.5 2-4 0-6z" fill="__ACCENT__"/>',
   'great-sage': '<path d="M4 19L19 4" stroke="__ACCENT__" stroke-width="2.6" stroke-linecap="round"/><path d="M3 17l4 4M17 3l4 4" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round"/><path d="M2 10c2-2 4-2 6-1M15 20c2 1 5 0 7-2" fill="none" stroke="__ACCENT__" stroke-width="1"/>',
   nezha: '<path d="M12 19c-4-3-6-7-5-11 3 1 5 4 5 6 0-2 2-5 5-6 1 4-1 8-5 11zM12 16c-2-2-2-7 0-11 2 4 2 9 0 11zM5 13c-1 2 0 5 7 7 7-2 8-5 7-7" fill="none" stroke="__ACCENT__" stroke-width="1.4" stroke-linejoin="round"/>',
-  'whale-prince': '<path d="M3 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0M12 14c-1-3 0-5 0-5-4 0-5-3-5-5 3 .5 4 2 5 3 1-1 2-2.5 5-3 0 2-1 5-5 5" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+  'whale-prince': '<path d="M3 9c3-3 5-3 8 0s5 3 10 0M3 15c3-3 5-3 8 0s5 3 10 0" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round"/><circle cx="18" cy="4" r="1.2" fill="__ACCENT__"/>',
   'jianlai-aliang': '<path d="M3 19 19 3M16 3h3v3M5 20l-2 1 1-2M4 9l2-2m5 11 1-3m8 2 2-1" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
   'sunny-watch': '<path d="M3 18h18M7 14a5 5 0 0 1 10 0M12 2v3M4 7l2 2m14-2-2 2M2 14h2m16 0h2" fill="none" stroke="__ACCENT__" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
   'young-goku': '<path d="M2 17c0-2 1.5-3 3.5-3 0-2 1.5-3 3.3-3 1.5 0 2.5.8 3.1 2 1.4-1.8 4.6-1.3 5.1 1.3 2.4-.5 4.7 1 4.7 3.2 0 1.5-1.1 2.8-3.5 2.8H5c-2 0-3-1.1-3-2.3z" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 6 20 3" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round"/>',
@@ -49,8 +49,8 @@ const statusMarks = {
 const statusMotion = {
   shanhe: 'gallery-ink 3.6s ease-in-out infinite',
   ultraman: 'gallery-light 2.4s ease-in-out infinite',
-  'perfect-world': 'gallery-rune 7s linear infinite',
-  'flame-emperor': 'gallery-flame 1.55s ease-in-out infinite alternate',
+  'perfect-world': 'gallery-rune 3.6s ease-in-out infinite',
+  'flame-emperor': 'gallery-flame 2.4s ease-in-out infinite',
   'great-sage': 'gallery-staff 3s ease-in-out infinite',
   nezha: 'gallery-lotus 3.6s ease-in-out infinite',
   'whale-prince': 'gallery-tide 3.4s ease-in-out infinite',
@@ -72,7 +72,10 @@ const heroLooks = {
 };
 for (const item of CATALOG) {
   const slug = item.slug;
-  const originalCss = await read(`../themes/${slug}/assets/theme.css`);
+  // The gallery owns one live-status renderer. Importing the standalone
+  // renderer as well adds a second icon and a competing pseudo-element label.
+  const originalCss = (await read(`../themes/${slug}/assets/theme.css`))
+    .replace(/\n\/\* DSH 0\.2 live status:[\s\S]*$/, '');
   const scene = await readScene(`../themes/${slug}/assets/${sceneMap[slug]}`);
   const url = `data:image/webp;base64,${scene.toString('base64')}`;
   // Every legacy selector is scoped to exactly this gallery choice.
@@ -389,48 +392,58 @@ body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running]
   text-shadow: 0 1px 7px color-mix(in srgb, var(--gallery-sidebar-fill) 82%, transparent);
   pointer-events: none;
 }
-/* DSH 0.2 shows live Turns in a separate running row. Keep its clock and
-   hidden screen-reader announcement; replace only the visible icon and copy. */
+/* DSH 0.2 has both a masked animation and an SVG in its native icon.
+   Replace their entire seat; one icon and one label belong to this renderer. */
 body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] {
   color: var(--gallery-sidebar-ink);
 }
-body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"] {
-  width: 22px;
-  height: 22px;
-  background: var(--gallery-status-icon) center / contain no-repeat;
-  animation: var(--gallery-status-motion);
-}
-body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"] svg,
+body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"],
 body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningText"] {
   display: none !important;
 }
+body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningContent"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 4px 12px 4px 8px;
+  border: 1px solid color-mix(in srgb, var(--gallery-chrome) 32%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--gallery-sidebar-fill) 76%, transparent);
+}
+body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningContent"]::before {
+  content: '';
+  display: block;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  background: var(--gallery-status-icon) center / contain no-repeat;
+  animation: var(--gallery-status-motion);
+}
 body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningContent"]::after {
-  content: attr(data-dsh-gallery-live-label);
+  content: attr(data-dsh-gallery-live-label) !important;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--gallery-sidebar-ink);
-  font-size: var(--dsh-content-font-size-secondary, 13px);
-  line-height: 24px;
-  letter-spacing: .05em;
-  text-shadow: 0 1px 7px color-mix(in srgb, var(--gallery-sidebar-fill) 82%, transparent);
+  font-size: calc(var(--dsh-content-font-size, 14px) - 1px);
+  font-variant-numeric: tabular-nums;
+  line-height: 22px;
+  letter-spacing: .025em;
 }
-body[data-dsh-gallery-theme="shanhe"] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"] {
-  position: relative;
+body[data-dsh-gallery-theme="shanhe"] [data-chat-running][data-dsh-gallery-running] [class*="runningContent"]::before {
+  content: '墨';
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
   border: 1px solid #aa493a;
   border-radius: 3px;
   background: rgba(250, 246, 237, .9);
-  animation: gallery-ink-seal 3.6s ease-in-out infinite;
-}
-body[data-dsh-gallery-theme="shanhe"] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"]::after {
-  content: '墨';
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
   color: #8f382e;
-  font: 700 15px/1 "STKaiti", "KaiTi", serif;
+  font: 700 14px/1 "STKaiti", "KaiTi", serif;
+  animation: gallery-ink-seal 3.6s ease-in-out infinite;
 }
 /* Ink theme: a clear vermilion seal stays legible against the painted hills.
    Its small rise is tied to the real running indicator. */
@@ -454,16 +467,16 @@ body[data-dsh-gallery-theme="shanhe"] button[data-turn-process][data-dsh-gallery
   to { background-position: -100% 100%; }
 }
 @keyframes gallery-ink { 0%, 100% { opacity: .48; transform: translateX(-2px); } 50% { opacity: 1; transform: translateX(2px); } }
-@keyframes gallery-ink-seal { 0%, 100% { transform: translateY(1px) rotate(-4deg); opacity: .85; } 50% { transform: translateY(-1px) rotate(-4deg); opacity: 1; } }
-@keyframes gallery-light { 0%, 100% { opacity: .62; transform: scale(.88); filter: drop-shadow(0 0 1px var(--gallery-chrome)); } 50% { opacity: 1; transform: scale(1.08); filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
-@keyframes gallery-rune { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes gallery-flame { from { opacity: .78; transform: translateY(1px) scale(.92, .93) rotate(-5deg); filter: drop-shadow(0 0 2px var(--gallery-chrome)); } to { opacity: 1; transform: translateY(-2px) scale(1.06, 1.1) rotate(5deg); filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
-@keyframes gallery-staff { 0%, 100% { transform: rotate(-10deg) translateY(1px); } 50% { transform: rotate(10deg) translateY(-1px); } }
-@keyframes gallery-lotus { 0%, 100% { transform: scale(.86) rotate(-8deg); opacity: .7; } 50% { transform: scale(1.08) rotate(8deg); opacity: 1; } }
-@keyframes gallery-tide { 0%, 100% { transform: translateY(2px); opacity: .64; } 50% { transform: translateY(-2px); opacity: 1; } }
-@keyframes gallery-blade { 0%, 100% { transform: translate(-2px, 2px); opacity: .55; filter: drop-shadow(0 0 0 transparent); } 50% { transform: translate(2px, -2px); opacity: 1; filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
-@keyframes gallery-sunrise { 0%, 100% { opacity: .65; filter: drop-shadow(0 0 0 var(--gallery-chrome)); } 50% { opacity: 1; filter: drop-shadow(0 0 5px var(--gallery-chrome)); } }
-@keyframes gallery-nimbus { 0%, 100% { opacity: .78; transform: translateX(-2px) translateY(1px); } 50% { opacity: 1; transform: translateX(3px) translateY(-1px); } }
+@keyframes gallery-ink-seal { 0%, 100% { transform: rotate(-3deg); opacity: .85; } 50% { transform: rotate(-3deg) scale(1.04); opacity: 1; } }
+@keyframes gallery-light { 0%, 100% { opacity: .8; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.04); filter: drop-shadow(0 0 2px var(--gallery-chrome)); } }
+@keyframes gallery-rune { 0%, 100% { transform: scale(.96); opacity: .78; } 50% { transform: scale(1.05); opacity: 1; } }
+@keyframes gallery-flame { 0%, 100% { opacity: .85; transform: scale(.97, .95); } 50% { opacity: 1; transform: translateY(-1px) scale(1.03, 1.04); filter: drop-shadow(0 0 2px var(--gallery-chrome)); } }
+@keyframes gallery-staff { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes gallery-lotus { 0%, 100% { transform: scale(.98); opacity: .82; } 50% { transform: scale(1.06); opacity: 1; } }
+@keyframes gallery-tide { 0%, 100% { transform: translateY(1px); opacity: .8; } 50% { transform: translateY(-1px); opacity: 1; } }
+@keyframes gallery-blade { 0%, 100% { transform: translate(-1px, 1px); opacity: .8; } 50% { transform: translate(1px, -1px); opacity: 1; } }
+@keyframes gallery-sunrise { 0%, 100% { opacity: .8; } 50% { opacity: 1; filter: drop-shadow(0 0 2px var(--gallery-chrome)); } }
+@keyframes gallery-nimbus { 0%, 100% { opacity: .88; transform: translateX(-1px); } 50% { opacity: 1; transform: translateX(1px); } }
 @media (prefers-reduced-motion: reduce) {
   body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running] {
     animation: none !important;
@@ -472,7 +485,7 @@ body[data-dsh-gallery-theme="shanhe"] button[data-turn-process][data-dsh-gallery
   body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running]::before {
     animation: none !important;
   }
-  body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningIcon"] {
+  body[data-dsh-gallery-theme] [data-chat-running][data-dsh-gallery-running] [class*="runningContent"]::before {
     animation: none !important;
   }
 }

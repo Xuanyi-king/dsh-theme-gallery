@@ -46,7 +46,7 @@ body[data-young-goku-theme] button[data-turn-process][data-young-goku-running]::
 body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningIcon"] {
   position: relative; width: 22px; height: 22px; flex: none;
 }
-body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningIcon"] svg,
+body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningIcon"] > *,
 body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningText"] { display: none !important; }
 body[data-young-goku-theme] [data-chat-running][data-young-goku-running] [class*="runningIcon"]::before {
   content: '☁'; position: absolute; top: 0; left: 0; color: #f4b447; font-size: 17px;

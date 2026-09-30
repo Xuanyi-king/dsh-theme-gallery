@@ -237,6 +237,7 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
   let desired = null;
   let userSelected = false;
   let disposed = false;
+  let restoreQueued = false;
   let writeQueue = Promise.resolve();
   const subscribers = new Set();
   const readVisual = () => {
@@ -294,9 +295,18 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
     syncVisual();
     const unlisten = ctx.on?.('theme/change', snapshot => {
       // The host may apply its built-in theme setting after this plugin starts.
-      // Keep a gallery choice active until it is explicitly reset in this page.
+      // Finish dispatching that snapshot before publishing the saved choice.
+      // A nested event lets a later presenter overwrite it with the old palette.
       if (desired && snapshot.preference !== desired) {
-        ctx.theme.setTheme(desired);
+        if (!restoreQueued) {
+          restoreQueued = true;
+          queueMicrotask(() => {
+            restoreQueued = false;
+            if (disposed || !desired) return;
+            ctx.theme.setTheme(desired);
+            sync(ctx.theme.getTheme().preference);
+          });
+        }
         return;
       }
       sync(snapshot.preference);

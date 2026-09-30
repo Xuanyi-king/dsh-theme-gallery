@@ -151,7 +151,7 @@ body[data-nezha-theme] [data-nezha-orn-glyph] { background: no-repeat center / c
 body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningIcon"] {
   position: relative; width: 22px; height: 22px; flex: none;
 }
-body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningIcon"] svg,
+body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningIcon"] > *,
 body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningText"] { display: none !important; }
 body[data-nezha-theme] [data-chat-running][data-nezha-running] [class*="runningIcon"]::before {
   content: ''; position: absolute; top: 2px; left: 0; width: 20px; height: 20px;

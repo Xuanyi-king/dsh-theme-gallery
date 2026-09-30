@@ -46,7 +46,7 @@ body[data-sunny-watch-theme] button[data-turn-process][data-sunny-watch-running]
 body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningIcon"] {
   position: relative; width: 22px; height: 22px; flex: none;
 }
-body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningIcon"] svg,
+body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningIcon"] > *,
 body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningText"] { display: none !important; }
 body[data-sunny-watch-theme] [data-chat-running][data-sunny-watch-running] [class*="runningIcon"]::before {
   content: '☀'; position: absolute; top: 0; left: 0; color: #e58a4a; font-size: 17px;

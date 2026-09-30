@@ -19,9 +19,18 @@ function harness(saved = null, fetchImpl = null, visualSaved = null) {
   const theme = {
     getTheme: () => ({ preference: choice }),
     register(def) { if (definitions.has(def.id)) throw Error('duplicate'); definitions.set(def.id, def); return () => definitions.delete(def.id); },
-    setTheme(id) { if (id !== 'system' && !definitions.has(id)) throw Error('unknown'); choice = id; listeners.get('theme/change')?.({ preference: id }); },
+    setTheme(id) {
+      if (id !== 'system' && !definitions.has(id)) throw Error('unknown');
+      if (choice === id) return;
+      choice = id;
+      for (const fn of listeners.get('theme/change') ?? []) fn({ preference: id });
+    },
   };
-  const ctx = { theme, on(name, fn) { listeners.set(name, fn); return () => listeners.delete(name); } };
+  const ctx = { theme, on(name, fn) {
+    if (!listeners.has(name)) listeners.set(name, new Set());
+    listeners.get(name).add(fn);
+    return () => listeners.get(name).delete(fn);
+  } };
   const controller = applyGallery(ctx, { document, storage, Observer: null, styleText: '.gallery{}', fetchImpl });
   return { ctx, controller, attrs, styles, data, definitions, elements, get choice() { return choice; } };
 }
@@ -50,18 +59,51 @@ test('switching is immediate and built-in selection removes the stored override'
   h.controller.dispose();
 });
 
-test('bad saved ids are ignored, and an active gallery theme survives late host adoption', () => {
+test('bad saved ids are ignored, and an active gallery theme survives late host adoption', async () => {
   const h = harness('gallery-unknown');
   assert.equal(h.choice, 'dark');
   assert.equal(h.data.has('dsh.themeGallery.selection'), false);
   h.controller.select('gallery-shanhe');
   assert.equal(h.data.get('dsh.themeGallery.selection'), 'gallery-shanhe');
   h.ctx.theme.setTheme('light');
+  await new Promise(resolve => setImmediate(resolve));
   assert.equal(h.choice, 'gallery-shanhe');
   h.controller.select('light');
   assert.equal(h.data.has('dsh.themeGallery.selection'), false);
   assert.throws(() => h.controller.select('unknown'), /unknown/i);
   h.controller.dispose();
+});
+
+test('startup adoption restores the palette after later theme presenters consume the host snapshot', async () => {
+  const h = harness('gallery-perfect-world');
+  const present = snapshot => {
+    for (const key of [...h.styles.keys()]) if (key.startsWith('--dsw-')) h.styles.delete(key);
+    for (const [key, value] of Object.entries(h.definitions.get(snapshot.preference)?.tokens ?? {})) h.styles.set(key, value);
+  };
+  h.ctx.on('theme/change', present);
+  present(h.ctx.theme.getTheme());
+  h.ctx.theme.setTheme('light'); // The durable built-in preference arrives after plugin startup.
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.choice, 'gallery-perfect-world');
+  assert.equal(h.styles.get('--dsw-alias-label-primary'), '#f6e9cd');
+  assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'perfect-world');
+  h.controller.dispose();
+});
+
+test('a pending startup restore respects a user reset and disposal', async () => {
+  const h = harness('gallery-perfect-world');
+  h.ctx.theme.setTheme('light');
+  h.controller.select('system');
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.choice, 'system');
+  assert.equal(h.attrs.has('data-dsh-gallery-theme'), false);
+  h.controller.dispose();
+  const closed = harness('gallery-perfect-world');
+  closed.ctx.theme.setTheme('light');
+  closed.controller.dispose();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(closed.definitions.size, 2);
+  assert.equal(closed.attrs.has('data-dsh-gallery-theme'), false);
 });
 
 test('live reply wording tracks selected theme and leaves other statuses intact', () => {
