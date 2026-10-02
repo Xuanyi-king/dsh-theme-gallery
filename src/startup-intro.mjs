@@ -1,8 +1,8 @@
 import { CATALOG } from './catalog.mjs';
+import { createIntroArtwork, createIntroEmblem } from './intro-scenes.mjs';
 
 const STARTUP_RESTORE_TIMEOUT_MS = 1500;
 const STARTUP_DURATION_MS = 4000;
-const STARTUP_THEMES = new Set(['shanhe', 'jianlai-aliang', 'sunny-watch', 'young-goku']);
 
 /** One startup decision per plugin mount; this is not a conversation listener. */
 export function createStartupIntro(gallery, {
@@ -32,7 +32,7 @@ export function createStartupIntro(gallery, {
     decided = true;
     clearTimer(restoreTimer);
     if (gallery.hasUserSelection() || reducedMotion()) return;
-    const theme = CATALOG.find(item => item.id === gallery.getSelection() && STARTUP_THEMES.has(item.slug));
+    const theme = CATALOG.find(item => item.id === gallery.getSelection());
     if (!theme) return;
     playbackTimer = setTimer(skip, STARTUP_DURATION_MS);
     publish(theme);
@@ -63,6 +63,7 @@ export function createStartupIntroView(React, intro, {
   window: win = globalThis.window,
   skipLabel = '跳过',
   hint = 'Esc 跳过 · 即将启程',
+  themedHint = 'Esc 跳过 · 即将开启对话',
 } = {}) {
   const h = React.createElement;
   return function StartupIntro() {
@@ -86,27 +87,31 @@ export function createStartupIntroView(React, intro, {
       };
     }, [theme]);
     if (theme === null) return null;
+    const shanhe = theme.slug === 'shanhe';
     return h('div', {
-      className: 'dsh-gallery-intro', role: 'dialog', 'aria-modal': true,
+      className: `dsh-gallery-intro${shanhe ? '' : ' dsh-gallery-intro-themed'}`, role: 'dialog', 'aria-modal': true,
       'aria-labelledby': 'dsh-gallery-intro-title', 'data-intro-theme': theme.slug,
+      'data-intro-tone': theme.definition.colorScheme,
       style: { '--gallery-intro-duration': `${STARTUP_DURATION_MS}ms` },
     },
       h('div', { className: 'dsh-gallery-intro-scene', 'aria-hidden': true }),
       h('div', { className: 'dsh-gallery-intro-mist', 'aria-hidden': true }),
+      createIntroArtwork(React, theme.slug),
       h('div', { className: 'dsh-gallery-intro-copy' },
-        theme.slug === 'shanhe'
-          ? h('span', { className: 'dsh-gallery-intro-seal', 'aria-hidden': true }, '山', h('br'), '河')
-          : h('span', { className: 'dsh-gallery-intro-mark', 'aria-hidden': true }),
+        shanhe ? h('span', { className: 'dsh-gallery-intro-seal', 'aria-hidden': true }, '山', h('br'), '河') : createIntroEmblem(React, theme.slug),
         h('p', { className: 'dsh-gallery-intro-name' }, theme.zh),
-        h('h1', { id: 'dsh-gallery-intro-title' }, theme.hero),
-        h('svg', { className: 'dsh-gallery-intro-ink', viewBox: '0 0 440 36', 'aria-hidden': true },
+        !shanhe && h('p', { className: 'dsh-intro-chapter', 'aria-hidden': true }, theme.en),
+        h('h1', { id: 'dsh-gallery-intro-title' }, shanhe ? theme.hero : theme.hero.split('，').map((line, index, lines) =>
+          h('span', { className: 'dsh-intro-title-line', key: index }, line + (index < lines.length - 1 ? '，' : '')),
+        )),
+        shanhe ? h('svg', { className: 'dsh-gallery-intro-ink', viewBox: '0 0 440 36', 'aria-hidden': true },
           h('path', { d: 'M8 24 C80 8 120 28 205 17 S350 9 432 18', pathLength: 100 }),
           h('path', { d: 'M64 29 C160 20 220 30 380 24', pathLength: 100 }),
-        ),
+        ) : h('div', { className: 'dsh-intro-rule', 'aria-hidden': true }),
         h('p', { className: 'dsh-gallery-intro-tagline' }, theme.tagline),
       ),
       h('button', { type: 'button', className: 'dsh-gallery-intro-skip', ref: skipRef, onClick: intro.skip }, skipLabel),
-      h('p', { className: 'dsh-gallery-intro-hint' }, hint),
+      h('p', { className: 'dsh-gallery-intro-hint' }, shanhe ? hint : themedHint),
     );
   };
 }

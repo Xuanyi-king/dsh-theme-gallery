@@ -1,0 +1,218 @@
+/* Nine scenes, sharing the startup lifecycle but not Shanhe's composition. */
+.dsh-gallery-intro-themed {
+  --intro-accent: #91daff;
+  --intro-ink: #f4f8ff;
+  --intro-muted: #c3cddc;
+  --intro-font: "STKaiti", "KaiTi", "AR PL UKai CN", "Noto Serif CJK SC", serif;
+  background: #090f19;
+  color: var(--intro-ink);
+}
+.dsh-gallery-intro-themed .dsh-gallery-intro-scene {
+  inset: 0;
+  background-position: 70% center;
+  animation-name: themed-scene-arrival;
+}
+.dsh-gallery-intro-themed .dsh-gallery-intro-mist {
+  inset: 0;
+  background: linear-gradient(90deg, rgba(4,9,18,.85), rgba(4,9,18,.56) 34%, rgba(4,9,18,.03) 70%),
+    linear-gradient(0deg, rgba(4,9,18,.55), transparent 25%);
+  animation: none;
+}
+.dsh-gallery-intro-themed .dsh-gallery-intro-copy {
+  position: absolute;
+  left: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 49%;
+  max-width: 720px;
+  padding: 0;
+  align-items: flex-start;
+  text-align: left;
+  z-index: 2;
+}
+.dsh-gallery-intro-themed .dsh-gallery-intro-name {
+  margin: 12px 0 8px;
+  color: var(--intro-accent);
+  font: 500 14px/1.5 system-ui, sans-serif;
+  letter-spacing: .3em;
+}
+.dsh-intro-chapter {
+  margin: 0 0 26px;
+  color: var(--intro-muted);
+  opacity: .7;
+  font: 10px/1.5 system-ui, sans-serif;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  animation: intro-copy 900ms 400ms ease-out both;
+}
+/* The title must win over legacy native main h1 rules, even inside a main slot. */
+.dsh-gallery-intro-themed #dsh-gallery-intro-title {
+  color: var(--intro-ink);
+  font: 700 clamp(32px, 4.3vw, 70px)/1.35 var(--intro-font);
+  letter-spacing: .07em;
+  text-shadow: 0 3px 28px rgba(0,0,0,.25);
+}
+.dsh-intro-title-line { display: block; }
+.dsh-intro-rule {
+  width: 96px;
+  height: 2px;
+  margin: 26px 0 20px;
+  background: linear-gradient(90deg, var(--intro-accent), transparent);
+  transform-origin: left;
+  animation: themed-rule 1.2s 650ms ease-out both;
+}
+.dsh-gallery-intro-themed .dsh-gallery-intro-tagline {
+  color: var(--intro-muted);
+  font: 14px/1.8 system-ui, sans-serif;
+  letter-spacing: .14em;
+}
+.dsh-gallery-intro-themed .dsh-gallery-intro-hint { color: var(--intro-muted); z-index: 3; }
+.dsh-gallery-intro-themed .dsh-gallery-intro-skip {
+  z-index: 4;
+  background: rgba(7,16,28,.8);
+  border-color: rgba(220,238,255,.35);
+  color: #edf6ff;
+}
+.dsh-gallery-intro-themed .dsh-gallery-intro-skip:hover { background: rgba(23,40,59,.96); }
+.dsh-gallery-intro-themed .dsh-gallery-intro-skip:focus-visible { outline-color: var(--intro-accent); }
+.dsh-intro-artwork { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+.dsh-intro-emblem, .dsh-intro-stage {
+  color: var(--intro-accent);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dsh-intro-emblem { width: 66px; height: 66px; overflow: visible; animation: themed-emblem 1s 120ms ease-out both; }
+.dsh-intro-stage { position: absolute; width: min(52vw, 760px); right: -6%; top: 10%; opacity: .17; }
+:is(.dsh-intro-stage, .dsh-intro-emblem) :is(.intro-orbit, .intro-core, .intro-rune-inner, .intro-fire-wheel) { transform-box: fill-box; transform-origin: center; }
+.dsh-intro-glow {
+  position: absolute; width: 80vw; height: 80vw; right: -30%; top: -45%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--intro-accent) 16%, transparent), transparent 66%);
+  animation: themed-atmosphere 4s ease-out both;
+}
+.dsh-intro-rays {
+  position: absolute; inset: -30% -10%; opacity: .13;
+  background: conic-gradient(from 145deg at 78% 5%, transparent 0deg 7deg, var(--intro-accent) 8deg 10deg,
+    transparent 11deg 26deg, var(--intro-accent) 27deg 30deg, transparent 31deg 44deg, var(--intro-accent) 45deg 47deg, transparent 48deg);
+  transform-origin: 78% 5%; animation: themed-rays 4s ease-out both;
+}
+.dsh-intro-mote {
+  position: absolute; left: var(--mote-x); bottom: var(--mote-y);
+  width: var(--mote-size); height: var(--mote-size); border-radius: 50%;
+  color: var(--intro-accent); background: currentColor; box-shadow: 0 0 12px currentColor;
+  animation: themed-mote 3.6s var(--mote-delay) ease-out both;
+}
+.dsh-intro-clouds {
+  position: absolute; inset: 64% -12% -20%; opacity: .2;
+  background: radial-gradient(ellipse at 12% 80%, #d2e1eb, transparent 44%),
+    radial-gradient(ellipse at 66% 95%, #fff1cb, transparent 56%);
+  animation: themed-clouds 4s ease-out both;
+}
+.dsh-intro-rain {
+  position: absolute; inset: -30%; opacity: .12;
+  background: repeating-linear-gradient(112deg, transparent 0 69px, #d5e5ed 70px 71px, transparent 72px 143px);
+  animation: themed-rain 4s linear both;
+}
+/* Optical palettes follow the actual wallpaper, rather than the chat accents. */
+.dsh-gallery-intro-themed[data-intro-theme="ultraman"] { --intro-font: system-ui, "Noto Sans CJK SC", sans-serif; --intro-accent: #85d9ff; }
+[data-intro-theme="ultraman"] .intro-orbit { animation: themed-orbit 4s linear both; }
+[data-intro-theme="ultraman"] .intro-core { fill: currentColor; fill-opacity: .12; animation: themed-core 1.6s ease-out both; }
+[data-intro-theme="ultraman"] .intro-core-light { fill: currentColor; fill-opacity: .3; }
+.dsh-gallery-intro-themed[data-intro-theme="perfect-world"] { --intro-accent: #e6bb74; --intro-ink: #fff2d9; --intro-muted: #d2c2a8; }
+[data-intro-theme="perfect-world"] .dsh-intro-stage { right: -4%; top: -12%; opacity: .2; }
+[data-intro-theme="perfect-world"] .intro-rune-inner { animation: themed-orbit 4s linear reverse both; }
+[data-intro-theme="perfect-world"] .intro-rune-mark { stroke-width: 3; }
+[data-intro-theme="perfect-world"] .intro-emperor-star { stroke-width: 3; fill: currentColor; fill-opacity: .04; }
+.dsh-gallery-intro-themed[data-intro-theme="flame-emperor"] { --intro-accent: #72e8d4; --intro-ink: #effff8; --intro-muted: #c2d4cb; }
+[data-intro-theme="flame-emperor"] .dsh-intro-stage { right: -8%; top: auto; bottom: -20%; opacity: .18; width: 49vw; }
+[data-intro-theme="flame-emperor"] .intro-petal { animation: themed-lotus 2.4s ease-out both; }
+[data-intro-theme="flame-emperor"] .intro-flame-core { fill: currentColor; fill-opacity: .13; stroke-width: 3; }
+[data-intro-theme="flame-emperor"] .dsh-intro-mote { color: #f6b674; }
+.dsh-gallery-intro-themed[data-intro-theme="great-sage"] { --intro-accent: #e6bd75; --intro-ink: #fff1d6; --intro-muted: #d5c6ab; }
+[data-intro-theme="great-sage"] .dsh-intro-stage { right: 6%; top: 20%; opacity: .26; }
+[data-intro-theme="great-sage"] .intro-staff { stroke-width: 10; }
+[data-intro-theme="great-sage"] .dsh-intro-stage .intro-staff { stroke-width: 2; }
+[data-intro-theme="great-sage"] .intro-staff-bands { stroke-width: 6; }
+[data-intro-theme="great-sage"] .intro-staff-trail { stroke-width: 1; stroke-dasharray: 100; animation: intro-ink-reveal 1.6s 250ms ease-out both; }
+.dsh-gallery-intro-themed[data-intro-theme="nezha"] { --intro-accent: #ff987e; --intro-ink: #fff2df; --intro-muted: #ead0b5; }
+[data-intro-theme="nezha"] .dsh-intro-stage { right: -9%; top: auto; bottom: -18%; opacity: .32; }
+[data-intro-theme="nezha"] .intro-fire-wheel { animation: themed-orbit 4s linear both; stroke-width: 4; }
+[data-intro-theme="nezha"] .intro-red-ribbon { stroke-width: 12; stroke: #e55e50; stroke-dasharray: 100; animation: intro-ink-reveal 2s 100ms ease-out both; }
+.dsh-gallery-intro-themed[data-intro-theme="whale-prince"] { --intro-accent: #9bddf2; --intro-ink: #eefaff; --intro-muted: #bfd3df; }
+[data-intro-theme="whale-prince"] .dsh-intro-stage { top: auto; bottom: -24%; right: -9%; width: 60vw; opacity: .24; }
+[data-intro-theme="whale-prince"] .intro-wave { animation: themed-tide 4s ease-out both; }
+[data-intro-theme="whale-prince"] .intro-wave-second { animation-delay: 200ms; }
+[data-intro-theme="whale-prince"] .dsh-intro-mote { background: transparent; border: 1px solid currentColor; box-shadow: none; --mote-size: 7px; }
+.dsh-gallery-intro-themed[data-intro-theme="jianlai-aliang"] { --intro-accent: #e0ba81; --intro-ink: #f1f0e8; --intro-muted: #c9c9be; }
+[data-intro-theme="jianlai-aliang"] .dsh-intro-glow { right: auto; left: -46%; top: -20%; background: radial-gradient(circle, #c488382d, transparent 60%); }
+[data-intro-theme="jianlai-aliang"] .dsh-intro-stage { right: 0; top: 25%; opacity: .2; }
+[data-intro-theme="jianlai-aliang"] .intro-sword-glint { stroke-width: 1; animation: themed-sword 4s ease-out both; }
+[data-intro-theme="jianlai-aliang"] .intro-lamp { fill: currentColor; fill-opacity: .12; }
+.dsh-gallery-intro-themed[data-intro-tone="light"] { --intro-ink: #203e55; --intro-muted: #4a6473; background: #eaf5ff; }
+.dsh-gallery-intro-themed[data-intro-tone="light"] .dsh-gallery-intro-mist {
+  background: linear-gradient(90deg, rgba(250,252,243,.88), rgba(250,252,243,.68) 32%, transparent 70%),
+    linear-gradient(0deg, rgba(250,252,243,.78), transparent 34%);
+}
+.dsh-gallery-intro-themed[data-intro-tone="light"] #dsh-gallery-intro-title { text-shadow: 0 2px 24px rgba(255,255,255,.4); }
+.dsh-gallery-intro-themed[data-intro-tone="light"] .dsh-gallery-intro-skip { color: #28475b; background: rgba(249,253,255,.92); border-color: #738fa380; }
+.dsh-gallery-intro-themed[data-intro-tone="light"] .dsh-gallery-intro-skip:hover { background: #fff; }
+.dsh-gallery-intro-themed[data-intro-theme="sunny-watch"] { --intro-font: system-ui, "Noto Sans CJK SC", sans-serif; --intro-accent: #8e4f25; }
+[data-intro-theme="sunny-watch"] .dsh-intro-stage { right: 14%; top: 5%; width: 38vw; opacity: .18; animation: themed-sunrise 4s ease-out both; }
+[data-intro-theme="sunny-watch"] .dsh-intro-rays { --intro-accent: #ffdd98; opacity: .28; }
+[data-intro-theme="sunny-watch"] .intro-city-line { stroke-width: 2; }
+.dsh-gallery-intro-themed[data-intro-theme="young-goku"] { --intro-font: "YouYuan", "Noto Sans CJK SC", system-ui, sans-serif; --intro-accent: #875017; }
+[data-intro-theme="young-goku"] .dsh-intro-stage { right: -4%; top: auto; bottom: 3%; opacity: .24; animation: themed-nimbus 4s ease-out both; }
+[data-intro-theme="young-goku"] .intro-nimbus { fill: #ffe18d; fill-opacity: .6; stroke-width: 3; }
+[data-intro-theme="young-goku"] .dsh-intro-stage :is(.intro-nimbus, .intro-nimbus-curl) { display: none; }
+[data-intro-theme="young-goku"] .intro-cloud-trail { stroke-dasharray: 100; animation: intro-ink-reveal 2.3s 200ms ease-out both; }
+[data-intro-theme="young-goku"] .dsh-intro-mote { color: #f3bf53; box-shadow: none; }
+@keyframes themed-scene-arrival { from { transform: scale(1.035) translateX(.5%); } to { transform: scale(1.065) translateX(0); } }
+@keyframes themed-emblem { from { opacity: 0; transform: translateY(6px) scale(.9); } to { opacity: 1; transform: none; } }
+@keyframes themed-rule { from { opacity: 0; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes themed-atmosphere { from { opacity: 0; transform: scale(.88); } to { opacity: 1; transform: scale(1); } }
+@keyframes themed-rays { from { opacity: 0; transform: rotate(-5deg); } to { opacity: .16; transform: rotate(1deg); } }
+@keyframes themed-mote { 0% { opacity: 0; transform: translateY(25px); } 28%, 68% { opacity: .65; } 100% { opacity: 0; transform: translateY(-100px); } }
+@keyframes themed-clouds { from { opacity: 0; transform: translateX(-4%); } to { opacity: .22; transform: translateX(3%); } }
+@keyframes themed-rain { from { transform: translate(-25px,-35px); } to { transform: translate(25px,70px); } }
+@keyframes themed-orbit { from { transform: rotate(-16deg); } to { transform: rotate(36deg); } }
+@keyframes themed-core { from { opacity: 0; transform: scale(.75); } to { opacity: 1; transform: scale(1); } }
+@keyframes themed-lotus { from { opacity: 0; stroke-dasharray: 100; stroke-dashoffset: 100; } to { opacity: 1; stroke-dasharray: 100; stroke-dashoffset: 0; } }
+@keyframes themed-tide { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(10px); } }
+@keyframes themed-sword { 0%, 20%, 76%, 100% { opacity: 0; } 42%, 56% { opacity: .85; } }
+@keyframes themed-sunrise { from { transform: translateY(25px); opacity: 0; } to { transform: translateY(-4px); opacity: .18; } }
+@keyframes themed-nimbus { from { transform: translateX(-60px) translateY(10px); opacity: 0; } to { transform: translateX(16px) translateY(-5px); opacity: .24; } }
+@media (max-width: 700px) {
+  .dsh-gallery-intro-themed .dsh-gallery-intro-scene { background-position: 90% center; }
+  .dsh-gallery-intro-themed[data-intro-theme="ultraman"] .dsh-gallery-intro-scene { background-position: 100% center; }
+  .dsh-gallery-intro-themed .dsh-gallery-intro-mist {
+    background: linear-gradient(0deg, rgba(4,9,18,.95), rgba(4,9,18,.72) 28%, transparent 64%);
+  }
+  .dsh-gallery-intro-themed[data-intro-tone="light"] .dsh-gallery-intro-mist {
+    background: linear-gradient(0deg, rgba(250,252,243,.96), rgba(250,252,243,.83) 30%, transparent 70%);
+  }
+  .dsh-gallery-intro-themed .dsh-gallery-intro-copy {
+    left: 8%; top: auto; bottom: max(76px, calc(env(safe-area-inset-bottom) + 56px));
+    transform: none; width: 86%; max-width: none;
+  }
+  .dsh-intro-emblem { width: 48px; height: 48px; }
+  .dsh-gallery-intro-themed .dsh-gallery-intro-name { margin-top: 8px; font-size: 12px; }
+  .dsh-intro-chapter { margin-bottom: 16px; font-size: 9px; }
+  .dsh-gallery-intro-themed #dsh-gallery-intro-title { font-size: clamp(27px, 8.5vw, 40px); line-height: 1.4; letter-spacing: .04em; }
+  .dsh-intro-rule { margin: 18px 0 14px; width: 76px; }
+  .dsh-gallery-intro-themed .dsh-gallery-intro-tagline { font-size: 12px; letter-spacing: .1em; }
+  .dsh-gallery-intro-themed .dsh-intro-stage { width: 92vw; right: -28%; top: 15%; bottom: auto; opacity: .12; }
+  .dsh-gallery-intro-themed .dsh-gallery-intro-hint { font-size: 11px; }
+}
+@media (max-height: 520px) {
+  .dsh-gallery-intro-themed .dsh-gallery-intro-copy { top: 50%; bottom: auto; transform: translateY(-50%); width: 63%; }
+  .dsh-intro-emblem { display: none; }
+  .dsh-gallery-intro-themed .dsh-gallery-intro-name { margin: 0 0 6px; }
+  .dsh-intro-chapter { margin-bottom: 12px; }
+  .dsh-gallery-intro-themed #dsh-gallery-intro-title { font-size: clamp(23px, 4.4vw, 37px); }
+  .dsh-intro-rule { margin: 14px 0 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dsh-gallery-intro-themed, .dsh-gallery-intro-themed * { animation: none !important; }
+}

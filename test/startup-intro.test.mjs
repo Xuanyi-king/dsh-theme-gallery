@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { applyGallery } from '../src/client.mjs';
+import { CATALOG } from '../src/catalog.mjs';
 import * as opening from '../src/startup-intro.mjs';
 const { createStartupIntro } = opening;
 
@@ -46,29 +47,6 @@ function fixture(saved = 'gallery-shanhe', fetchImpl = null, reducedMotion = () 
 
 const tick = () => new Promise(resolve => setImmediate(resolve));
 
-for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku']) {
-  test(`${slug} plays its own opening after Host restoration, once per startup`, async () => {
-    const id = `gallery-${slug}`;
-    const h = fixture(null, async () => ({ ok: true, json: async () => ({ themeId: id }) }));
-    await tick();
-    assert.equal(h.gallery.getSelection(), id);
-    assert.equal(h.intro.getSnapshot()?.slug, slug);
-    h.time.advance(4000);
-    assert.equal(h.intro.getSnapshot(), null);
-    h.gallery.select('gallery-shanhe');
-    h.gallery.select(id);
-    await tick();
-    assert.equal(h.intro.getSnapshot(), null);
-    assert.equal(h.time.pending, 0);
-    h.dispose();
-    const reduced = fixture(id, null, () => true);
-    await tick();
-    assert.equal(reduced.intro.getSnapshot(), null);
-    assert.equal(reduced.time.pending, 0);
-    reduced.dispose();
-  });
-}
-
 test('saved Shanhe plays once at startup and closes at four seconds without replay on theme changes', async () => {
   const h = fixture();
   assert.equal(h.intro.getSnapshot(), null);
@@ -86,6 +64,24 @@ test('saved Shanhe plays once at startup and closes at four seconds without repl
   h.dispose();
 });
 
+test('every saved gallery theme plays its own opening once and uses the same four-second boundary', async () => {
+  for (const theme of CATALOG) {
+    const h = fixture(theme.id);
+    await tick();
+    assert.equal(h.intro.getSnapshot()?.slug, theme.slug, theme.id);
+    h.time.advance(3999);
+    assert.equal(h.intro.getSnapshot()?.slug, theme.slug);
+    h.time.advance(1);
+    assert.equal(h.intro.getSnapshot(), null);
+    h.gallery.select('system');
+    h.gallery.select(theme.id);
+    await tick();
+    assert.equal(h.intro.getSnapshot(), null);
+    assert.equal(h.time.pending, 0);
+    h.dispose();
+  }
+});
+
 test('startup waits for the host and uses its restored selection instead of a stale local choice', async () => {
   let respond;
   const h = fixture('gallery-shanhe', () => new Promise(resolve => { respond = resolve; }));
@@ -95,6 +91,7 @@ test('startup waits for the host and uses its restored selection instead of a st
   assert.equal(h.intro.getSnapshot(), null);
   respond({ ok: true, json: async () => ({ themeId: 'gallery-nezha' }) });
   await tick();
+  assert.equal(h.intro.getSnapshot()?.slug, 'nezha');
   h.time.advance(10000);
   assert.equal(h.intro.getSnapshot(), null);
   assert.equal(h.time.pending, 0);
@@ -133,19 +130,21 @@ test('choosing a theme during startup never interrupts the user with a delayed o
   }
 });
 
-test('reduced motion and themes without an intro bypass the opening', async () => {
-  for (const choice of ['system', 'dark', 'gallery-nezha', 'gallery-unknown', null]) {
+test('reduced motion and built-in or invalid choices bypass the opening', async () => {
+  for (const choice of ['system', 'light', 'dark', 'gallery-unknown', null]) {
     const h = fixture(choice);
     await tick();
     assert.equal(h.intro.getSnapshot(), null, String(choice));
     assert.equal(h.time.pending, 0);
     h.dispose();
   }
-  const reduced = fixture('gallery-shanhe', null, () => true);
-  await tick();
-  assert.equal(reduced.intro.getSnapshot(), null);
-  assert.equal(reduced.time.pending, 0);
-  reduced.dispose();
+  for (const theme of CATALOG) {
+    const reduced = fixture(theme.id, null, () => true);
+    await tick();
+    assert.equal(reduced.intro.getSnapshot(), null, theme.id);
+    assert.equal(reduced.time.pending, 0);
+    reduced.dispose();
+  }
 });
 
 test('skip, theme change, and disposal cancel the opening and its timers', async () => {
@@ -189,6 +188,35 @@ test('the opening view exposes theme copy, a modal label, and a working Skip but
   skip.props.onClick();
   assert.equal(View(), null);
   h.dispose();
+});
+
+test('each new opening view exposes the correct artwork and text instead of the Shanhe sample', async () => {
+  const React = {
+    createElement: (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat() }),
+    useSyncExternalStore: (_subscribe, read) => read(),
+    useRef: () => ({ current: null }),
+    useEffect() {},
+  };
+  const text = node => typeof node === 'string' ? node : (node?.children ?? []).map(text).join('');
+  for (const theme of CATALOG.filter(item => item.slug !== 'shanhe')) {
+    const h = fixture(theme.id);
+    await tick();
+    const View = opening.createStartupIntroView(React, h.intro, { document: null, window: null });
+    const tree = View();
+    const nodes = [];
+    const visit = node => { if (!node || typeof node !== 'object') return; nodes.push(node); node.children.forEach(visit); };
+    visit(tree);
+    assert.equal(tree.props['data-intro-theme'], theme.slug);
+    assert.equal(tree.props['data-intro-tone'], theme.definition.colorScheme);
+    assert.equal(text(nodes.find(node => node.type === 'h1')), theme.hero);
+    assert.ok(nodes.some(node => node.props['data-intro-artwork'] === theme.slug));
+    assert.ok(!nodes.some(node => node.props.className === 'dsh-gallery-intro-seal'));
+    assert.ok(text(tree).includes('Esc 跳过 · 即将开启对话'));
+    assert.equal(nodes.filter(node => node.type === 'button').length, 1);
+    nodes.find(node => node.type === 'button').props.onClick();
+    assert.equal(View(), null);
+    h.dispose();
+  }
 });
 
 test('the modal traps Tab, closes on Escape, and restores connected prior focus', async () => {

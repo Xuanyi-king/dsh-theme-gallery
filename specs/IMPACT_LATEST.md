@@ -1,27 +1,27 @@
-# Shanhe startup intro impact
+# e02: Nine themed startup intros
 
 ## Target
-Add a startup-only Shanhe image animation to the unified gallery plugin.
+Extend `src/startup-intro.mjs` and the offline build from a Shanhe-only opening to ten gallery openings. Preserve the shipped Shanhe view and one-shot lifecycle.
 
 ## Dependents
-- `src/client.mjs`: `applyGallery` restores theme selection; `apply` mounts the settings UI.
-- `scripts/build-gallery.mjs`: bundles client source and embeds the existing scenes offline.
-- `test/gallery.test.mjs`: controller persistence, palette restoration, and settings contracts.
-- `test/bundle.test.mjs`: exercises the shipped module loader factory.
+- `src/client.mjs`: initializes the controller and mounts the shell overlay.
+- `scripts/build-gallery.mjs`: combines source modules and CSS into lib/client.js.
+- `test/startup-intro.test.mjs`: startup, restore, cancellation, focus, and reduced-motion contracts.
+- `test/bundle.test.mjs`: shipped module loader and twenty-image offline bundle contract.
+- `scripts/verify-startup-browser.mjs`: browser fixture currently assumes other themes bypass playback.
+- Both READMEs: currently describe a Shanhe-only sample.
 
 ## Affected Stories
-New e01s01 only. No prior specs, release plan, or conventions exist in this repository.
+Historical e01s01 remains the Shanhe sample. New e02s01 adds the nine approved designs and a separate all-theme preview page.
 
 ## Contracts
-Keep theme registration, persistence, host routes, sliders, and standalone packages unchanged.
-Do not add session services or any media routes. Do not duplicate embedded image bytes.
-Keep settings registration compatible; the new overlay uses a separate `shell.overlay` list slot.
-
-## Test Coverage
-Existing tests cover the controller and shipped bundle. New coverage must prove startup waits for restore, plays only once for Shanhe, skips other themes and reduced motion, ends after 4 seconds, cancels on skip/theme change/disposal, and tolerates stalled restore.
+Startup only, four seconds, no audio/video/network media. Built-in/invalid themes and reduced motion still bypass. Saved host selection wins; a stalled restore falls back after 1.5 seconds. User selection suppresses late autoplay. Theme changes/disposal dismiss. Keyboard focus and Skip/Escape remain supported. Theme registration, settings, host routes, standalone packages, and existing images remain unchanged.
 
 ## Risk: Medium
-A startup overlay can obstruct the application or show the wrong restored theme. Use bounded timers, explicit cleanup, keyboard dismissal, and tests of the built artifact.
+The common overlay now handles ten visual variants. Add per-theme lifecycle/view tests and browser checks at desktop and mobile sizes. Keep effect DOM bounded and generated deterministically.
+
+## Test Coverage Gaps
+Old non-Shanhe bypass assertions must become all-gallery playback assertions. Add distinct artwork and mobile text bounds checks. Preserve the Shanhe screenshot composition. Verify the shipped artifact, not source-only components.
 
 ## Recommended action
-Proceed with the user-approved Shanhe sample. Test the controller first and visually inspect a browser fixture before requesting real DSH verification.
+Implement on feat/themed-startup-intros, produce an offline theme chooser, and request visual approval before any push.

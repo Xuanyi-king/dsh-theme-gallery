@@ -1,0 +1,32 @@
+story_id: e02s01
+title: Nine themed startup intros
+status: failing
+implementation_status: passing
+manual_uat: pending
+note: Code gates pass; user visual approval and actual DSH UAT remain pending.
+bcps: 4
+tasks:
+  - id: 1
+    description: Playback eligibility for all gallery themes
+    risk: P1
+    status: passing
+    verify: node --test test/startup-intro.test.mjs
+  - id: 2
+    description: Distinct themed artwork and shipped overlay layouts
+    risk: P1
+    status: passing
+    verify: npm run build && node --test test/startup-intro.test.mjs test/intro-art.test.mjs test/bundle.test.mjs
+  - id: 3
+    description: Offline chooser, desktop/mobile checks and bilingual guides
+    risk: P2
+    status: passing
+    verify: >-
+      DSH_INTRO_BROWSER_TOOLS=/tmp/dsh-intro-browser.zOIqKy
+      FONTCONFIG_FILE=/tmp/dsh-intro-browser.zOIqKy/fontconfig.xml
+      LD_LIBRARY_PATH=/tmp/dsh-intro-browser.zOIqKy/system-libs/extracted/usr/lib/x86_64-linux-gnu
+      node scripts/verify-startup-browser.mjs
+  - id: 4
+    description: Full regression and package checks
+    risk: P1
+    status: passing
+    verify: npm test && git diff --check

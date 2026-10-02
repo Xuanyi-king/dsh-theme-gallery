@@ -469,8 +469,8 @@ export function apply(ctx) {
   }, 'dsh-theme-gallery: selection and scenery');
   const zh = { nav: '主题', title: '主题', intro: '挑选喜欢的主题，即点即换。十款主题都包含在这个插件中。', footnote: '选择保存在 DSH 中；可随时恢复默认外观。', system: '跟随 DSH', light: 'DSH 明亮', dark: 'DSH 深色', appearance: '画面与文字', appearanceHint: '调节时立即生效，重启后仍会保留。默认：深淡 0%、侧栏遮罩 40%、模糊 0px、文字对比 100%。', fade: '背景深淡', sidebarOpacity: '侧栏遮罩', blur: '背景模糊', contrast: '文字对比' };
   const en = { nav: 'Themes', title: 'Themes', intro: 'Choose a theme and switch instantly. All ten are included.', footnote: 'Your choice is saved by DSH. Return to the default at any time.', system: 'DSH default', light: 'DSH Light', dark: 'DSH Dark', appearance: 'Scene and text', appearanceHint: 'Updates instantly and persists after restart. Defaults: depth 0%, sidebar mask 40%, blur 0px, text contrast 100%.', fade: 'Background depth', sidebarOpacity: 'Sidebar mask', blur: 'Scene blur', contrast: 'Text contrast' };
-  Object.assign(zh, { introSkip: '跳过', introHint: 'Esc 跳过 · 即将启程' });
-  Object.assign(en, { introSkip: 'Skip', introHint: 'Esc to skip · Your journey begins' });
+  Object.assign(zh, { introSkip: '跳过', introHint: 'Esc 跳过 · 即将启程', introThemedHint: 'Esc 跳过 · 即将开启对话' });
+  Object.assign(en, { introSkip: 'Skip', introHint: 'Esc to skip · Your journey begins', introThemedHint: 'Esc to skip · Your journey begins' });
   for (const item of CATALOG) { zh[item.slug] = item.zh; en[item.slug] = item.en; }
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'dsh-theme-gallery: locale');
   ctx.slots.inject('settings.section', () => ctx.slots.register({
@@ -482,5 +482,6 @@ export function apply(ctx) {
   }, createStartupIntroView(REACT, startup, {
     skipLabel: ctx.locale.bind(NS)('introSkip'),
     hint: ctx.locale.bind(NS)('introHint'),
+    themedHint: ctx.locale.bind(NS)('introThemedHint'),
   })));
 }

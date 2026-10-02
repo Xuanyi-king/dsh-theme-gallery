@@ -1,0 +1,62 @@
+story_id: e02s01
+base_commit: 51701b85335fdbe77cedfd076b42ae2ee95f7acc
+branch: feat/themed-startup-intros
+implementation_status: passing
+human_visual_review: pending
+actual_dsh_uat: pending
+push_merge_publish: not_requested
+checks:
+  build: passing
+  full_suite:
+    status: passing
+    total: 106
+    root: 51
+    workspaces: 55
+  source_coverage:
+    status: passing
+    total_lines_percent: 87.23
+    total_branches_percent: 81.01
+    startup_lines_percent: 100
+    startup_branches_percent: 100
+    artwork_lines_percent: 100
+    artwork_branches_percent: 100
+  browser:
+    status: passing
+    runtime_errors: 0
+    layouts:
+      - 1440x900 desktop
+      - 390x844 mobile
+      - 320x568 compact phone
+      - 844x390 landscape
+    scenarios:
+      - Correct artwork and theme copy for all ten saved gallery themes
+      - Four-second close and connected prior-focus restoration
+      - Skip and Escape dismissal, keyboard focus containment
+      - No replay after theme changes
+      - Reduced-motion bypass for all ten themes
+      - Built-in and invalid theme bypass
+      - Restored Host choice wins over stale local Shanhe
+      - Plugin disposal removes the overlay
+      - Nine new headings retain intended colors and fonts inside native main
+      - Offline chooser, explicit replay and card selection
+      - Preview controls stay above the legacy wallpaper backdrop
+  syntax: passing
+  whitespace: passing
+  package:
+    status: passing
+    bilingual_guides: included
+    browser_tooling: excluded
+    embedded_webp_occurrences: 20
+    additional_runtime_dependencies: 0
+    version: unchanged_0.3.18
+  standalone_packages: unchanged
+artifacts:
+  directory: /home/xuanyi/dsh-theme-gallery-intros-preview
+  collection: theme-intros.html
+  desktop_contact: contact-desktop.png
+  mobile_contact: contact-mobile.png
+  collection_screenshot: collection.png
+limits:
+  - Browser fixtures simulate DSH services; they do not prove native host integration.
+  - Visual quality needs user approval before push or merge.
+  - No configured repository CI, standalone lint, or typecheck gate.
