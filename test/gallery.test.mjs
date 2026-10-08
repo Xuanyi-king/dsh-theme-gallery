@@ -35,10 +35,10 @@ function harness(saved = null, fetchImpl = null, visualSaved = null) {
   return { ctx, controller, attrs, styles, data, definitions, elements, get choice() { return choice; } };
 }
 
-test('one gallery registers ten unique themes and restores the Sunny Watch selection', () => {
-  assert.equal(CATALOG.length, 10);
+test('one gallery registers eleven unique themes and restores the Sunny Watch selection', () => {
+  assert.equal(CATALOG.length, 11);
   const h = harness('gallery-sunny-watch');
-  assert.equal(h.definitions.size, 12);
+  assert.equal(h.definitions.size, 13);
   assert.equal(h.choice, 'gallery-sunny-watch');
   assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'sunny-watch');
   h.controller.dispose();
@@ -169,7 +169,7 @@ test('settings section offers every theme plus DSH default through an accessible
   const walk = x => { if (!x || typeof x !== 'object') return; nodes.push(x); x.children?.forEach(walk); };
   walk(root);
   const buttons = nodes.filter(x => x.type === 'button');
-  assert.equal(buttons.length, 13);
+  assert.equal(buttons.length, 14);
   assert.equal(buttons.filter(x => x.props['aria-pressed'] === true).length, 1);
   const ranges = nodes.filter(x => x.type === 'input' && x.props.type === 'range');
   assert.deepEqual(ranges.map(x => x.props['aria-label']), ['fade', 'sidebarOpacity', 'blur', 'contrast']);
@@ -269,5 +269,39 @@ test('child Goku theme selects, persists and retains its sky palette', () => {
   assert.equal(h.data.get('dsh.themeGallery.selection'), 'gallery-young-goku');
   assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'young-goku');
   assert.equal(formatRunningStatus('深度求索中', '深度求索中', goku), '乘云思索 · 勇敢向前');
+  h.controller.dispose();
+});
+
+test('Wang Lin switches palette, native heading and active reply text immediately, then resets to DSH', () => {
+  const wanglin = CATALOG.find(item => item.slug === 'wang-lin');
+  assert.ok(wanglin, 'Wang Lin is a choice in the unified gallery');
+  assert.equal(wanglin.zh, '王林 · 一念仙逆');
+  assert.equal(wanglin.definition.colorScheme, 'dark');
+  assert.equal(wanglin.definition.tokens['--dsw-alias-label-primary'], '#edf0f3');
+  const h = harness();
+  h.controller.select(wanglin.id);
+  assert.equal(h.choice, 'gallery-wang-lin');
+  assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'wang-lin');
+  assert.equal(h.data.get('dsh.themeGallery.selection'), 'gallery-wang-lin');
+  const heading = { textContent: '探索未至之境' };
+  decorateHero({ querySelectorAll: () => [heading] }, wanglin);
+  assert.equal(heading.textContent, '一念逆天，执心问道');
+  assert.equal(formatRunningStatus('深度求索中', '深度求索中', wanglin), '逆道推演 · 凝神中');
+  assert.equal(formatLiveRunningStatus('深度求索中，用时 3分3秒...', wanglin), '逆道推演 · 已历 3分3秒');
+  assert.equal(formatLiveRunningStatus('Deep diving for 12s...', wanglin), 'Defiant insight · 12s');
+  assert.equal(formatLiveRunningStatus('已完成工作', wanglin), null);
+  h.controller.adjust('fade', 32);
+  h.controller.adjust('sidebarOpacity', 55);
+  h.controller.adjust('blur', 3);
+  h.controller.adjust('contrast', 125);
+  const restored = harness(h.data.get('dsh.themeGallery.selection'), null, h.data.get('dsh.themeGallery.visual'));
+  assert.equal(restored.choice, wanglin.id);
+  assert.deepEqual(restored.controller.getAdjustments(), { fade: 32, sidebarOpacity: 55, blur: 3, contrast: 125 });
+  restored.controller.dispose();
+  h.controller.select('system');
+  decorateHero({ querySelectorAll: () => [heading] }, null);
+  assert.equal(heading.textContent, '探索未至之境');
+  assert.equal(h.attrs.has('data-dsh-gallery-theme'), false);
+  assert.equal(h.data.has('dsh.themeGallery.selection'), false);
   h.controller.dispose();
 });

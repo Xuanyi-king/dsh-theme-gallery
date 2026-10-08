@@ -2,7 +2,7 @@
 
 [简体中文（默认）](README.md) | **English**
 
-One plugin, ten themes for DeepSeek Harness. Open **Settings → Themes** to choose a theme. Select **DSH default** to restore the built-in appearance. DSH restores your saved theme after a restart.
+One plugin, eleven themes for DeepSeek Harness. Open **Settings → Themes** to choose a theme. Select **DSH default** to restore the built-in appearance. DSH restores your saved theme after a restart.
 
 ## Themes and appearance
 
@@ -20,10 +20,11 @@ Each theme includes a color palette, scene wallpaper, headline, and input hint. 
 | A Liang · Rain Road · 阿良 · 雨夜行 | [View preview](themes/jianlai-aliang/assets/concept-preview.webp) | Traveler, bamboo hat, rainy night, warm lamps, sword light |
 | Sunny Watch · 晴空守望 | [View preview](themes/sunny-watch/assets/concept-preview.webp) | Morning city, clear sky, warm sunlight |
 | Young Goku · Nimbus Journey · 少年悟空 | [View preview](themes/young-goku/assets/concept-preview.webp) | Young Goku, Flying Nimbus, Power Pole, bright landscapes. Unofficial fan theme. |
+| Wang Lin · Renegade Immortal · 王林 | [View preview](themes/wang-lin/assets/concept-preview.webp) | Silver-white hair and robes, slate mountain mist, cinnabar accents, a split red/silver seal. Unofficial Renegade Immortal fan theme. |
 
 The plugin uses newly made visual assets. Character themes are unofficial fan designs. New artwork does not mean original ownership of the characters or permission from their rights holders.
 
-Four sliders adjust the appearance across all ten themes:
+Four sliders adjust the appearance across all eleven themes:
 
 | Control | Default | Effect |
 | --- | --- | --- |
@@ -43,6 +44,8 @@ Version 0.3.19 fixed A Liang, Sunny Watch, and Young Goku being rejected by the 
 On Windows desktop, the title bar uses a solid theme color. The sidebar wallpaper and mask remain adjustable. The plugin styles the existing sidebar, conversation, and input card without replacing their functional buttons.
 
 Shanhe uses a WebP ink landscape instead of the older abstract SVG mountains.
+
+Version 0.3.20 adds **Wang Lin · Renegade Immortal**, with silver-white robes, slate mountain mist, and restrained cinnabar accents. The native home, sidebar, title bar, composer, and running status share the palette. Active replies retain their timer beside a softly breathing red/silver seal; the startup intro reveals the seal through mist. It uses the same four sliders and the existing single installation.
 
 ## Installation
 
@@ -67,13 +70,13 @@ Run:
 dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery
 ```
 
-Then open **Settings → Themes**. One installation includes all ten themes.
+Then open **Settings → Themes**. One installation includes all eleven themes.
 
 After an upgrade, close and reopen DSH to load the new plugin. DSH restores your saved theme. If older standalone theme plugins remain installed, remove them to prevent competing styles.
 
 ## Theme selection and storage
 
-**Settings → Themes** includes ten gallery themes and three built-in choices: **DSH default**, **DSH Light**, and **DSH Dark**.
+**Settings → Themes** includes eleven gallery themes and three built-in choices: **DSH default**, **DSH Light**, and **DSH Dark**.
 
 Select **DSH default** to remove the gallery override. You can select a gallery theme again at any time.
 
@@ -81,7 +84,7 @@ The plugin saves the selection in `dsh-theme-gallery/selection.json` inside the 
 
 ## Theme startup intros
 
-Each saved gallery theme displays its own opening for about 4 seconds after a page restart or refresh. All ten openings use existing wallpapers and code animation. They need no video, audio, or remote media. Shanhe retains the accepted ink-style sample.
+Each saved gallery theme displays its own opening for about 4 seconds after a page restart or refresh. All eleven openings use existing wallpapers and code animation. They need no video, audio, or remote media. Shanhe retains the accepted ink-style sample.
 
 | Theme | Opening effect |
 | --- | --- |
@@ -95,6 +98,7 @@ Each saved gallery theme displays its own opening for about 4 seconds after a pa
 | A Liang | Fine rain, a warm lamp glow, and a brief sword glint |
 | Sunny Watch | Sunrise light, a sun symbol, and a city outline |
 | Young Goku | Light cloud trails, gold arcs, and bright theme text |
+| Wang Lin | Slate mist, a split red/silver seal, and resolute theme copy |
 
 Desktop layouts place the text in the scene whitespace on the left. Narrow layouts place the text near the bottom. The wallpaper crop helps keep character faces visible.
 
@@ -114,11 +118,11 @@ npm test
 npm run pack:gallery
 ```
 
-The root package contains the combined gallery. `themes/<name>/` retains the original resources and tests for each theme. The startup intros apply only to the combined gallery. It does not change standalone theme packages.
+The root package contains the combined gallery. `themes/<name>/` retains theme resources. Wang Lin supplies only palette and assets for the gallery, with no standalone manifest or package. The ten legacy themes retain their original resources and tests. The startup intros apply only to the combined gallery. It does not change standalone theme packages.
 
 ### Optional browser verification
 
-The browser script uses real React and the built `lib/client.js`. It covers all ten themes at desktop, mobile, and 320px widths. It also covers Skip, Esc, automatic dismissal, reduced motion, and theme restoration.
+The browser script uses real React and the built `lib/client.js`. It covers all eleven themes at desktop, mobile, and 320px widths. It also covers Skip, Esc, automatic dismissal, reduced motion, and theme restoration.
 
 1. Install `playwright`, `react@18`, and `react-dom@18` in a directory outside this repository.
 2. Install Chromium through Playwright.

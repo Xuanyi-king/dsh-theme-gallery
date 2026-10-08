@@ -6,7 +6,6 @@ import { createServer } from 'node:http';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { CATALOG } from '../src/catalog.mjs';
 import { createIntroPreview } from './intro-preview.mjs';
 
@@ -97,7 +96,12 @@ for (const [path, contents] of files) {
 const demoPath = join(output, 'shanhe-preview.html');
 await writeFile(demoPath, offline);
 const collectionPath = join(output, 'theme-intros.html');
-await writeFile(collectionPath, createIntroPreview(files));
+const collection = createIntroPreview(files);
+await writeFile(collectionPath, collection);
+// Serve the self-contained review documents over loopback too. Managed
+// Chromium may disallow file: navigation; the documents still embed all assets.
+files.set('/shanhe-preview.html', Buffer.from(offline));
+files.set('/theme-intros.html', Buffer.from(collection));
 
 const server = createServer((req, res) => {
   const path = new URL(req.url, 'http://localhost').pathname;
@@ -109,7 +113,7 @@ const server = createServer((req, res) => {
     if (req.method === 'PUT') { req.resume(); res.end('{}'); return; }
     setTimeout(() => res.end(JSON.stringify({ themeId: themeId === 'none' ? null : themeId })), 200);
   } else if (files.has(path)) {
-    res.setHeader('content-type', 'text/javascript; charset=utf-8');
+    res.setHeader('content-type', path.endsWith('.html') ? 'text/html; charset=utf-8' : 'text/javascript; charset=utf-8');
     res.end(files.get(path));
   } else if (path === '/') {
     res.setHeader('content-type', 'text/html; charset=utf-8');
@@ -175,7 +179,7 @@ try {
   await quiet.waitForTimeout(1700);
   assert.equal(await quiet.evaluate(() => openings), 0);
   evidence.push('reduced motion bypass PASS');
-  for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku']) {
+  for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku', 'wang-lin']) {
     // With motion disabled, verify the actual generated CSS on native-shaped
     // home elements without an overlay obscuring the result.
     await quiet.goto(base + '?saved=gallery-' + slug);
@@ -226,7 +230,7 @@ try {
   await page.evaluate(() => fixture.dispose());
   await intro.waitFor({ state: 'detached' });
   evidence.push('plugin disposal removes the opening PASS');
-  await page.goto(pathToFileURL(demoPath).href);
+  await page.goto(base + '/shanhe-preview.html');
   await intro.waitFor({ state: 'visible' });
   await page.getByRole('button', { name: '跳过', exact: true }).click();
   await intro.waitFor({ state: 'detached' });
@@ -257,7 +261,7 @@ try {
       assert.equal(await target.evaluate(() => openings), 1, 'switches do not replay: ' + theme.slug);
     }
   }
-  evidence.push('all ten themes: correct copy/art, bounded desktop/mobile layouts, Skip, focus trap and no switch replay PASS');
+  evidence.push('all gallery themes: correct copy/art, bounded desktop/mobile layouts, Skip, focus trap and no switch replay PASS');
   await phone.setViewportSize({ width: 320, height: 568 });
   for (const theme of CATALOG) {
     await phone.goto(base + '?saved=' + theme.id);
@@ -268,7 +272,7 @@ try {
     assert.ok(heading.x >= 0 && heading.x + heading.width <= 321 && heading.y >= 0 && heading.y + heading.height <= 568, theme.slug + ' compact phone');
     await phone.keyboard.press('Escape');
   }
-  evidence.push('all ten themes: 320px compact phone layouts PASS');
+  evidence.push('all gallery themes: 320px compact phone layouts PASS');
   await phone.setViewportSize({ width: 844, height: 390 });
   for (const theme of CATALOG) {
     await phone.goto(base + '?saved=' + theme.id);
@@ -279,17 +283,47 @@ try {
     assert.ok(heading.x >= 0 && heading.x + heading.width <= 845 && heading.y >= 0 && heading.y + heading.height <= 390, theme.slug + ' landscape');
     await phone.keyboard.press('Escape');
   }
-  evidence.push('all ten themes: short landscape layouts PASS');
+  evidence.push('all gallery themes: short landscape layouts PASS');
   for (const theme of CATALOG) {
     await quiet.goto(base + '?saved=' + theme.id);
     await quiet.waitForTimeout(350);
     assert.equal(await quiet.evaluate(() => openings), 0, theme.slug);
   }
-  evidence.push('all ten themes: reduced-motion bypass PASS');
+  evidence.push('all gallery themes: reduced-motion bypass PASS');
   await page.goto(base + '?saved=gallery-whale-prince&lang=en');
   await intro.waitFor({ state: 'visible' });
   await page.getByRole('button', { name: 'Skip', exact: true }).click();
   evidence.push('English Skip label PASS');
+  // Exercise both the renderer's live text and its actual CSS on a native-shaped
+  // running row. No model credentials or generated response are needed here.
+  await page.goto(base + '?saved=gallery-wang-lin');
+  await intro.waitFor({ state: 'visible' });
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => {
+    const row = document.createElement('div');
+    row.setAttribute('data-chat-running', '');
+    row.innerHTML = '<div class="fixture_runningContent"><span class="fixture_runningIcon">native whale</span><span class="fixture_runningText">深度求索中，用时 12 秒...</span></div>';
+    document.querySelector('main').append(row);
+  });
+  await page.waitForFunction(() => document.querySelector('.fixture_runningContent').getAttribute('data-dsh-gallery-live-label') === '逆道推演 · 已历 12 秒');
+  const live = page.locator('.fixture_runningContent');
+  const motion = await live.evaluate(node => ({
+    animation: getComputedStyle(node, '::before').animationName,
+    image: getComputedStyle(node, '::before').backgroundImage,
+    native: getComputedStyle(node.querySelector('.fixture_runningIcon')).display,
+  }));
+  assert.equal(motion.animation, 'gallery-defiant');
+  assert.ok(motion.image.includes('data:image/svg+xml'));
+  assert.equal(motion.native, 'none', 'the theme mark does not duplicate the native whale');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  assert.equal(await live.evaluate(node => getComputedStyle(node, '::before').animationName), 'none');
+  await page.evaluate(() => { document.querySelector('.fixture_runningText').textContent = 'Deep diving for 12s...'; });
+  await page.waitForFunction(() => document.querySelector('.fixture_runningContent').getAttribute('data-dsh-gallery-live-label') === 'Defiant insight · 12s');
+  await page.evaluate(() => fixture.select('system'));
+  assert.equal(await live.getAttribute('data-dsh-gallery-live-label'), null);
+  assert.equal(await page.locator('.fixture_runningText').textContent(), 'Deep diving for 12s...');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  evidence.push('Wang Lin native-shaped running row: timed zh/en copy, one breathing mark, reduced motion and default reset PASS');
   for (const theme of CATALOG.filter(item => item.slug !== 'shanhe')) {
     await page.goto(base + '?saved=' + theme.id + '&nested=1');
     await intro.waitFor({ state: 'visible' });
@@ -307,8 +341,8 @@ try {
     assert.deepEqual(typography.actual, typography.expected, 'native heading styles do not override ' + theme.slug);
     await page.keyboard.press('Escape');
   }
-  evidence.push('nine new themes: native main heading CSS does not override intro typography PASS');
-  await page.goto(pathToFileURL(collectionPath).href);
+  evidence.push('all non-Shanhe themes: native main heading CSS does not override intro typography PASS');
+  await page.goto(base + '/theme-intros.html');
   await intro.waitFor({ state: 'visible' });
   await page.keyboard.press('Escape');
   await page.selectOption('#theme-picker', 'flame-emperor');

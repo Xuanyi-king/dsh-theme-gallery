@@ -9,7 +9,7 @@ import { applyGallery } from '../src/client.mjs';
 
 // Exercise the actual HTTP validation and disk storage, rather than a fake
 // fetch that accepts ids the Host would reject.
-for (const id of ['gallery-jianlai-aliang', 'gallery-sunny-watch', 'gallery-young-goku']) {
+for (const id of ['gallery-jianlai-aliang', 'gallery-sunny-watch', 'gallery-young-goku', 'gallery-wang-lin']) {
   test(`${id} replaces an older host selection and restores in a fresh browser`, async () => {
     const home = await mkdtemp(join(tmpdir(), 'dsh-gallery-restart-'));
     const controllers = [];
@@ -49,6 +49,15 @@ for (const id of ['gallery-jianlai-aliang', 'gallery-sunny-watch', 'gallery-youn
       const restarted = newBrowser();
       await restarted.whenReady();
       assert.equal(restarted.getSelection(), id, 'a fresh browser restores the disk selection');
+      if (id === 'gallery-wang-lin') {
+        const reset = new Promise(resolve => { written = resolve; });
+        restarted.select('system');
+        assert.equal(await reset, 200, 'DSH default clears the host override');
+        restarted.dispose();
+        const defaultBrowser = newBrowser();
+        await defaultBrowser.whenReady();
+        assert.equal(defaultBrowser.getSelection(), 'system', 'reset survives a fresh browser too');
+      }
     } finally {
       for (const gallery of controllers) gallery.dispose();
       server.closeAllConnections();

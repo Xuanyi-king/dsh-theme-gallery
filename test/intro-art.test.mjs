@@ -13,7 +13,7 @@ const nodesOf = tree => {
   return nodes;
 };
 
-test('the nine remaining themes have distinct bounded decorative artwork and matching emblems', () => {
+test('every non-Shanhe theme has distinct bounded decorative artwork and a matching emblem', () => {
   const signatures = new Set();
   for (const theme of CATALOG.filter(item => item.slug !== 'shanhe')) {
     const art = createIntroArtwork(React, theme.slug);
@@ -28,7 +28,7 @@ test('the nine remaining themes have distinct bounded decorative artwork and mat
     assert.ok(vectors.length > 0);
     signatures.add(JSON.stringify(vectors.map(node => [node.type, Object.fromEntries(Object.entries(node.props).filter(([key]) => !['className', 'key'].includes(key)))])));
   }
-  assert.equal(signatures.size, 9, 'themes differ in geometry, not just labels or colors');
+  assert.equal(signatures.size, CATALOG.length - 1, 'themes differ in geometry, not just labels or colors');
   for (const slug of ['shanhe', 'unknown', '__proto__']) {
     assert.equal(createIntroArtwork(React, slug), null);
     assert.equal(createIntroEmblem(React, slug), null);
@@ -44,6 +44,6 @@ test('the shipped factory includes the new artwork and theme-specific CSS withou
     assert.equal(module.createIntroArtwork(React, theme.slug).props['data-intro-artwork'], theme.slug);
     assert.ok(client.includes(`[data-intro-theme=\\"${theme.slug}\\"]`), theme.slug);
   }
-  assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, 20);
+  assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, CATALOG.length * 2);
   assert.ok(client.includes('dsh-gallery-intro-themed'));
 });

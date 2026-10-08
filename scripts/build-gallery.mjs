@@ -16,6 +16,7 @@ const sceneMap = {
   'jianlai-aliang': 'rainy-road.webp',
   'sunny-watch': 'sunrise-city.webp',
   'young-goku': 'nimbus-journey.webp',
+  'wang-lin': 'renegade-mist.webp',
 };
 let css = await read('../assets/gallery.css');
 css += '\n' + await read('../assets/startup-intro.css');
@@ -34,10 +35,11 @@ const sidebarPalettes = {
   'jianlai-aliang': ['#172532', '#f2f0e9', '#bdc9cd', '#344553', '#c9a775'],
   'sunny-watch': ['#e9f3fa', '#173a54', '#496b82', '#d9e9f5', '#6eacd2'],
   'young-goku': ['#edf6f9', '#163d58', '#4e7284', '#d9edf4', '#f3b43f'],
+  'wang-lin': ['#141a22', '#edf0f3', '#a6b1bf', '#303b47', '#bb5d60'],
 };
 // All scenes use one adjustable mask above the wallpaper. The three recent
 // themes also adopt the older themes' translucent settings surfaces.
-const recentScenes = new Set(['jianlai-aliang', 'sunny-watch', 'young-goku']);
+const recentScenes = new Set(['jianlai-aliang', 'sunny-watch', 'young-goku', 'wang-lin']);
 // Small line-art marks for the native reply status. The marks animate only
 // while DSH reports an active model turn; no standalone decoration is added.
 const statusMarks = {
@@ -51,6 +53,7 @@ const statusMarks = {
   'jianlai-aliang': '<path d="M3 19 19 3M16 3h3v3M5 20l-2 1 1-2M4 9l2-2m5 11 1-3m8 2 2-1" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
   'sunny-watch': '<path d="M3 18h18M7 14a5 5 0 0 1 10 0M12 2v3M4 7l2 2m14-2-2 2M2 14h2m16 0h2" fill="none" stroke="__ACCENT__" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
   'young-goku': '<path d="M2 17c0-2 1.5-3 3.5-3 0-2 1.5-3 3.3-3 1.5 0 2.5.8 3.1 2 1.4-1.8 4.6-1.3 5.1 1.3 2.4-.5 4.7 1 4.7 3.2 0 1.5-1.1 2.8-3.5 2.8H5c-2 0-3-1.1-3-2.3z" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 6 20 3" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round"/>',
+  'wang-lin': '<path d="M9 4a8.5 8.5 0 0 0 0 16M7 7a5.8 5.8 0 0 0 0 10" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round"/><path d="M15 4a8.5 8.5 0 0 1 0 16M17 7a5.8 5.8 0 0 1 0 10" fill="none" stroke="#d8dfe6" stroke-width="1.2" stroke-linecap="round"/><path d="M12 1l1 8-1 3-1-3zm0 12v10" fill="__ACCENT__" stroke="__ACCENT__" stroke-width=".8"/>',
 };
 const statusMotion = {
   shanhe: 'gallery-ink 3.6s ease-in-out infinite',
@@ -63,6 +66,7 @@ const statusMotion = {
   'jianlai-aliang': 'gallery-blade 2.7s ease-in-out infinite',
   'sunny-watch': 'gallery-sunrise 3.2s ease-in-out infinite',
   'young-goku': 'gallery-nimbus 2.9s ease-in-out infinite',
+  'wang-lin': 'gallery-defiant 3.6s ease-in-out infinite',
 };
 const heroLooks = {
   shanhe: ['"STXingkai", "STKaiti", "KaiTi", serif', '#2d2924', '#66574b', '.16em', '700'],
@@ -75,6 +79,7 @@ const heroLooks = {
   'jianlai-aliang': ['"STKaiti", "KaiTi", "Songti SC", serif', '#f2eee4', '#d4c7b0', '.13em', '650'],
   'sunny-watch': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#17395b', '#385e79', '.08em', '720'],
   'young-goku': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#143956', '#3b6680', '.09em', '740'],
+  'wang-lin': ['"Songti SC", "STSong", "Noto Serif CJK SC", serif', '#edf0f3', '#c2cbd4', '.10em', '650'],
 };
 for (const item of CATALOG) {
   const slug = item.slug;
@@ -483,6 +488,7 @@ body[data-dsh-gallery-theme="shanhe"] button[data-turn-process][data-dsh-gallery
 @keyframes gallery-blade { 0%, 100% { transform: translate(-1px, 1px); opacity: .8; } 50% { transform: translate(1px, -1px); opacity: 1; } }
 @keyframes gallery-sunrise { 0%, 100% { opacity: .8; } 50% { opacity: 1; filter: drop-shadow(0 0 2px var(--gallery-chrome)); } }
 @keyframes gallery-nimbus { 0%, 100% { opacity: .88; transform: translateX(-1px); } 50% { opacity: 1; transform: translateX(1px); } }
+@keyframes gallery-defiant { 0%, 100% { opacity: .78; transform: scale(.98); } 50% { opacity: 1; transform: scale(1.03); } }
 @media (prefers-reduced-motion: reduce) {
   body[data-dsh-gallery-theme] button[data-turn-process][data-dsh-gallery-running] {
     animation: none !important;
@@ -659,6 +665,27 @@ body[data-dsh-gallery-theme="young-goku"] [data-conversation-region="chat"] { ba
 body[data-dsh-gallery-theme="young-goku"] [data-composer-card] { background: rgba(251,254,255,.91); border-color: rgba(55,141,190,.45); box-shadow: 0 14px 38px rgba(25,91,131,.17), inset 0 1px 0 white; }
 body[data-dsh-gallery-theme="young-goku"] button[data-turn-process][data-dsh-gallery-running] { background-image: linear-gradient(90deg, transparent, #f4b447 46%, #52aee0 64%, transparent) !important; }
 @media (max-width: 700px) { body[data-dsh-gallery-theme="young-goku"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 69% center; } }
+`;
+css += `
+/* Wang Lin: quiet graphite surfaces and cinnabar edges over the mist scene. */
+body[data-dsh-gallery-theme="wang-lin"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 68% center; }
+body[data-dsh-gallery-theme="wang-lin"] :is([data-pane="sidebar"], [class*="sidebarCol"]) { background-position: 8% center; border-right-color: rgba(202,212,223,.2); }
+body[data-dsh-gallery-theme="wang-lin"] [data-conversation-region="chat"] { background: linear-gradient(90deg, rgba(20,26,34,.32), transparent 76%); }
+body[data-dsh-gallery-theme="wang-lin"] [data-composer-card] {
+  background: rgba(23,30,39,.9); border-color: rgba(187,93,96,.7);
+  box-shadow: inset 0 1px 0 rgba(237,240,243,.12), 0 16px 38px rgba(8,13,20,.4);
+}
+body[data-dsh-gallery-theme="wang-lin"] [data-composer-card]::before { background: none; border-color: rgba(216,223,230,.12); }
+body[data-dsh-gallery-theme="wang-lin"] [data-composer-card] button[class*="_primary"] { box-shadow: 0 0 0 1px rgba(216,223,230,.22); }
+body[data-dsh-gallery-theme="wang-lin"] :is([data-pane="sidebar"], [class*="sidebarCol"]) [class*="root"]:not([class*="collapsed"]) button[class*="newSession"] {
+  background: color-mix(in srgb, #30242b 80%, #141a22); box-shadow: inset 0 1px 0 rgba(237,240,243,.1);
+}
+body[data-dsh-gallery-theme="wang-lin"] :is([data-pane="sidebar"], [class*="sidebarCol"]) button[class*="newSession"]::after { display: none; }
+.dsh-gallery-card[data-theme="gallery-wang-lin"] .dsh-gallery-light { display: none; }
+@media (max-width: 700px) {
+  body[data-dsh-gallery-theme="wang-lin"] :is([data-pane="conversation"], [class*="centerCol"])::before { background-position: 88% center; }
+  body[data-dsh-gallery-theme="wang-lin"] [data-conversation-region="chat"] { background: linear-gradient(0deg, rgba(20,26,34,.58), rgba(20,26,34,.1)); }
+}
 `;
 for (const item of CATALOG) {
   const [font, ink, muted, tracking, weight] = heroLooks[item.slug];

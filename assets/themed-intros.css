@@ -1,4 +1,4 @@
-/* Nine scenes, sharing the startup lifecycle but not Shanhe's composition. */
+/* Dedicated scenes share the startup lifecycle and preserve Shanhe's composition. */
 .dsh-gallery-intro-themed {
   --intro-accent: #91daff;
   --intro-ink: #f4f8ff;
@@ -183,6 +183,25 @@
 @keyframes themed-sword { 0%, 20%, 76%, 100% { opacity: 0; } 42%, 56% { opacity: .85; } }
 @keyframes themed-sunrise { from { transform: translateY(25px); opacity: 0; } to { transform: translateY(-4px); opacity: .18; } }
 @keyframes themed-nimbus { from { transform: translateX(-60px) translateY(10px); opacity: 0; } to { transform: translateX(16px) translateY(-5px); opacity: .24; } }
+/* A split cinnabar/silver seal rises through quiet mist, below the character. */
+.dsh-gallery-intro-themed[data-intro-theme="wang-lin"] {
+  --intro-accent: #d78688; --intro-ink: #edf0f3; --intro-muted: #c2cbd4;
+  --intro-font: "Songti SC", "STSong", "Noto Serif CJK SC", serif;
+  background: #141a22;
+}
+[data-intro-theme="wang-lin"] .dsh-gallery-intro-scene { background-position: 68% center; }
+[data-intro-theme="wang-lin"] .dsh-gallery-intro-mist {
+  background: linear-gradient(90deg, rgba(20,26,34,.88), rgba(20,26,34,.55) 37%, transparent 74%),
+    linear-gradient(0deg, rgba(20,26,34,.55), transparent 32%);
+  animation: themed-defiant-mist 4s ease-out both;
+}
+[data-intro-theme="wang-lin"] .dsh-intro-stage { top: auto; bottom: -26%; right: -12%; opacity: .12; }
+[data-intro-theme="wang-lin"] .dsh-intro-glow { top: auto; bottom: -65%; opacity: .55; }
+[data-intro-theme="wang-lin"] .intro-defiant-ring { stroke-width: 4; stroke-dasharray: 100; animation: intro-ink-reveal 1.8s 180ms ease-out both; }
+[data-intro-theme="wang-lin"] .intro-defiant-inner { stroke-dasharray: 100; animation: intro-ink-reveal 2s 300ms ease-out both; }
+[data-intro-theme="wang-lin"] .intro-defiant-silver { stroke: #d8dfe6; }
+[data-intro-theme="wang-lin"] .intro-defiant-needle { fill: currentColor; fill-opacity: .4; animation: themed-core 1.5s 250ms ease-out both; }
+@keyframes themed-defiant-mist { from { opacity: 1; transform: translateX(-1%); } to { opacity: .88; transform: none; } }
 @media (max-width: 700px) {
   .dsh-gallery-intro-themed .dsh-gallery-intro-scene { background-position: 90% center; }
   .dsh-gallery-intro-themed[data-intro-theme="ultraman"] .dsh-gallery-intro-scene { background-position: 100% center; }
@@ -204,6 +223,9 @@
   .dsh-gallery-intro-themed .dsh-gallery-intro-tagline { font-size: 12px; letter-spacing: .1em; }
   .dsh-gallery-intro-themed .dsh-intro-stage { width: 92vw; right: -28%; top: 15%; bottom: auto; opacity: .12; }
   .dsh-gallery-intro-themed .dsh-gallery-intro-hint { font-size: 11px; }
+  [data-intro-theme="wang-lin"] .dsh-gallery-intro-scene { background-position: 88% center; }
+  [data-intro-theme="wang-lin"] .dsh-gallery-intro-mist { background: linear-gradient(0deg, rgba(20,26,34,.97), rgba(20,26,34,.8) 32%, transparent 68%); }
+  [data-intro-theme="wang-lin"] .dsh-intro-stage { top: auto; bottom: -17%; opacity: .09; }
 }
 @media (max-height: 520px) {
   .dsh-gallery-intro-themed .dsh-gallery-intro-copy { top: 50%; bottom: auto; transform: translateY(-50%); width: 63%; }

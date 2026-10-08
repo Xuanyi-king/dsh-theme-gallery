@@ -8,6 +8,7 @@ import { THEME as whalePrince } from '../themes/whale-prince/src/client.mjs';
 import { THEME as jianlaiAliang } from '../themes/jianlai-aliang/src/client.mjs';
 import { THEME as sunnyWatch } from '../themes/sunny-watch/src/client.mjs';
 import { THEME as youngGoku } from '../themes/young-goku/src/client.mjs';
+import { THEME as wangLin } from '../themes/wang-lin/src/client.mjs';
 
 const HERO_COPY = Object.freeze({
   shanhe: ['山河入墨，剑意问心', '一念为始 · 万里山河'],
@@ -20,6 +21,7 @@ const HERO_COPY = Object.freeze({
   'jianlai-aliang': ['雨落江湖，执剑同行', '且行江湖路 · 静候一剑鸣'],
   'sunny-watch': ['越过高楼，守护日常', '微光落在每一条街巷'],
   'young-goku': ['乘云而行，勇敢向前', '心怀热爱 · 一路闯关'],
+  'wang-lin': ['一念逆天，执心问道', '凡心不灭 · 逆旅问道'],
 });
 
 const entry = (slug, zh, en, detail, accent, intro, elapsed, english, placeholder, original) => Object.freeze({
@@ -39,4 +41,5 @@ export const CATALOG = Object.freeze([
   entry('jianlai-aliang', '阿良 · 雨夜行', 'A Liang · Rain Road', '斗笠 · 雨夜 · 江湖', '#cfab74', '雨落江湖 · 问剑中', '雨落江湖 · 已行', 'Rain road · thinking', '说说这一路遇见的事…', jianlaiAliang),
   entry('sunny-watch', '晴空守望', 'Sunny Watch · Daybreak', '晴空 · 城市 · 晨光', '#e58a4a', '晨光映城 · 正在思考', '晨光映城 · 已持续', 'Daylight · thinking', '写下你的问题，让答案从这里出发…', sunnyWatch),
   entry('young-goku', '少年悟空 · 筋斗云之旅', 'Young Goku · Nimbus Journey', '筋斗云 · 如意棒 · 晴空', '#efa93c', '乘云思索 · 勇敢向前', '乘云思索 · 已行', 'Nimbus · thinking', '带上你的问题，一起出发…', youngGoku),
+  entry('wang-lin', '王林 · 一念仙逆', 'Wang Lin · Renegade Immortal', '白发 · 雾山 · 逆道赤印', '#bb5d60', '逆道推演 · 凝神中', '逆道推演 · 已历', 'Defiant insight', '执心问道，写下你的问题…', wangLin),
 ]);

@@ -11,6 +11,7 @@ const descriptions = {
   'jianlai-aliang': '细雨斜落 · 暖灯微光 · 一瞬剑意',
   'sunny-watch': '晨光铺开 · 城市轮廓 · 晴空守望',
   'young-goku': '轻盈筋斗云 · 金色轨迹 · 少年启程',
+  'wang-lin': '冷灰雾山 · 赤银逆道印 · 凡心问道',
 };
 const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 
@@ -18,7 +19,7 @@ const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '
 export function createIntroPreview(files) {
   const options = CATALOG.map(item => `<option value="${item.slug}">${escape(item.zh)} / ${escape(item.en)}</option>`).join('');
   const cards = CATALOG.map((item, index) => `<button class="preview-card" type="button" data-preview="${item.slug}" style="--card-accent:${item.accent}"><span class="card-number">${String(index + 1).padStart(2, '0')}</span><strong>${escape(item.zh)}</strong><span class="card-en">${escape(item.en)}</span><span class="card-note">${escape(descriptions[item.slug])}</span></button>`).join('');
-  let html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>十款主题 · 启动开场预览</title>
+  let html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${CATALOG.length} 款主题 · 启动开场预览</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f2f4f7;color:#182638;font-family:system-ui,"Noto Sans CJK SC",sans-serif}
 .preview-shell{position:relative;z-index:1;min-height:100vh;max-width:1180px;margin:auto;padding:64px 28px;background:#f2f4f7;color:#182638;font-family:system-ui,"Noto Sans CJK SC",sans-serif}.preview-eyebrow{font-size:11px;letter-spacing:.22em;color:#66778c}
@@ -30,7 +31,7 @@ export function createIntroPreview(files) {
 .preview-foot{font-size:12px;color:#708196;line-height:1.9;margin-top:28px}.preview-motion{font-size:13px;color:#854817}.preview-shell button:focus-visible,.preview-shell select:focus-visible{outline:2px solid #547ca2;outline-offset:3px}
 @media(max-width:600px){.preview-shell{padding:36px 20px}.preview-grid{grid-template-columns:1fr}.preview-controls select{width:100%}}
 </style></head><body>
-<section class="preview-shell" aria-label="启动动画预览"><p class="preview-eyebrow">DSH THEME GALLERY / STARTUP COLLECTION</p><h1>十种开场，同一个入口。</h1>
+<section class="preview-shell" aria-label="启动动画预览"><p class="preview-eyebrow">DSH THEME GALLERY / STARTUP COLLECTION</p><h1>${CATALOG.length} 种开场，同一个入口。</h1>
 <p class="preview-lead">现有壁纸配合专属矢量动效。每款约 4 秒，按 Esc 或点击「跳过」结束。选择下方主题，可重新播放并比较效果。</p>
 <div class="preview-controls"><label for="theme-picker">预览主题</label><select id="theme-picker">${options}</select><button id="replay" type="button">重播当前开场</button></div>
 <p class="preview-motion" id="motion-note" hidden>系统已启用「减少动态效果」，本页与插件一样不播放启动动画。</p><div class="preview-grid">${cards}</div>

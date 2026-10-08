@@ -66,6 +66,13 @@ const INTRO_VECTORS = Object.freeze({
     path('M12 265C119 308 267 258 344 191', 'intro-cloud-trail'),
     path('M40 284C138 318 271 280 328 230', 'intro-cloud-trail-second'),
   ],
+  'wang-lin': [
+    path('M150 48A135 135 0 0 0 150 312', 'intro-defiant-ring'),
+    path('M210 48A135 135 0 0 1 210 312', 'intro-defiant-ring intro-defiant-silver'),
+    path('M137 82A105 105 0 0 0 137 278', 'intro-defiant-inner'),
+    path('M223 82A105 105 0 0 1 223 278', 'intro-defiant-inner intro-defiant-silver'),
+    path('M180 18L190 130L180 166L170 130ZM180 186V343', 'intro-defiant-needle'),
+  ],
 });
 
 function introSymbol(React, slug, className) {
