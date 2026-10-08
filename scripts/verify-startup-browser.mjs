@@ -64,6 +64,7 @@ const ctx = {
   slots: {
     inject(name, fn) { fn(); },
     register(descriptor, Component) {
+      if (descriptor.name === 'sidebar.panellist') return () => {};
       const root = ReactDOM.createRoot(document.getElementById(descriptor.name === 'shell.overlay' ? 'overlay' : 'settings'));
       roots.push(root);
       root.render(React.createElement(Component, { t: key => key }));

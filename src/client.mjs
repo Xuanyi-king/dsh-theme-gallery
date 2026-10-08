@@ -1,4 +1,7 @@
 import { CATALOG } from './catalog.mjs';
+import { createUpdateController, createUpdatePanel, UPDATE_LOCALES } from './update-client.mjs';
+const BUILD_INFO = null;
+export const PANEL_ID = 'dsh-theme-gallery';
 import { createStartupIntro, createStartupIntroView } from './startup-intro.mjs';
 
 // Replaced with an offline CSS bundle during the build.
@@ -26,7 +29,7 @@ let lastOrnX = null;
 let lastOrnY = null;
 const originalHeroText = new WeakMap();
 
-export const inject = ['theme', 'slots', 'locale'];
+export const inject = ['theme', 'slots', 'locale', 'layout'];
 
 export function formatRunningStatus(announcement, visible, selected) {
   if (!selected) return null;
@@ -388,8 +391,9 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
   }
 }
 
-export function createGallerySection(React, controller, catalog = CATALOG) {
+export function createGallerySection(React, controller, catalog = CATALOG, updates = null) {
   const h = React.createElement;
+  const UpdatePanel = updates ? createUpdatePanel(React, updates) : null;
   return function GallerySection(props) {
     const t = props.t ?? (key => key);
     const [selected, setSelected] = React.useState(() => controller.getSelection());
@@ -412,6 +416,7 @@ export function createGallerySection(React, controller, catalog = CATALOG) {
         h('h2', null, t('title')),
         h('p', null, t('intro')),
       ),
+      ...(UpdatePanel ? [h(UpdatePanel, { t })] : []),
       h('div', { className: 'dsh-gallery-grid' }, choices.map(choice =>
         h('button', {
           key: choice.id, type: 'button', className: 'dsh-gallery-card',
@@ -459,24 +464,67 @@ export function createGallerySection(React, controller, catalog = CATALOG) {
 export function apply(ctx) {
   let controller;
   let startup;
+  let updates;
+  const registered={main:false,sidebar:false};
   ctx.effect(() => {
     controller = applyGallery(ctx);
     startup = createStartupIntro(controller);
+    updates = createUpdateController({ client: BUILD_INFO, probe: async signal => {
+      const urls=[...new Set(STYLE_TEXT.match(/data:image\/webp;base64,[A-Za-z0-9+/=]+/g)??[])];
+      const decoded=typeof Image==='function' ? await Promise.all(urls.map(url=>new Promise(resolve=>{
+        const image=new Image();
+        const finish=valid=>{image.onload=null;image.onerror=null;signal?.removeEventListener('abort',cancel);resolve(valid)};
+        const cancel=()=>{finish(false);image.src=''};
+        image.onload=()=>finish(image.naturalWidth>0);image.onerror=()=>finish(false);
+        if(signal?.aborted)cancel();else{signal?.addEventListener('abort',cancel,{once:true});image.src=url}
+      }))) : [];
+      let appearance=false;try{
+        const selected=controller.getSelection(), cached=localStorage.getItem(STORAGE_KEY);
+        const saved=JSON.parse(localStorage.getItem(VISUAL_KEY)??'null')??VISUAL_DEFAULTS;
+        appearance=(selected??null)===(cached??null) &&
+          Object.entries(controller.getAdjustments()).every(([key,value])=>value===Number(saved[key])) &&
+          document.body.getAttribute(ATTR)===(CATALOG.find(item=>item.id===selected)?.slug??null);
+      }catch{}
+      return {...registered,appearance,resources:urls.length===CATALOG.length*2 && decoded.length===urls.length && decoded.every(Boolean)};
+    }, navigate: () => {
+      const navigation = ctx.get?.('pluginNavigation');
+      if (!navigation?.openBundle) throw new Error('DSH plugin navigation unavailable');
+      navigation.openBundle('dsh-theme-gallery');
+    } });
+    void updates.check();
     return () => {
+      updates.dispose();
       startup.dispose();
       controller.dispose();
     };
   }, 'dsh-theme-gallery: selection and scenery');
+  ctx.on?.('connection/reset', () => { updates.cancel(); void updates.check(); });
   const zh = { nav: '主题', title: '主题', intro: `挑选喜欢的主题，即点即换。${CATALOG.length} 款主题都包含在这个插件中。`, footnote: '选择保存在 DSH 中；可随时恢复默认外观。', system: '跟随 DSH', light: 'DSH 明亮', dark: 'DSH 深色', appearance: '画面与文字', appearanceHint: '调节时立即生效，重启后仍会保留。默认：深淡 0%、侧栏遮罩 40%、模糊 0px、文字对比 100%。', fade: '背景深淡', sidebarOpacity: '侧栏遮罩', blur: '背景模糊', contrast: '文字对比' };
   const en = { nav: 'Themes', title: 'Themes', intro: `Choose a theme and switch instantly. All ${CATALOG.length} are included.`, footnote: 'Your choice is saved by DSH. Return to the default at any time.', system: 'DSH default', light: 'DSH Light', dark: 'DSH Dark', appearance: 'Scene and text', appearanceHint: 'Updates instantly and persists after restart. Defaults: depth 0%, sidebar mask 40%, blur 0px, text contrast 100%.', fade: 'Background depth', sidebarOpacity: 'Sidebar mask', blur: 'Scene blur', contrast: 'Text contrast' };
   Object.assign(zh, { introSkip: '跳过', introHint: 'Esc 跳过 · 即将启程', introThemedHint: 'Esc 跳过 · 即将开启对话' });
   Object.assign(en, { introSkip: 'Skip', introHint: 'Esc to skip · Your journey begins', introThemedHint: 'Esc to skip · Your journey begins' });
+  Object.assign(zh, UPDATE_LOCALES.zh);
+  Object.assign(en, UPDATE_LOCALES.en);
   for (const item of CATALOG) { zh[item.slug] = item.zh; en[item.slug] = item.en; }
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'dsh-theme-gallery: locale');
-  ctx.slots.inject('settings.section', () => ctx.slots.register({
-    name: 'settings.section', id: 'dsh-theme-gallery', order: 55,
-    label: () => ctx.locale.bind(NS)('nav'), locale: NS, inject: () => ({}),
-  }, createGallerySection(REACT, controller)));
+  ctx.slots.inject('main', () => {
+    const release=ctx.slots.register({
+    name: 'main', key: PANEL_ID, locale: NS, inject: () => ({}),
+  }, createGallerySection(REACT, controller, CATALOG, updates));
+    registered.main=true;return()=>{registered.main=false;release?.()};
+  });
+  ctx.slots.inject('sidebar.panellist', () => {
+    const release=ctx.slots.register({
+    name: 'sidebar.panellist', id: PANEL_ID, order: 5,
+    label: () => ctx.locale.bind(NS)('nav'), locale: NS,
+  }, function PaletteIcon({ size = 18 }) {
+    return REACT.createElement('svg', { width: size, height: size, viewBox: '0 0 24 24',
+      fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, 'aria-hidden': true },
+      REACT.createElement('path', { d: 'M12 3a9 9 0 1 0 0 18h1.5a2 2 0 0 0 1.4-3.4 1.5 1.5 0 0 1 1-2.6H18a3 3 0 0 0 3-3c0-5-4-9-9-9Z' }),
+      ...[[7.5,10],[10,6.8],[14,6.8],[17,10]].map(([cx,cy]) => REACT.createElement('circle', { key: cx, cx, cy, r: 1, fill: 'currentColor', stroke: 'none' })));
+  });
+    registered.sidebar=true;return()=>{registered.sidebar=false;release?.()};
+  });
   ctx.slots.inject('shell.overlay', () => ctx.slots.register({
     name: 'shell.overlay', id: 'dsh-theme-gallery-startup', order: 850,
   }, createStartupIntroView(REACT, startup, {

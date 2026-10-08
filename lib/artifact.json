@@ -1,0 +1,15 @@
+{
+  "version": "0.3.21",
+  "fingerprint": "87bb5a164ea12e59533e57ef3064b762b1b79e9aa7538bacfdcd2a39f63ad4e7",
+  "sourceCommit": "deb3c0b415c9f101694cb32d033b21ac0c6bf987",
+  "sourceDirty": true,
+  "manifestSha256": "64fce5c8a6d27c9c0aa81a5572ddbd099e92fa7238baa42b16bb763c87d6e7b3",
+  "resourceCount": 11,
+  "clientSha256": "f050c99c9ec4580849cef35c8a34e810866aaeeff2f3080d3c99430c2b48a6eb",
+  "hostHashes": {
+    "lib/index.js": "d7fd9b72e7750d98e9dcc35e831e4a4e392f2fe72877c569f9e7c51ac6f3be86",
+    "lib/selection-route.js": "7dd9597d28c406635d142f025013c955bd3ab4214277c010bb27b46b64803029",
+    "lib/update-core.js": "f415e28bc84d992c8aec04312a47d9f33a7764e7d53b2a22983cbb6cc4eff726",
+    "lib/update-host.js": "72d3490782751049576629ab3140315587acbd7f15e09f8f7487ae59d8d2ea4f"
+  }
+}

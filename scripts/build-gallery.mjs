@@ -1,9 +1,15 @@
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { CATALOG } from '../src/catalog.mjs';
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const readScene = path => readFile(new URL(path, import.meta.url));
 const body = await read('../src/client.mjs');
+const updater = await read('../src/update-client.mjs');
+const manifest = JSON.parse(await read('../package.json'));
+const hostFiles = ['lib/index.js', 'lib/selection-route.js', 'lib/update-core.js', 'lib/update-host.js'];
+const hostHashes = Object.fromEntries(await Promise.all(hostFiles.map(async file => [file, createHash('sha256').update(await read('../' + file)).digest('hex')])));
 const artwork = await read('../src/intro-scenes.mjs');
 const startup = (await read('../src/startup-intro.mjs'))
   .replace("import { CATALOG } from './catalog.mjs';", '')
@@ -693,9 +699,16 @@ for (const item of CATALOG) {
   css += `body[data-dsh-gallery-theme="${item.slug}"] [class*="_titleGroup"] > span:first-child { font-family: ${font}; font-weight: ${weight}; letter-spacing: ${tracking}; color: ${ink} !important; text-shadow: 0 2px 14px color-mix(in srgb, var(--gallery-sidebar-fill) 74%, transparent), 0 0 22px color-mix(in srgb, var(--gallery-chrome) 22%, transparent); -webkit-text-fill-color: currentColor; background-image: none; }\n`;
   css += `body[data-dsh-gallery-theme="${item.slug}"] [class*="_titleGroup"] > span:first-child::after { content: ${JSON.stringify(item.tagline)} !important; font-family: ${font}; font-weight: 400; color: ${muted}; -webkit-text-fill-color: ${muted}; }\n`;
 }
+css += `\n.dsh-gallery-page { height: 100%; box-sizing: border-box; overflow: auto; padding: clamp(16px, 3vw, 36px); color: var(--dsw-alias-label-primary); background: color-mix(in srgb, var(--dsw-alias-bg-layer-1) 82%, transparent); }\n.dsh-gallery-updates { border: 1px solid var(--dsw-alias-border-l2); border-radius: 16px; padding: 18px; margin-bottom: 24px; background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 70%, transparent); backdrop-filter: blur(12px); }\n.dsh-gallery-version-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }\n.dsh-gallery-version-grid div { min-width: 0; }\n.dsh-gallery-version-grid dt { font-size: 12px; opacity: .7; }\n.dsh-gallery-version-grid dd { margin: 4px 0 0; overflow-wrap: anywhere; }\n.dsh-gallery-update-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }\n.dsh-gallery-update-actions button, .dsh-gallery-update-actions a { color: inherit; border: 1px solid var(--dsw-alias-border-l2); border-radius: 8px; padding: 8px 12px; background: var(--dsw-alias-bg-layer-2); cursor: pointer; font-size: 13px; }\n.dsh-gallery-update-actions button:disabled { opacity: .5; cursor: default; }\n.dsh-gallery-update-actions :focus-visible { outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: 3px; }\n.dsh-gallery-update-reason, .dsh-gallery-updates details p { overflow-wrap: anywhere; white-space: pre-wrap; }\n.dsh-gallery-updates summary { cursor: pointer; margin-top: 16px; }\n@media(max-width:700px) { .dsh-gallery-version-grid { grid-template-columns: minmax(0, 1fr); } .dsh-gallery-updates { padding: 12px; } }\n`;
 const catalog = CATALOG.map(({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, hero, tagline, definition }) =>
   ({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, hero, tagline, definition }));
-const client = (artwork + '\n' + startup + '\n' + body)
+const fingerprint = createHash('sha256').update(JSON.stringify({ manifest, body, updater, artwork, startup, css, catalog, hostHashes })).digest('hex');
+let sourceCommit = null, sourceDirty = true;
+try { sourceCommit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(); sourceDirty = execFileSync('git', ['status', '--porcelain', '--untracked-files=normal'], { encoding: 'utf8' }).trim() !== ''; } catch {}
+const buildInfo = { version: manifest.version, fingerprint, sourceCommit, sourceDirty };
+const client = (artwork + '\n' + startup + '\n' + updater + '\n' + body)
+  .replace("import { createUpdateController, createUpdatePanel, UPDATE_LOCALES } from './update-client.mjs';", '')
+  .replace('const BUILD_INFO = null;', `const BUILD_INFO = ${JSON.stringify(buildInfo)};`)
   .replace("import { createStartupIntro, createStartupIntroView } from './startup-intro.mjs';", '')
   .replace("import { CATALOG } from './catalog.mjs';", `const CATALOG = ${JSON.stringify(catalog)};`)
   .replace("const STYLE_TEXT = '';", `const STYLE_TEXT = ${JSON.stringify(css)};`)
@@ -703,6 +716,9 @@ const client = (artwork + '\n' + startup + '\n' + body)
   .replaceAll('export const ', 'const ')
   .replaceAll('export function ', 'function ');
 if (client.includes('export ') || client.includes("import { CATALOG }")) throw new Error('untransformed client module');
-const bundle = `window.__ModuleLoader__.load({\n  id: 'dsh-theme-gallery',\n  factory: (require) => {\n${client}\n    return { apply, inject, CATALOG, formatRunningStatus, createGallerySection, applyGallery, createStartupIntro, createStartupIntroView, createIntroArtwork, createIntroEmblem };\n  }\n});\n`;
+const bundle = `window.__ModuleLoader__.load({\n  id: 'dsh-theme-gallery',\n  factory: (require) => {\n${client}\n    return { apply, inject, BUILD_INFO, PANEL_ID, createUpdateController, createUpdatePanel, CATALOG, formatRunningStatus, createGallerySection, applyGallery, createStartupIntro, createStartupIntroView, createIntroArtwork, createIntroEmblem };\n  }\n});\n`;
 await mkdir(new URL('../lib/', import.meta.url), { recursive: true });
 await writeFile(new URL('../lib/client.js', import.meta.url), bundle);
+
+await writeFile(new URL('../lib/build-info.js', import.meta.url), `export const BUILD_INFO = ${JSON.stringify(buildInfo)};\n`);
+await writeFile(new URL('../lib/artifact.json', import.meta.url), JSON.stringify({ ...buildInfo, manifestSha256: createHash('sha256').update(JSON.stringify(manifest)).digest('hex'), resourceCount: CATALOG.length, clientSha256: createHash('sha256').update(bundle).digest('hex'), hostHashes }, null, 2) + '\n');

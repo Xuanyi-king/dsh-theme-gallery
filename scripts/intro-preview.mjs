@@ -59,6 +59,7 @@ function playIntro(slug=picker.value){
     effect(fn){const end=fn();if(typeof end==='function')cleanups.push(end)},
     locale:{register(ns,dict){locales.set(ns,dict);return()=>locales.delete(ns)},bind:ns=>key=>locales.get(ns)?.zh[key]||key},
     slots:{inject(_name,fn){const end=fn();if(typeof end==='function')cleanups.push(end)},register(descriptor,Component){
+      if(descriptor.name==='sidebar.panellist')return()=>{};
       const root=ReactDOM.createRoot(document.getElementById(descriptor.name==='shell.overlay'?'overlay':'settings'));
       root.render(React.createElement(Component,{t:ctx.locale.bind('dsh-theme-gallery')}));return()=>root.unmount();
     }}
