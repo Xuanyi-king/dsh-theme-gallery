@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
+import { CATALOG } from '../src/catalog.mjs';
 
-test('installable root package declares one bundle with all ten theme assets', async () => {
+test('installable root package declares one bundle with all eleven theme assets', async () => {
   const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url)));
   const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const loaded = [];
@@ -11,9 +12,9 @@ test('installable root package declares one bundle with all ten theme assets', a
   assert.equal(loaded.length, 1);
   assert.equal(loaded[0].id, 'dsh-theme-gallery');
   const module = loaded[0].factory(name => { if (name === 'react') return { createElement() {} }; throw Error(name); });
-  assert.equal(module.CATALOG.length, 10);
+  assert.equal(module.CATALOG.length, 11);
   assert.equal(module.CATALOG[0].id, 'gallery-shanhe');
-  assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, 20);
+  assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, CATALOG.length * 2);
   assert.ok(client.includes('settings.section'));
   assert.ok(client.includes('prefers-reduced-motion'));
   assert.equal(pkg.dsh.bundle.patch, './cordis.patch.yml');
@@ -23,16 +24,16 @@ test('installable root package declares one bundle with all ten theme assets', a
 
 test('every gallery scene styles its own animated native progress label', async () => {
   const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
-  const choices = ['shanhe', 'ultraman', 'perfect-world', 'flame-emperor', 'great-sage', 'nezha', 'whale-prince', 'jianlai-aliang', 'sunny-watch', 'young-goku'];
+  const choices = CATALOG.map(item => item.slug);
   for (const slug of choices) assert.ok(client.includes(`body[data-dsh-gallery-theme=\\"${slug}\\"]`), slug);
   assert.ok(client.includes('[data-conversation-region=\\"chat\\"]'));
   assert.ok(client.includes('opacity: 0 !important;'));
   assert.ok(client.includes('content: attr(data-dsh-gallery-label) !important;'));
   assert.ok(client.includes('animation: gallery-progress-flow 3.2s linear infinite !important;'));
-  for (const motion of ['ink', 'light', 'rune', 'flame', 'staff', 'lotus', 'tide', 'blade', 'sunrise', 'nimbus']) {
+  for (const motion of ['ink', 'light', 'rune', 'flame', 'staff', 'lotus', 'tide', 'blade', 'sunrise', 'nimbus', 'defiant']) {
     assert.ok(client.includes(`@keyframes gallery-${motion}`), motion);
   }
-  assert.equal((client.match(/--gallery-status-icon: url\(/g) ?? []).length, 10);
+  assert.equal((client.match(/--gallery-status-icon: url\(/g) ?? []).length, CATALOG.length);
   assert.ok(client.includes('animation: var(--gallery-status-motion) !important;'));
   assert.ok(client.includes("content: '墨' !important;"));
   assert.ok(client.includes('animation: gallery-ink-seal 3.6s ease-in-out infinite !important;'));
@@ -67,7 +68,7 @@ test('recent scenes use translucent settings surfaces and sidebar layers', async
   const encoded = bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/);
   assert.ok(encoded, 'built gallery contains CSS');
   const css = JSON.parse(encoded[1]);
-  for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku']) {
+  for (const slug of ['jianlai-aliang', 'sunny-watch', 'young-goku', 'wang-lin']) {
     const tokens = [...css.matchAll(new RegExp(`body\\[data-dsh-gallery-theme="${slug}"\\] \\{([^}]+)\\}`, 'g'))];
     assert.ok(tokens.some(token => /--dsw-specific-sidebar-fill:\s*transparent !important;/.test(token[1])), `${slug} does not add a second mask at the frame`);
     assert.ok(tokens.some(token => /--dsw-alias-bg-layer-1:\s*color-mix\(/.test(token[1])), `${slug} provides translucent settings surfaces`);
@@ -81,10 +82,10 @@ test('recent scenes use translucent settings surfaces and sidebar layers', async
   assert.ok(css.includes('body[data-dsh-gallery-theme] :is([data-pane="sidebar"], [class*="sidebarCol"]) {'), 'the sidebar column paints the scene behind its transparent child');
 });
 
-test('all ten themes expose wallpaper through the adjustable sidebar mask', async () => {
+test('all gallery themes expose wallpaper through the adjustable sidebar mask', async () => {
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
-  for (const slug of ['shanhe', 'ultraman', 'perfect-world', 'flame-emperor', 'great-sage', 'nezha', 'whale-prince', 'jianlai-aliang', 'sunny-watch', 'young-goku']) {
+  for (const { slug } of CATALOG) {
     const target = `body[data-dsh-gallery-theme="${slug}"] [class*="sidebarCol"] > *`;
     const block = css.slice(css.lastIndexOf(target));
     assert.ok(block.startsWith(target), `${slug} reaches the actual sidebar child`);
@@ -98,7 +99,7 @@ test('all ten themes expose wallpaper through the adjustable sidebar mask', asyn
 test('Windows caption is a solid theme color while the sidebar stays translucent', async () => {
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
-  for (const slug of ['shanhe', 'ultraman', 'perfect-world', 'flame-emperor', 'great-sage', 'nezha', 'whale-prince', 'jianlai-aliang', 'sunny-watch', 'young-goku']) {
+  for (const { slug } of CATALOG) {
     const rules = [...css.matchAll(new RegExp(`body\\[data-dsh-gallery-theme="${slug}"\\] \\{([^}]+)\\}`, 'g'))];
     assert.ok(rules.some(([, properties]) => /--gallery-titlebar-fill:\s*#[0-9a-f]{6};/i.test(properties)), `${slug} sets a solid titlebar color`);
   }
@@ -188,10 +189,10 @@ test('bundled plugin registers a settings page whose cards switch and reset them
   const visit = node => { if (!node || typeof node !== 'object') return; nodes.push(node); node.children?.forEach(visit); };
   visit(rendered);
   const buttons = nodes.filter(node => node.type === 'button');
-  assert.equal(buttons.length, 13);
-  buttons.find(node => node.props['data-theme'] === 'gallery-ultraman').props.onClick();
-  assert.equal(preference, 'gallery-ultraman');
-  assert.equal(attrs.get('data-dsh-gallery-theme'), 'ultraman');
+  assert.equal(buttons.length, 14);
+  buttons.find(node => node.props['data-theme'] === 'gallery-wang-lin').props.onClick();
+  assert.equal(preference, 'gallery-wang-lin');
+  assert.equal(attrs.get('data-dsh-gallery-theme'), 'wang-lin');
   buttons.find(node => node.props['data-theme'] === 'system').props.onClick();
   assert.equal(preference, 'system');
   assert.equal(attrs.has('data-dsh-gallery-theme'), false);

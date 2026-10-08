@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { CATALOG } from '../src/catalog.mjs';
 
-for (const { slug } of CATALOG) {
+// Wang Lin is a gallery-only resource; the ten legacy packages stay compatible.
+for (const { slug } of CATALOG.filter(item => item.slug !== 'wang-lin')) {
   test(`${slug} standalone theme decorates the DSH 0.2 live status`, async () => {
     const theme = await import(`../themes/${slug}/src/client.mjs`);
     const attrs = new Map();

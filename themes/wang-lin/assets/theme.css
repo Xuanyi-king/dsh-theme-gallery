@@ -1,0 +1,13 @@
+/* Gallery-only Wang Lin resources; the unified builder owns scene and status. */
+body[data-wang-lin-theme] {
+  --dsw-focus-ring-color: #d78688;
+  --dsw-elevation-stroke-color: rgba(187,93,96,.38);
+  color: #edf0f3;
+  background: #141a22;
+}
+body[data-wang-lin-theme] :is(textarea, [contenteditable="true"]) {
+  caret-color: #d78688;
+}
+body[data-wang-lin-theme] :is(textarea, [contenteditable="true"]):focus-visible {
+  outline-color: #d78688;
+}
