@@ -2,7 +2,7 @@
 
 [简体中文（默认）](README.md) | **English**
 
-One plugin, eleven themes for DeepSeek Harness. Open **Settings → Themes** to choose a theme. Select **DSH default** to restore the built-in appearance. DSH restores your saved theme after a restart.
+One plugin, eleven themes for DeepSeek Harness. Open the sidebar **Themes** center to choose a theme. Select **DSH default** to restore the built-in appearance. DSH restores your saved theme after a restart.
 
 ## Themes and appearance
 
@@ -33,7 +33,7 @@ Four sliders adjust the appearance across all eleven themes:
 | Scene blur | 0 px | Adjusts wallpaper blur |
 | Text contrast | 100% | Adjusts text contrast |
 
-Slider changes take effect immediately and remain on the current device after a restart. These controls do not change built-in DSH themes. The settings page uses its own translucent background.
+Slider changes take effect immediately and remain on the current device after a restart. These controls do not change built-in DSH themes. The theme center uses its own translucent background.
 
 During a model response, each theme shows its own text, elapsed time, and small animated mark in the native status area. The plugin supports the separate DSH 0.2 status row. With reduced motion enabled, the mark stays still.
 
@@ -59,7 +59,7 @@ https://github.com/Xuanyi-king/dsh-theme-gallery
 ```
 
 3. Select **Install**.
-4. Open **Settings → Themes**.
+4. Open the sidebar **Themes** center.
 5. Select a theme card.
 
 ### Web profile
@@ -70,13 +70,49 @@ Run:
 dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery
 ```
 
-Then open **Settings → Themes**. One installation includes all eleven themes.
+Then open the sidebar **Themes** center. One installation includes all eleven themes.
 
 After an upgrade, close and reopen DSH to load the new plugin. DSH restores your saved theme. If older standalone theme plugins remain installed, remove them to prevent competing styles.
 
+## v0.3.21: dedicated theme center and safe updates
+
+Select **Themes** below **Plugins** in the sidebar. The native panel supports its collapsed palette icon, keyboard navigation and Chinese/English labels. Closing the page keeps the theme active. The old `settings.section` contribution is removed; `shell.overlay` startup intros remain.
+
+The top panel separates the running Client version, disk manifest, installation source, reliable locked commit, build fingerprint, DSH/Node and remote target. A single nonblocking startup check is read-only; nothing installs automatically. Checks prefer verified stable GitHub Releases, otherwise fetch the default branch commit and its pinned manifest/bundle from the fixed official repository. README text is never a version source. Network failures, proxy issues, rate limits, timeouts, older remote data or historical artifacts without metadata remain failed/unknown.
+
+| DSH | v0.3.21 support |
+| --- | --- |
+| `0.2.1-alpha.1` | Primary target, pinned official tag; actual Web evidence in acceptance record |
+| `0.2.0-rc.2` | Regression target with the same main/sidebar/Connection contract |
+| Other versions, including 0.1.x and unreviewed future versions | Unverified; do not widen peers or force an incompatible install |
+
+Node requires `^22.19.0 || >=24`. The peer explicitly includes `0.2.1-alpha.1`; a stable `^0.2.1` floor does not admit that prerelease.
+
+| Installation source | Supported detection/guidance |
+| --- | --- |
+| Official GitHub repository | Dependency spec and locked commit checked separately; unknown/stale lock explained, target pinned |
+| Registry / local `.tgz` | Manifest, running build and artifacts checked; native-manager guidance |
+| `link:` / junction / local directory | Read-only identification and backup; update the source without moving/deleting it |
+| Unproven source / custom Host | Unknown/unsupported; no generic installation command |
+
+**Check compatibility** reports DSH/Node, every DSH peer with real SemVer/prerelease matching, target artifacts, disk/runtime agreement, writable target, a single active entry and a recovery path. Incompatibility blocks updates. The official Host has no full safe upgrade transaction; even a compatible target only offers **Save recovery baseline → Download baseline → Open DSH plugin details**. This plugin never runs npm/pnpm installers, chains uninstall/install, upgrades DSH or modifies other plugins.
+
+
+**Verify running state again** reads the saved baseline after restart and checks disk/Host/Client, active state, registrations, actual image decoding, theme and sliders against the original configuration. Missing evidence remains unknown. Baseline IDs persist in the browser; backups reject linked boundaries outside this plugin and preserve original bytes and unknown fields.
+
+### Manual updates and recovery
+
+1. Save and download the baseline. The only Host backup is `dsh-theme-gallery/update-baselines/<unique ID>.json`. Record the original fixed artifact, source, locked commit and Profile. The baseline retains original `selection.json` bytes (including unknown fields), browser theme copy and all four sliders; it never copies DSH_HOME.
+2. From an independent terminal or external Agent inspect `dsh --version`, Node, installation type and target peers. Confirm a recoverable original artifact before uninstalling. Use the official manager or the matching installation mechanism for this plugin only. GitHub installs may retain an old lock commit; verify the resolved result rather than deleting the whole lockfile or updating every dependency.
+3. On Windows fully stop DSH to release file locks; closing the browser is insufficient. Never install from the plugin/DSH session being replaced. A link/junction is the source itself: never blindly copy into, move or remove it.
+4. Restart the Host and hard-refresh the browser. Verify running Client/Host/manifest, locked commit, active status, navigation, resources, theme and sliders. Downloaded, installed and activated are separate stages. Inspect unknown outcomes before retrying.
+5. Download failures leave the original intact. After install failures reinstall the recorded original fixed artifact externally. Recover Host load failures externally; for client failures check the actual bundle/cache then refresh. Restore only baseline `selectionRaw` to this plugin’s `selection.json` at its original path, keeping the backup. Restore only browser keys `dsh.themeGallery.selection` and `dsh.themeGallery.visual` (remove a key when null); never clear all storage or other plugin settings.
+
+See [design evidence](docs/THEME-CENTER-UPGRADE-DESIGN.md) and [acceptance record](docs/THEME-CENTER-ACCEPTANCE.md) for fault injection, actual Host evidence and Windows limitations.
+
 ## Theme selection and storage
 
-**Settings → Themes** includes eleven gallery themes and three built-in choices: **DSH default**, **DSH Light**, and **DSH Dark**.
+the sidebar **Themes** center includes eleven gallery themes and three built-in choices: **DSH default**, **DSH Light**, and **DSH Dark**.
 
 Select **DSH default** to remove the gallery override. You can select a gallery theme again at any time.
 

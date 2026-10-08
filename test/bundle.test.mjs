@@ -15,7 +15,9 @@ test('installable root package declares one bundle with all eleven theme assets'
   assert.equal(module.CATALOG.length, 11);
   assert.equal(module.CATALOG[0].id, 'gallery-shanhe');
   assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, CATALOG.length * 2);
-  assert.ok(client.includes('settings.section'));
+  assert.ok(!client.includes("name: 'settings.section'"));
+  assert.ok(client.includes("name: 'sidebar.panellist'"));
+  assert.ok(client.includes("name: 'main'"));
   assert.ok(client.includes('prefers-reduced-motion'));
   assert.equal(pkg.dsh.bundle.patch, './cordis.patch.yml');
   assert.ok(pkg.dsh.client.inject.includes('@deepseek-ai/dsh-client-ui-slots'));
@@ -141,7 +143,7 @@ test('Shanhe no longer draws the sword divider', async () => {
   assert.ok(!css.includes('body[data-dsh-gallery-theme="shanhe"] :is([data-pane="conversation"], [class*="centerCol"])::after'), 'the sword pseudo-element is absent');
 });
 
-test('bundled plugin registers a settings page whose cards switch and reset themes', async () => {
+test('bundled plugin registers one native panel whose cards switch and reset themes', async () => {
   const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const loaded = [];
   const attrs = new Map();
@@ -156,7 +158,7 @@ test('bundled plugin registers a settings page whose cards switch and reset them
   vm.runInNewContext(client, {
     window: { __ModuleLoader__: { load: entry => loaded.push(entry) } }, document,
     localStorage: { getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value), removeItem: key => data.delete(key) },
-    setTimeout, clearTimeout,
+    setTimeout, clearTimeout, AbortController,
   });
   const plugin = loaded[0].factory(name => { if (name === 'react') return React; throw Error(name); });
   const registered = new Map();
@@ -176,10 +178,12 @@ test('bundled plugin registers a settings page whose cards switch and reset them
     slots: { inject: (_slot, register) => register(), register: (descriptor, component) => { slots.push({ descriptor, component }); return () => {}; } },
   };
   plugin.apply(ctx);
-  assert.equal(slots.length, 2);
-  const settings = slots.find(slot => slot.descriptor.name === 'settings.section');
+  assert.equal(slots.length, 3);
+  const settings = slots.find(slot => slot.descriptor.name === 'main');
   const overlay = slots.find(slot => slot.descriptor.name === 'shell.overlay');
-  assert.equal(settings.descriptor.id, 'dsh-theme-gallery');
+  assert.equal(settings.descriptor.key, 'dsh-theme-gallery');
+  assert.equal(slots.find(slot => slot.descriptor.name === 'sidebar.panellist').descriptor.id, settings.descriptor.key);
+  assert.equal(slots.find(slot => slot.descriptor.name === 'sidebar.panellist').descriptor.order, 5);
   assert.equal(overlay.descriptor.id, 'dsh-theme-gallery-startup');
   assert.ok(client.includes('.dsh-gallery-intro'));
   assert.ok(client.includes('intro-ink-reveal'));
@@ -189,7 +193,7 @@ test('bundled plugin registers a settings page whose cards switch and reset them
   const visit = node => { if (!node || typeof node !== 'object') return; nodes.push(node); node.children?.forEach(visit); };
   visit(rendered);
   const buttons = nodes.filter(node => node.type === 'button');
-  assert.equal(buttons.length, 14);
+  assert.equal(buttons.filter(node=>node.props['data-theme']).length, 14);
   buttons.find(node => node.props['data-theme'] === 'gallery-wang-lin').props.onClick();
   assert.equal(preference, 'gallery-wang-lin');
   assert.equal(attrs.get('data-dsh-gallery-theme'), 'wang-lin');
@@ -198,4 +202,13 @@ test('bundled plugin registers a settings page whose cards switch and reset them
   assert.equal(attrs.has('data-dsh-gallery-theme'), false);
   for (const stop of effects.reverse()) stop?.();
   assert.equal(registered.size, 0);
+});
+
+test('executed client build identity and Host identity match the root manifest',async()=>{
+ const pkg=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
+ const loaded=[];vm.runInNewContext(await readFile(new URL('../lib/client.js',import.meta.url),'utf8'),{window:{__ModuleLoader__:{load:v=>loaded.push(v)}}});
+ const client=loaded[0].factory(()=>({}));const host=await import('../lib/build-info.js');
+ assert.equal(client.BUILD_INFO.version,pkg.version);assert.equal(host.BUILD_INFO.version,pkg.version);assert.equal(client.BUILD_INFO.fingerprint,host.BUILD_INFO.fingerprint);
+ const metadata=JSON.parse(await readFile(new URL('../lib/artifact.json',import.meta.url),'utf8'));
+ assert.equal(metadata.version,pkg.version);assert.equal(metadata.fingerprint,client.BUILD_INFO.fingerprint);
 });

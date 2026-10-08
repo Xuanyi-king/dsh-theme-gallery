@@ -51,3 +51,9 @@ test('route validates origin and theme ids, and reads back the selected theme', 
     assert.equal(JSON.parse((await call('GET')).body).themeId, 'gallery-nezha');
   } finally { dispose(); await rm(home, { recursive: true, force: true }); }
 });
+
+test('selection routes can enforce the official Connection admission fence', async()=>{
+  let route;registerSelectionRoute({register(value){route=value;return()=>{}}},{authorize:()=>401});
+  const req=Readable.from([]);req.method='GET';req.headers={host:'localhost'};let status;
+  await route.handler(req,{writeHead(code){status=code},end(){}});assert.equal(status,401);
+});
