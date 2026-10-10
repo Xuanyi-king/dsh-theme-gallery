@@ -1,7 +1,10 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';
+import test from 'node:test';import assert from 'node:assert/strict';import {mkdtemp,mkdir,writeFile,readFile,rm,symlink} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';
 import { createUpdateHandler } from '../lib/update-host.js';
 const build={version:'0.3.21',fingerprint:'f'.repeat(64)};
-const info={manifest:{name:'dsh-theme-gallery',version:'0.3.21'},build,artifactValid:true,source:{kind:'link'},runtimeVersion:'0.2.1-alpha.1'};
+const info={manifest:{name:'@xuanyi-king/dsh-theme-gallery',version:'0.3.21'},build,artifactValid:true,source:{kind:'link'},runtimeVersion:'0.2.1-alpha.1'};
+// Windows only permits symlinks with Developer Mode or elevation; the tests that
+// need them assert a capability, so skip there instead of reporting a false failure.
+const symlinkSkip = await (async () => { const dir=await mkdtemp(join(tmpdir(),'gallery-symlink-')); try { await symlink(process.cwd(),join(dir,'link')); return false; } catch { return 'this platform does not permit creating symlinks'; } finally { await rm(dir,{recursive:true,force:true}); } })();
 test('only authenticated Connection routes are registered; requests never install anything',async()=>{
   const home=await mkdtemp(join(tmpdir(),'gallery-handler-'));try{
     await mkdir(join(home,'dsh-theme-gallery'));await writeFile(join(home,'dsh-theme-gallery','selection.json'),'{"themeId":"gallery-wang-lin"}');
@@ -25,7 +28,7 @@ test('cancelled Host operation cannot return a stale successful check after plug
  const pending=handler.fetch(new Request('http://localhost/api/dsh-theme-gallery/update/check',{method:'POST',body:'{}'}));await new Promise(r=>setTimeout(r,0));handler.dispose();resolve({version:'0.3.21',build,commit:'a'.repeat(40),channel:'commit'});const response=await pending;assert.equal(response.status,503);assert.equal((await response.json()).status,'unknown');
 });
 
-test('runtime source identity rejects another loaded directory and internal source links',async()=>{
+test('runtime source identity rejects another loaded directory and internal source links',{skip:symlinkSkip},async()=>{
  const {readRuntimeInfo}=await import('../lib/update-host.js');
  const {symlink}=await import('node:fs/promises');
  const home=await mkdtemp(join(tmpdir(),'gallery-source-'));try{
@@ -80,4 +83,19 @@ test('read-only runtime info remains available while a background GitHub check i
  const runtime=await handler.fetch(new Request('http://localhost/api/dsh-theme-gallery/update/info'));
  assert.equal(runtime.status,200);assert.equal((await runtime.json()).info.build.version,'0.3.21');
  resolve({version:'0.3.21',build,artifactValid:true,channel:'commit',commit:'a'.repeat(40)});await pending;handler.dispose();
+});
+test('scoped install path resolves and the pre-rename path keeps working',{skip:symlinkSkip},async()=>{
+ const {readRuntimeInfo}=await import('../lib/update-host.js');
+ const {symlink}=await import('node:fs/promises');
+ for(const [name,segments] of [['@xuanyi-king/dsh-theme-gallery',['@xuanyi-king','dsh-theme-gallery']],['dsh-theme-gallery',['dsh-theme-gallery']]]){
+  const home=await mkdtemp(join(tmpdir(),'gallery-scoped-'));try{
+   const profile=join(home,'profile'),outer=segments.slice(0,-1);
+   await mkdir(outer.length?join(profile,'node_modules',...outer):join(profile,'node_modules'),{recursive:true});
+   await writeFile(join(profile,'package.json'),JSON.stringify({dependencies:{[name]:'github:Xuanyi-king/dsh-theme-gallery'}}));
+   const source=join(profile,'source');await symlink(process.cwd(),source);await symlink(source,join(profile,'node_modules',...segments));
+   const ctx={profileContext:{dir:profile,home,installAnchor:join(profile,'package.json'),name:'test'},pluginManager:{listPlugins:async()=>[]}};
+   const actual=await readRuntimeInfo(ctx,{directory:process.cwd()});
+   assert.equal(actual.source.kind,'link',name);assert.equal(actual.source.commit,null,name);
+  }finally{await rm(home,{recursive:true,force:true})}
+ }
 });

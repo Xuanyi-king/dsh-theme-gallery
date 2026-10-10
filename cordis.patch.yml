@@ -1,3 +1,3 @@
 - insert:
     - id: dsh-theme-gallery
-      name: dsh-theme-gallery
+      name: '@xuanyi-king/dsh-theme-gallery'

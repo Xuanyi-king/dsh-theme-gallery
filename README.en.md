@@ -51,11 +51,13 @@ Version 0.3.20 adds **Wang Lin · Renegade Immortal**, with silver-white robes, 
 
 ### Desktop app
 
+The plugin is published to npm as `@xuanyi-king/dsh-theme-gallery`.
+
 1. Open **Plugins → Add plugin** in DSH.
-2. Paste this repository address into the input field:
+2. Paste this package name into the input field:
 
 ```text
-https://github.com/Xuanyi-king/dsh-theme-gallery
+@xuanyi-king/dsh-theme-gallery
 ```
 
 3. Select **Install**.
@@ -67,8 +69,12 @@ https://github.com/Xuanyi-king/dsh-theme-gallery
 Run:
 
 ```bash
-dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery
+dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
 ```
+
+> Do not install from the GitHub repository address. A `https://github.com/...` or `github:` spec makes pnpm clone the entire git history (this repository's snapshot is about 21MB), and DSH runs a GitHub reachability pre-check first (5s default timeout) that fails outright as `spec-host` on GitHub-restricted networks. The npm spec needs one registry metadata request.
+
+> Before 0.3.21 the published name was `dsh-theme-gallery` (installed from the GitHub address). The name changed to avoid an unrelated npm package that already owned it. Remove the old `dsh-theme-gallery` dependency before installing the new name, or two bundles will insert the same plugin.
 
 Then open the sidebar **Themes** center. One installation includes all eleven themes.
 
@@ -84,9 +90,10 @@ The top panel separates the running Client version, disk manifest, installation 
 | --- | --- |
 | `0.2.1-alpha.1` | Primary target, pinned official tag; actual Web evidence in acceptance record |
 | `0.2.0-rc.2` | Regression target with the same main/sidebar/Connection contract |
-| Other versions, including 0.1.x and unreviewed future versions | Unverified; do not widen peers or force an incompatible install |
+| Other `0.2.x`, prereleases included | Peer range `>=0.2.0-0 <0.3.0` matches automatically on the same main/sidebar/Connection contract |
+| `0.1.x` and `>=0.3.0` | Unverified; do not widen peers or force an incompatible install |
 
-Node requires `^22.19.0 || >=24`. The peer explicitly includes `0.2.1-alpha.1`; a stable `^0.2.1` floor does not admit that prerelease.
+Node requires `^22.19.0 || >=24`. The DSH peer is `>=0.2.0-0 <0.3.0`: the floor is written `0.2.0-0` rather than `0.2.0` so prereleases such as `0.2.0-rc.2` and `0.2.1-alpha.1` stay matchable under SemVer, while the `0.3.0` ceiling prevents a cross-major install. The same range is declared in `engines.dsh` so the plugin catalog can predict compatibility before installing.
 
 | Installation source | Supported detection/guidance |
 | --- | --- |

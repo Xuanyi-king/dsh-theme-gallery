@@ -32,17 +32,21 @@ v0.3.20 新增「王林 · 一念仙逆」（《仙逆》非官方同人主题�
 
 ## 安装
 
-在 DSH 桌面应用中打开「插件 → 添加插件」，在输入框粘贴下面的仓库地址，点击「安装」：
+插件已发布到 npm，包名为 `@xuanyi-king/dsh-theme-gallery`。在 DSH 桌面应用中打开「插件 → 添加插件」，在输入框粘贴下面的包名，点击「安装」：
 
 ```text
-https://github.com/Xuanyi-king/dsh-theme-gallery
+@xuanyi-king/dsh-theme-gallery
 ```
 
 通过 Web profile 的命令行安装时，也只需一条命令：
 
 ```bash
-dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery
+dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
 ```
+
+> 不要再粘贴 GitHub 仓库地址安装。`https://github.com/...` 或 `github:` 规格会让 pnpm 克隆整份 git 历史（本仓库快照约 21MB），而且 DSH 在安装前会先做一次 GitHub 连通性预检（默认 5 秒超时），在 GitHub 受限的网络里会直接失败在 `spec-host`；npm 规格只需要一次 registry 元数据请求。
+
+> 0.3.21 之前的发行包名是 `dsh-theme-gallery`（经 GitHub 地址安装）。改名是为了避开 npm 上与本项目无关的同名包。升级时请先移除旧的 `dsh-theme-gallery` 依赖，再安装新包名，否则两份 bundle 会同时插入插件。
 
 安装后打开左侧「主题」中心，点击喜欢的主题卡片即可切换，不需要为每款主题分别安装插件。
 升级后关闭、重开一次 DSH，加载新版插件；已保存的主题会自动恢复。已安装的旧版单款主题插件需要移除，避免同时覆盖界面样式。
@@ -57,9 +61,10 @@ dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery
 | --- | --- |
 | `0.2.1-alpha.1` | 本次主要适配目标，固定官方 tag 契约；真实 Web 验收详见验收记录 |
 | `0.2.0-rc.2` | 旧版回归目标，相同 main/sidebar/connection 契约 |
-| 其他版本（含旧 0.1.x 与后续未核对版本） | 未验证，不自动放宽 peer；选择相应兼容插件版本，不强行安装 |
+| 其他 `0.2.x`（含 prerelease） | peer 声明为 `>=0.2.0-0 <0.3.0`，同一条 main/sidebar/connection 契约按 SemVer 自动匹配 |
+| `0.1.x` 与 `>=0.3.0` | 未验证，不自动放宽 peer；选择相应兼容插件版本，不强行安装 |
 
-Node 需要 `^22.19.0 || >=24`。DSH peer 显式包含 `0.2.1-alpha.1`；`^0.2.1` 的稳定版本下界不能匹配该 prerelease。
+Node 需要 `^22.19.0 || >=24`。DSH peer 为 `>=0.2.0-0 <0.3.0`：下界写成 `0.2.0-0` 而不是 `0.2.0`，这样 `0.2.0-rc.2`、`0.2.1-alpha.1` 这类预发布版本才在 SemVer 里可匹配，上界 `0.3.0` 防止跨大版本误装。同一个范围也写在 `engines.dsh`，供插件市场在安装前预判兼容性。
 
 | 安装来源 | 检测与引导能力 |
 | --- | --- |

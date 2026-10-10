@@ -6,17 +6,20 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { classifySource, compatibility, compareTarget, inspectTarget, checkGithub, preflight, saveBaseline, verifyRuntime, validateArtifact, HOST_FILES } from '../lib/update-core.js';
 const sha = 'a'.repeat(40), old = 'b'.repeat(40);
+// Windows only permits symlinks with Developer Mode or elevation; the tests that
+// need them assert a capability, so skip there instead of reporting a false failure.
+const symlinkSkip = await (async () => { const dir = await mkdtemp(join(tmpdir(), 'gallery-symlink-')); try { await symlink(process.cwd(), join(dir, 'link')); return false; } catch { return 'this platform does not permit creating symlinks'; } finally { await rm(dir, { recursive: true, force: true }); } })();
 const build = { version: '0.3.21', fingerprint: 'f'.repeat(64), sourceCommit: old, sourceDirty: true };
-const manifest = { name: 'dsh-theme-gallery', main:'./lib/index.js', version: '0.3.21', engines: { node: '^22.19.0 || >=24' }, peerDependencies: { '@deepseek-ai/dsh': '0.2.0-rc.2 || 0.2.1-alpha.1' }, dsh: { bundle: { patch: './cordis.patch.yml' }, client: {platform:'web',immediately:true,inject:['ui-theme','ui-slots','locale','ui-layout','ui-sidebar'].map(id=>'@deepseek-ai/dsh-client-'+id)} } };
+const manifest = { name: '@xuanyi-king/dsh-theme-gallery', main:'./lib/index.js', version: '0.3.21', engines: { node: '^22.19.0 || >=24' }, peerDependencies: { '@deepseek-ai/dsh': '0.2.0-rc.2 || 0.2.1-alpha.1' }, dsh: { bundle: { patch: './cordis.patch.yml' }, client: {platform:'web',immediately:true,inject:['ui-theme','ui-slots','locale','ui-layout','ui-sidebar'].map(id=>'@deepseek-ai/dsh-client-'+id)} } };
 const target = { commit: sha, version: '0.3.22', manifest: { ...manifest, version: '0.3.22' }, build: { ...build, version: '0.3.22' }, artifactValid: true, channel: 'commit' };
-const info = { manifest, build, diskBuild: build, artifactValid: true, runtimeVersion: '0.2.1-alpha.1', nodeVersion: '24.19.0', source: { kind: 'github', spec: 'github:Xuanyi-king/dsh-theme-gallery', commit: old }, writable: true, entries: [{ moduleName: 'dsh-theme-gallery', enabled: true, fiberPhase: 'active' }], backupAvailable: true };
+const info = { manifest, build, diskBuild: build, artifactValid: true, runtimeVersion: '0.2.1-alpha.1', nodeVersion: '24.19.0', source: { kind: 'github', spec: 'github:Xuanyi-king/dsh-theme-gallery', commit: old }, writable: true, entries: [{ moduleName: '@xuanyi-king/dsh-theme-gallery', enabled: true, fiberPhase: 'active' }], backupAvailable: true };
 const response = (status, value) => new Response(typeof value === 'string' ? value : JSON.stringify(value), { status });
 function artifactFixture(targetBuild=target.build) {
  const bundle=`window.__ModuleLoader__.load({id:'dsh-theme-gallery',factory:()=>{const BUILD_INFO = ${JSON.stringify(targetBuild)};/* ${Array.from({length:22},(_,i)=>'data:image/webp;base64,'+Buffer.from(String(i)).toString('base64')).join(' ')} */}});`;
  const files=Object.fromEntries(HOST_FILES.map(file=>[file,'// '+file]));
  const hash=text=>createHash('sha256').update(text).digest('hex');
  files['lib/build-info.js']=`export const BUILD_INFO = ${JSON.stringify(targetBuild)};\n`;
- files['cordis.patch.yml']='- insert:\n    - id: dsh-theme-gallery\n      name: dsh-theme-gallery\n';
+ files['cordis.patch.yml']="- insert:\n    - id: dsh-theme-gallery\n      name: '@xuanyi-king/dsh-theme-gallery'\n";
  files['lib/artifact.json']=JSON.stringify({...targetBuild,manifestSha256:hash(JSON.stringify(target.manifest)),resourceCount:11,clientSha256:hash(bundle),hostHashes:Object.fromEntries(HOST_FILES.map(file=>[file,hash(files[file])]))});
  return{bundle,files};
 }
@@ -29,6 +32,9 @@ test('SemVer includes prereleases without accepting a stable floor above alpha',
 test('source classification keeps links and junctions outside automatic updates', () => {
   for (const spec of ['link:/repo', 'file:/repo', '/repo']) assert.equal(classifySource(spec).kind, spec.startsWith('link:') ? 'link' : 'directory');
   assert.equal(classifySource('dsh-theme-gallery@0.3.20').kind, 'registry');
+  assert.equal(classifySource('@xuanyi-king/dsh-theme-gallery@0.3.20').kind, 'registry');
+  assert.equal(classifySource('@xuanyi-king/dsh-theme-gallery').kind, 'registry');
+  assert.equal(classifySource('@xuanyi-king/other-plugin@0.3.20').kind, 'unknown');
   assert.equal(classifySource('file:/tmp/theme.tgz').kind, 'tarball');
   assert.equal(classifySource('https://evil.example/plugin').kind, 'unknown');
   assert.equal(classifySource('github:Xuanyi-king/dsh-theme-gallery', `packages:\n  https://codeload.github.com/Xuanyi-king/dsh-theme-gallery/tar.gz/${old}: {}`).commit, old);
@@ -68,7 +74,7 @@ test('all valid preflight evidence still declines a fake safe upgrade transactio
   assert.equal(preflight({...info,entries:[...info.entries,...info.entries]},target,build).status,'incompatible');
   assert.equal(preflight({...info,artifactValid:false},target,build).status,'incompatible');
 });
-test('backup preserves original config bytes and unknown fields without touching linked installs or other plugins', async()=>{
+test('backup preserves original config bytes and unknown fields without touching linked installs or other plugins', { skip: symlinkSkip }, async()=>{
   const home=await mkdtemp(join(tmpdir(),'gallery-safe-update-'));try{
     await mkdir(join(home,'dsh-theme-gallery'));await mkdir(join(home,'other-plugin'));const raw='{"themeId":"gallery-wang-lin","future":{"x":1}}\n';
     await writeFile(join(home,'dsh-theme-gallery','selection.json'),raw);await writeFile(join(home,'other-plugin','config'),'untouched');await symlink(join(home,'other-plugin'),join(home,'linked'));
@@ -104,7 +110,7 @@ test('same lock commit cannot hide stale Host, disk or Client builds',()=>{
  assert.equal(preflight({...local,diskBuild:{...build,fingerprint:'e'.repeat(64)}},same,build).checks.localArtifact.status,'incompatible');
  assert.equal(compareTarget(local,same,build).status,'up-to-date');
 });
-test('backup refuses symlinked owned directories rather than writing into another plugin',async()=>{
+test('backup refuses symlinked owned directories rather than writing into another plugin', { skip: symlinkSkip }, async()=>{
  const home=await mkdtemp(join(tmpdir(),'gallery-boundary-'));try{
   await mkdir(join(home,'dsh-theme-gallery'));await mkdir(join(home,'other-plugin'));
   await symlink(join(home,'other-plugin'),join(home,'dsh-theme-gallery','update-baselines'));
@@ -122,6 +128,15 @@ test('verification never reports success without matching saved baseline and dis
 test('complete pinned artifacts reject missing Host, corrupt hashes, wrong module and patch',()=>{
  const {bundle,files}=artifactFixture();
  assert.equal(validateArtifact(target.manifest,bundle,files).artifactValid,true);
+ // A profile that still carries the pre-rename package name and patch must keep validating.
+ const legacyManifest={...target.manifest,name:'dsh-theme-gallery'};
+ const legacyFiles={...files,'cordis.patch.yml':'- insert:\n    - id: dsh-theme-gallery\n      name: dsh-theme-gallery\n'};
+ const digest=text=>createHash('sha256').update(text).digest('hex');
+ legacyFiles['lib/artifact.json']=JSON.stringify({...target.build,manifestSha256:digest(JSON.stringify(legacyManifest)),resourceCount:11,clientSha256:digest(bundle),hostHashes:Object.fromEntries(HOST_FILES.map(file=>[file,digest(legacyFiles[file])]))});
+ assert.equal(inspectTarget(legacyManifest,bundle).artifactValid,true);
+ assert.equal(validateArtifact(legacyManifest,bundle,legacyFiles).artifactValid,true);
+ assert.throws(()=>inspectTarget({...target.manifest,name:'other-plugin'},bundle),/artifact/);
+ assert.throws(()=>inspectTarget({...target.manifest,name:'dsh-theme-gallery-x'},bundle),/artifact/);
  for(const corrupted of [{...files,'lib/index.js':'tampered'},{...files,'lib/build-info.js':`export const BUILD_INFO = ${JSON.stringify(build)};`},{...files,'cordis.patch.yml':'- insert: []'}])assert.throws(()=>validateArtifact(target.manifest,bundle,corrupted),/artifact/);
  assert.throws(()=>validateArtifact({...target.manifest,engines:{node:'>=100'}},bundle,files),/artifact/);
  assert.throws(()=>inspectTarget(target.manifest,bundle.replace("id:'dsh-theme-gallery'","id:'another-plugin'")),/artifact/);

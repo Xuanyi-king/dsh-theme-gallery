@@ -15,9 +15,12 @@ test('Chinese is the default README and the English guide covers the same themes
   for (const guide of [zh, en]) {
     for (const theme of CATALOG) assert.ok(guide.includes(`themes/${theme.slug}/assets/concept-preview.webp`), theme.slug);
     for (const command of [
-      'dsh plugin --profile web add https://github.com/Xuanyi-king/dsh-theme-gallery',
+      'dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery',
       'npm run build', 'npm test', 'npm run pack:gallery', 'node scripts/verify-startup-browser.mjs',
     ]) assert.ok(guide.includes(command), command);
+    // Installing straight from the GitHub address is what made the install slow/fragile.
+    assert.ok(!/add\s+https?:\/\/github\.com\//.test(guide), 'no GitHub-address install command');
+    assert.ok(guide.includes(pkg.name), pkg.name);
     assert.ok(guide.includes('dsh-theme-gallery/selection.json'));
     assert.ok(guide.includes('1.5'));
     assert.ok(guide.includes('Esc'));
