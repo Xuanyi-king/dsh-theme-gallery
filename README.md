@@ -32,19 +32,39 @@ v0.3.20 新增「王林 · 一念仙逆」（《仙逆》非官方同人主题�
 
 ## 安装
 
-插件已发布到 npm，包名为 `@xuanyi-king/dsh-theme-gallery`。在 DSH 桌面应用中打开「插件 → 添加插件」，在输入框粘贴下面的包名，点击「安装」：
+主题库是一个 bundle，安装一次就包含全部十一款主题。任选一条安装方式即可。
+
+### 方式一：CDN 发布包（推荐，国内可直连）
+
+在 DSH 桌面应用中打开「插件 → 添加插件」，在输入框粘贴下面的 tarball 地址，点击「安装」：
+
+```text
+https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz
+```
+
+通过 Web profile 的命令行安装时，也是一条命令：
+
+```bash
+dsh plugin --profile web add "https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz"
+```
+
+> 该地址以 `.tgz` 结尾，DSH 会把它解析成远程 tarball 规格：非 git 规格不做 GitHub 连通性预检，pnpm 也不需要克隆 git 历史，只下载 2.6MB 的发布包。jsDelivr 实测约 394KB/s，几秒装完。`artifacts/` 里这份 tarball 与上传 npm 的是同一个文件（sha1 `63591cbdc9ae3784b1317d581d71f34410c36ff4`）。
+
+### 方式二：npm 包名
+
+注册表上的包名是 `@xuanyi-king/dsh-theme-gallery`，桌面端粘贴包名，命令行一条命令：
 
 ```text
 @xuanyi-king/dsh-theme-gallery
 ```
 
-通过 Web profile 的命令行安装时，也只需一条命令：
-
 ```bash
 dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
 ```
 
-> 不要再粘贴 GitHub 仓库地址安装。`https://github.com/...` 或 `github:` 规格会让 pnpm 克隆整份 git 历史（本仓库快照约 21MB），而且 DSH 在安装前会先做一次 GitHub 连通性预检（默认 5 秒超时），在 GitHub 受限的网络里会直接失败在 `spec-host`；npm 规格只需要一次 registry 元数据请求。
+> `0.3.21` 目前在 npm 上仍卡在发布时的自动审核（页面显示 `Validating`，已超过 20 小时未放行）：版本号已被占用，但内容不可下载，此刻用包名安装会得到 `404`。审核放行后本节即可用，registry 分发的也是同一份 tarball。国内直连 `registry.npmjs.org` 不稳定时，可在 profile 目录的 `.npmrc` 里加一行 `@xuanyi-king:registry=https://registry.npmmirror.com/`。
+
+> 不要再粘贴 GitHub 仓库地址安装。`https://github.com/...` 或 `github:` 规格会让 pnpm 克隆整份 git 历史（本仓库快照约 21MB），而且 DSH 在安装前会先做一次 GitHub 连通性预检（默认 5 秒超时），在 GitHub 受限的网络里会直接失败在 `spec-host`。
 
 > 0.3.21 之前的发行包名是 `dsh-theme-gallery`（经 GitHub 地址安装）。改名是为了避开 npm 上与本项目无关的同名包。升级时请先移除旧的 `dsh-theme-gallery` 依赖，再安装新包名，否则两份 bundle 会同时插入插件。
 

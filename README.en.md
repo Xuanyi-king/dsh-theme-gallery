@@ -49,15 +49,15 @@ Version 0.3.20 adds **Wang Lin · Renegade Immortal**, with silver-white robes, 
 
 ## Installation
 
-### Desktop app
+One installation includes all eleven themes. Pick either route.
 
-The plugin is published to npm as `@xuanyi-king/dsh-theme-gallery`.
+### Option 1: CDN release tarball (recommended, reachable from mainland China)
 
 1. Open **Plugins → Add plugin** in DSH.
-2. Paste this package name into the input field:
+2. Paste this tarball URL into the input field:
 
 ```text
-@xuanyi-king/dsh-theme-gallery
+https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz
 ```
 
 3. Select **Install**.
@@ -69,10 +69,26 @@ The plugin is published to npm as `@xuanyi-king/dsh-theme-gallery`.
 Run:
 
 ```bash
+dsh plugin --profile web add "https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz"
+```
+
+> The URL ends in `.tgz`, so DSH parses it as a remote tarball spec: non-git specs skip the GitHub reachability pre-check, and pnpm downloads a 2.6MB tarball instead of cloning git history. Measured at about 394KB/s through jsDelivr, so it installs in seconds. The tarball under `artifacts/` is byte-identical to the one uploaded to npm (sha1 `63591cbdc9ae3784b1317d581d71f34410c36ff4`).
+
+### Option 2: npm package name
+
+The registry package is `@xuanyi-king/dsh-theme-gallery`; paste the name in the desktop app or use one command on the command line:
+
+```text
+@xuanyi-king/dsh-theme-gallery
+```
+
+```bash
 dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
 ```
 
-> Do not install from the GitHub repository address. A `https://github.com/...` or `github:` spec makes pnpm clone the entire git history (this repository's snapshot is about 21MB), and DSH runs a GitHub reachability pre-check first (5s default timeout) that fails outright as `spec-host` on GitHub-restricted networks. The npm spec needs one registry metadata request.
+> `0.3.21` is still stuck in npm's publish-time automated review (the package page shows `Validating`, more than 20 hours in): the version number is reserved but its content is not downloadable, so installing by name currently returns `404`. Once the review clears, this route works and the registry serves the same tarball. If `registry.npmjs.org` is unreliable from your network, add `@xuanyi-king:registry=https://registry.npmmirror.com/` to the profile's `.npmrc`.
+
+> Do not install from the GitHub repository address. A `https://github.com/...` or `github:` spec makes pnpm clone the entire git history (this repository's snapshot is about 21MB), and DSH runs a GitHub reachability pre-check first (5s default timeout) that fails outright as `spec-host` on GitHub-restricted networks.
 
 > Before 0.3.21 the published name was `dsh-theme-gallery` (installed from the GitHub address). The name changed to avoid an unrelated npm package that already owned it. Remove the old `dsh-theme-gallery` dependency before installing the new name, or two bundles will insert the same plugin.
 

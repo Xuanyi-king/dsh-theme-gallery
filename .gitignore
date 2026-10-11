@@ -1,2 +1,4 @@
 node_modules/
 *.tgz
+# Published tarballs are the CDN install artifact (see README), so they are kept.
+!artifacts/*.tgz

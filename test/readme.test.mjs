@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { CATALOG } from '../src/catalog.mjs';
 
@@ -29,4 +30,19 @@ test('Chinese is the default README and the English guide covers the same themes
   }
   assert.ok(pkg.files.includes('README.md'));
   assert.ok(pkg.files.includes('README.en.md'), 'the packaged language switch must not lead to a missing guide');
+});
+
+test('both guides advertise the committed CDN tarball and its checksum', async () => {
+  const zh = await readFile(new URL('../README.md', import.meta.url), 'utf8');
+  const en = await readFile(new URL('../README.en.md', import.meta.url), 'utf8');
+  const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+  const tarballName = `${pkg.name.replace(/^@/, '').replace('/', '-')}-${pkg.version}.tgz`;
+  const tarballUrl = `https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v${pkg.version}/artifacts/${tarballName}`;
+  const tarball = await readFile(new URL(`../artifacts/${tarballName}`, import.meta.url));
+  const sha1 = createHash('sha1').update(tarball).digest('hex');
+  for (const guide of [zh, en]) {
+    assert.ok(guide.includes(tarballUrl), `document the CDN install URL ${tarballUrl}`);
+    assert.ok(guide.includes(sha1), `advertise the sha1 of artifacts/${tarballName}`);
+  }
+  assert.ok(!pkg.files.includes('artifacts'), 'the release tarball must never be packed into itself');
 });
