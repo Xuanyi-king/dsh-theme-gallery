@@ -51,7 +51,24 @@ Version 0.3.20 adds **Wang Lin · Renegade Immortal**, with silver-white robes, 
 
 One installation includes all eleven themes. Pick either route.
 
-### Option 1: CDN release tarball (recommended, reachable from mainland China)
+### Option 1: npm package name (recommended)
+
+The registry package is `@xuanyi-king/dsh-theme-gallery` (currently `0.3.21`).
+
+1. Open **Plugins → Add plugin** in DSH.
+2. Paste the package name into the input field:
+
+```text
+@xuanyi-king/dsh-theme-gallery
+```
+
+3. Select **Install**.
+4. Open the sidebar **Themes** center.
+5. Select a theme card.
+
+### Option 2: CDN release tarball (when the registry is unreachable)
+
+To install from the release tarball instead:
 
 1. Open **Plugins → Add plugin** in DSH.
 2. Paste this tarball URL into the input field:
@@ -69,6 +86,20 @@ https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xua
 Run:
 
 ```bash
+dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
+```
+
+> A registry spec skips the GitHub reachability pre-check (non-git specs return early) and clones no git history; pnpm fetches only the 2.6MB release. Measured on a restricted network: `registry.npmmirror.com` at about 2.75MB/s, 6s end to end with dependencies on a cold store, and 35ms for a repeat `pnpm install` from cache. `registry.npmjs.org` is frequently unreachable from such networks.
+>
+> If the official registry is unreliable for you, add `@xuanyi-king:registry=https://registry.npmmirror.com/` to the profile's `.npmrc` (that routes this scope only). Do not switch the global registry: the profile depends on several very new alpha versions and npmmirror lags behind them.
+>
+> Installing a just-published version makes pnpm's `minimumReleaseAge` policy record it in `minimumReleaseAgeExclude` in the profile's `pnpm-workspace.yaml` (it prints `Added 1 entry to minimumReleaseAgeExclude`). Expected; the install continues.
+
+### Tarball route: desktop and CLI
+
+On the command line, the tarball route is:
+
+```bash
 dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz"
 ```
 
@@ -79,20 +110,6 @@ dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme
 > jsDelivr endpoint reachability varies wildly per network. Measured on a restricted network (2.6MB): `cdn.jsdmirror.com` 0.5–3s ✅, `testingcf.jsdelivr.net` 0.2–1s ✅, `jsd.nn.ci` 0.7–3.4s ✅, `jsdelivr.b-cdn.net` 3–4s ✅, `fastly.jsdelivr.net` and `quantil.jsdelivr.net` about 20s+, `cdn.jsdelivr.net` gets its connection reset ❌, `gcore.jsdelivr.net` may have an intercepted certificate ❌, `jsd.cdn.zzko.cn` has an expired certificate ❌. **If that host is unreachable for you, swap it for any ✅ endpoint above** — the path and the file are identical (verify with the sha1 after downloading).
 >
 > pnpm has a known edge with remote-tarball dependencies: when the tarball is already in the pnpm store but the lockfile entry carries no `integrity` field, it reports `ERR_PNPM_MISSING_TARBALL_INTEGRITY`. A normal first install downloads the tarball and records the integrity in `pnpm-lock.yaml`, after which `pnpm install` hits the cache (measured 35ms). If you do hit that error, reinstall with a different endpoint host (the changed URL forces a fresh download and the integrity is filled in), or run `pnpm store prune` first.
-
-### Option 2: npm package name
-
-The registry package is `@xuanyi-king/dsh-theme-gallery`; paste the name in the desktop app or use one command on the command line:
-
-```text
-@xuanyi-king/dsh-theme-gallery
-```
-
-```bash
-dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
-```
-
-> `0.3.21` is still stuck in npm's publish-time automated review (the package page shows `Validating`, more than 20 hours in): the version number is reserved but its content is not downloadable, so installing by name currently returns `404`. Once the review clears, this route works and the registry serves the same tarball. If `registry.npmjs.org` is unreliable from your network, add `@xuanyi-king:registry=https://registry.npmmirror.com/` to the profile's `.npmrc`.
 
 > Do not install from the GitHub repository address. A `https://github.com/...` or `github:` spec makes pnpm clone the entire git history (this repository's snapshot is about 21MB), and DSH runs a GitHub reachability pre-check first (5s default timeout) that fails outright as `spec-host` on GitHub-restricted networks.
 

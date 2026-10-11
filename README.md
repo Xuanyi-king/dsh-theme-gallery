@@ -34,7 +34,27 @@ v0.3.20 新增「王林 · 一念仙逆」（《仙逆》非官方同人主题�
 
 主题库是一个 bundle，安装一次就包含全部十一款主题。任选一条安装方式即可。
 
-### 方式一：CDN 发布包（推荐，国内可直连）
+### 方式一：npm 包名（推荐）
+
+注册表上的包名是 `@xuanyi-king/dsh-theme-gallery`（当前 `0.3.21`）。在 DSH 桌面应用中打开「插件 → 添加插件」，粘贴包名后点击「安装」：
+
+```text
+@xuanyi-king/dsh-theme-gallery
+```
+
+通过 Web profile 的命令行安装同样是一条命令：
+
+```bash
+dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
+```
+
+> registry 规格不会触发 GitHub 连通性预检（非 git 规格直接跳过），也不会克隆 git 历史，pnpm 只取 2.6MB 的发布包。实测：`registry.npmmirror.com` 约 2.75MB/s，冷 store 含依赖 6 秒装完，重跑 `pnpm install` 命中缓存 35ms；`registry.npmjs.org` 在受限网络下经常连不上。
+>
+> 直连 `registry.npmjs.org` 不稳时，在 profile 目录（`~/.dsh/profiles/desktop`）的 `.npmrc` 里加一行，只把本 scope 指向镜像：`@xuanyi-king:registry=https://registry.npmmirror.com/`。不要改成全局 registry —— profile 里依赖了多个很新的 alpha 版本，而 npmmirror 对它们的同步有延迟。
+>
+> 首次安装刚发布的版本时，pnpm 的供应链策略 `minimumReleaseAge` 会把它自动登记进 profile 的 `pnpm-workspace.yaml` 的 `minimumReleaseAgeExclude`（终端会打印 `Added 1 entry to minimumReleaseAgeExclude`），属正常行为，安装会继续。
+
+### 方式二：CDN 发布包（registry 不可达时）
 
 在 DSH 桌面应用中打开「插件 → 添加插件」，在输入框粘贴下面的 tarball 地址，点击「安装」：
 
@@ -55,20 +75,6 @@ dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme
 > jsDelivr 各节点的可用性随网络差别极大，受限网络实测（2.6MB）：`cdn.jsdmirror.com` 0.5–3 秒 ✅、`testingcf.jsdelivr.net` 0.2–1 秒 ✅、`jsd.nn.ci` 0.7–3.4 秒 ✅、`jsdelivr.b-cdn.net` 3–4 秒 ✅、`fastly.jsdelivr.net` 与 `quantil.jsdelivr.net` 约 20 余秒、`cdn.jsdelivr.net` 连接会被重置 ❌、`gcore.jsdelivr.net` 证书会被劫持 ❌、`jsd.cdn.zzko.cn` 证书过期 ❌。**如果这个域名在你那里不通，把域名换成上面任一 ✅ 节点即可**，路径与文件完全相同（下载后可核对上面的 sha1）。
 >
 > pnpm 对「远程 tarball 依赖」有一个已知边角：当 tarball 已在 pnpm store 中、而锁文件里没有它的 integrity 字段时，会报 `ERR_PNPM_MISSING_TARBALL_INTEGRITY`。正常首次安装会下载并把 integrity 写进 `pnpm-lock.yaml`，之后 `pnpm install` 直接命中缓存（实测 35ms）。真遇到该报错时，把地址换成另一个节点域名重装即可（URL 变了会重新下载并补上 integrity），或先 `pnpm store prune` 清缓存再装。
-
-### 方式二：npm 包名
-
-注册表上的包名是 `@xuanyi-king/dsh-theme-gallery`，桌面端粘贴包名，命令行一条命令：
-
-```text
-@xuanyi-king/dsh-theme-gallery
-```
-
-```bash
-dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
-```
-
-> `0.3.21` 目前在 npm 上仍卡在发布时的自动审核（页面显示 `Validating`，已超过 20 小时未放行）：版本号已被占用，但内容不可下载，此刻用包名安装会得到 `404`。审核放行后本节即可用，registry 分发的也是同一份 tarball。国内直连 `registry.npmjs.org` 不稳定时，可在 profile 目录的 `.npmrc` 里加一行 `@xuanyi-king:registry=https://registry.npmmirror.com/`。
 
 > 不要再粘贴 GitHub 仓库地址安装。`https://github.com/...` 或 `github:` 规格会让 pnpm 克隆整份 git 历史（本仓库快照约 21MB），而且 DSH 在安装前会先做一次 GitHub 连通性预检（默认 5 秒超时），在 GitHub 受限的网络里会直接失败在 `spec-host`。
 
