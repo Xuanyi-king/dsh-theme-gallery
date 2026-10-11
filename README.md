@@ -39,16 +39,22 @@ v0.3.20 新增「王林 · 一念仙逆」（《仙逆》非官方同人主题�
 在 DSH 桌面应用中打开「插件 → 添加插件」，在输入框粘贴下面的 tarball 地址，点击「安装」：
 
 ```text
-https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz
+https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz
 ```
 
 通过 Web profile 的命令行安装时，也是一条命令：
 
 ```bash
-dsh plugin --profile web add "https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz"
+dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz"
 ```
 
-> 该地址以 `.tgz` 结尾，DSH 会把它解析成远程 tarball 规格：非 git 规格不做 GitHub 连通性预检，pnpm 也不需要克隆 git 历史，只下载 2.6MB 的发布包。jsDelivr 实测约 394KB/s，几秒装完。`artifacts/` 里这份 tarball 与上传 npm 的是同一个文件（sha1 `63591cbdc9ae3784b1317d581d71f34410c36ff4`）。
+> 该地址以 `.tgz` 结尾，DSH 会把它解析成远程 tarball 规格：非 git 规格不做 GitHub 连通性预检，pnpm 也不需要克隆 git 历史，只下载 2.6MB 的发布包（含依赖实测 3 秒左右装完）。
+>
+> `artifacts/` 里这份 tarball 与上传 npm 的是同一个文件：sha1 `63591cbdc9ae3784b1317d581d71f34410c36ff4`，sha512 `sha512-d2tyNOcC4ZaVJDVSs1aHSX8RDmjMXlmAbK1nKywjZHtESAtt6cQXbb7fbQEKejAxyvtQTyCFvoIBuwNZlneMcw==`。
+>
+> jsDelivr 各节点的可用性随网络差别极大，受限网络实测（2.6MB）：`cdn.jsdmirror.com` 0.5–3 秒 ✅、`testingcf.jsdelivr.net` 0.2–1 秒 ✅、`jsd.nn.ci` 0.7–3.4 秒 ✅、`jsdelivr.b-cdn.net` 3–4 秒 ✅、`fastly.jsdelivr.net` 与 `quantil.jsdelivr.net` 约 20 余秒、`cdn.jsdelivr.net` 连接会被重置 ❌、`gcore.jsdelivr.net` 证书会被劫持 ❌、`jsd.cdn.zzko.cn` 证书过期 ❌。**如果这个域名在你那里不通，把域名换成上面任一 ✅ 节点即可**，路径与文件完全相同（下载后可核对上面的 sha1）。
+>
+> pnpm 对「远程 tarball 依赖」有一个已知边角：当 tarball 已在 pnpm store 中、而锁文件里没有它的 integrity 字段时，会报 `ERR_PNPM_MISSING_TARBALL_INTEGRITY`。正常首次安装会下载并把 integrity 写进 `pnpm-lock.yaml`，之后 `pnpm install` 直接命中缓存（实测 35ms）。真遇到该报错时，把地址换成另一个节点域名重装即可（URL 变了会重新下载并补上 integrity），或先 `pnpm store prune` 清缓存再装。
 
 ### 方式二：npm 包名
 

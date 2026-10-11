@@ -37,12 +37,17 @@ test('both guides advertise the committed CDN tarball and its checksum', async (
   const en = await readFile(new URL('../README.en.md', import.meta.url), 'utf8');
   const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
   const tarballName = `${pkg.name.replace(/^@/, '').replace('/', '-')}-${pkg.version}.tgz`;
-  const tarballUrl = `https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v${pkg.version}/artifacts/${tarballName}`;
+  // jsDelivr serves the same file from several endpoints; which one is reachable is network-dependent.
+  const cdnHosts = ['cdn.jsdmirror.com', 'testingcf.jsdelivr.net', 'jsd.nn.ci', 'jsdelivr.b-cdn.net', 'fastly.jsdelivr.net', 'quantil.jsdelivr.net'];
+  const tarballUrl = `https://${cdnHosts[0]}/gh/Xuanyi-king/dsh-theme-gallery@v${pkg.version}/artifacts/${tarballName}`;
   const tarball = await readFile(new URL(`../artifacts/${tarballName}`, import.meta.url));
   const sha1 = createHash('sha1').update(tarball).digest('hex');
   for (const guide of [zh, en]) {
     assert.ok(guide.includes(tarballUrl), `document the CDN install URL ${tarballUrl}`);
     assert.ok(guide.includes(sha1), `advertise the sha1 of artifacts/${tarballName}`);
+    for (const host of cdnHosts.slice(1)) {
+      assert.ok(guide.includes(host), `list the fallback CDN host ${host}`);
+    }
   }
   assert.ok(!pkg.files.includes('artifacts'), 'the release tarball must never be packed into itself');
 });

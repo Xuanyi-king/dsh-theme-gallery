@@ -57,7 +57,7 @@ One installation includes all eleven themes. Pick either route.
 2. Paste this tarball URL into the input field:
 
 ```text
-https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz
+https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz
 ```
 
 3. Select **Install**.
@@ -69,10 +69,16 @@ https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuan
 Run:
 
 ```bash
-dsh plugin --profile web add "https://cdn.jsdelivr.net/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz"
+dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz"
 ```
 
-> The URL ends in `.tgz`, so DSH parses it as a remote tarball spec: non-git specs skip the GitHub reachability pre-check, and pnpm downloads a 2.6MB tarball instead of cloning git history. Measured at about 394KB/s through jsDelivr, so it installs in seconds. The tarball under `artifacts/` is byte-identical to the one uploaded to npm (sha1 `63591cbdc9ae3784b1317d581d71f34410c36ff4`).
+> The URL ends in `.tgz`, so DSH parses it as a remote tarball spec: non-git specs skip the GitHub reachability pre-check, and pnpm downloads a 2.6MB tarball instead of cloning git history (about 3s end to end with dependencies).
+>
+> The tarball under `artifacts/` is byte-identical to the one uploaded to npm: sha1 `63591cbdc9ae3784b1317d581d71f34410c36ff4`, sha512 `sha512-d2tyNOcC4ZaVJDVSs1aHSX8RDmjMXlmAbK1nKywjZHtESAtt6cQXbb7fbQEKejAxyvtQTyCFvoIBuwNZlneMcw==`.
+>
+> jsDelivr endpoint reachability varies wildly per network. Measured on a restricted network (2.6MB): `cdn.jsdmirror.com` 0.5–3s ✅, `testingcf.jsdelivr.net` 0.2–1s ✅, `jsd.nn.ci` 0.7–3.4s ✅, `jsdelivr.b-cdn.net` 3–4s ✅, `fastly.jsdelivr.net` and `quantil.jsdelivr.net` about 20s+, `cdn.jsdelivr.net` gets its connection reset ❌, `gcore.jsdelivr.net` may have an intercepted certificate ❌, `jsd.cdn.zzko.cn` has an expired certificate ❌. **If that host is unreachable for you, swap it for any ✅ endpoint above** — the path and the file are identical (verify with the sha1 after downloading).
+>
+> pnpm has a known edge with remote-tarball dependencies: when the tarball is already in the pnpm store but the lockfile entry carries no `integrity` field, it reports `ERR_PNPM_MISSING_TARBALL_INTEGRITY`. A normal first install downloads the tarball and records the integrity in `pnpm-lock.yaml`, after which `pnpm install` hits the cache (measured 35ms). If you do hit that error, reinstall with a different endpoint host (the changed URL forces a fresh download and the integrity is filled in), or run `pnpm store prune` first.
 
 ### Option 2: npm package name
 
