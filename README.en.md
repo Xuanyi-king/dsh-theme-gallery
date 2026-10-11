@@ -53,7 +53,7 @@ One installation includes all eleven themes. Pick either route.
 
 ### Option 1: npm package name (recommended)
 
-The registry package is `@xuanyi-king/dsh-theme-gallery` (currently `0.3.21`).
+The registry package is `@xuanyi-king/dsh-theme-gallery` (currently `0.3.22`).
 
 1. Open **Plugins → Add plugin** in DSH.
 2. Paste the package name into the input field:
@@ -74,7 +74,7 @@ To install from the release tarball instead:
 2. Paste this tarball URL into the input field:
 
 ```text
-https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz
+https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.22/artifacts/xuanyi-king-dsh-theme-gallery-0.3.22.tgz
 ```
 
 3. Select **Install**.
@@ -100,12 +100,12 @@ dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
 On the command line, the tarball route is:
 
 ```bash
-dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz"
+dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.22/artifacts/xuanyi-king-dsh-theme-gallery-0.3.22.tgz"
 ```
 
 > The URL ends in `.tgz`, so DSH parses it as a remote tarball spec: non-git specs skip the GitHub reachability pre-check, and pnpm downloads a 2.6MB tarball instead of cloning git history (about 3s end to end with dependencies).
 >
-> The tarball under `artifacts/` is byte-identical to the one uploaded to npm: sha1 `63591cbdc9ae3784b1317d581d71f34410c36ff4`, sha512 `sha512-d2tyNOcC4ZaVJDVSs1aHSX8RDmjMXlmAbK1nKywjZHtESAtt6cQXbb7fbQEKejAxyvtQTyCFvoIBuwNZlneMcw==`.
+> The tarball under `artifacts/` is byte-identical to the one uploaded to npm: sha1 `55d75156c2715932f60f4f71e88851bd0b971c0f`, sha512 `sha512-BHdrDHQF2xrBTvxFeP72UyNUMibgioIa+skOP07tTSlThWnuCyHVDOPVUaX5dF4hx8fYOjVDlB1Ksx/VvltEow==`.
 >
 > jsDelivr endpoint reachability varies wildly per network. Measured on a restricted network (2.6MB): `cdn.jsdmirror.com` 0.5–3s ✅, `testingcf.jsdelivr.net` 0.2–1s ✅, `jsd.nn.ci` 0.7–3.4s ✅, `jsdelivr.b-cdn.net` 3–4s ✅, `fastly.jsdelivr.net` and `quantil.jsdelivr.net` about 20s+, `cdn.jsdelivr.net` gets its connection reset ❌, `gcore.jsdelivr.net` may have an intercepted certificate ❌, `jsd.cdn.zzko.cn` has an expired certificate ❌. **If that host is unreachable for you, swap it for any ✅ endpoint above** — the path and the file are identical (verify with the sha1 after downloading).
 >
@@ -118,6 +118,12 @@ dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme
 Then open the sidebar **Themes** center. One installation includes all eleven themes.
 
 After an upgrade, close and reopen DSH to load the new plugin. DSH restores your saved theme. If older standalone theme plugins remain installed, remove them to prevent competing styles.
+
+## v0.3.22: client module id fix
+
+After the rename, the client bundle still registered the old plugin id `dsh-theme-gallery` while the DSH runtime keys its boot graph and client entry roster by **package name**, so the two never matched and the page stopped at `web boot: 1 entry did not activate`. In 0.3.22 the bundle registers the package name (the build script derives it from `package.json.name`), and the safe-update artifact check now enforces "registered id must equal the manifest package name"; `test/bundle.test.mjs` and `test/update.test.mjs` each lock that invariant.
+
+If you installed 0.3.21, upgrading to 0.3.22 is enough — no manual edits.
 
 ## v0.3.21: dedicated theme center and safe updates
 

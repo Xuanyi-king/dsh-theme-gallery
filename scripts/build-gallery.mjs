@@ -716,7 +716,10 @@ const client = (artwork + '\n' + startup + '\n' + updater + '\n' + body)
   .replaceAll('export const ', 'const ')
   .replaceAll('export function ', 'function ');
 if (client.includes('export ') || client.includes("import { CATALOG }")) throw new Error('untransformed client module');
-const bundle = `window.__ModuleLoader__.load({\n  id: 'dsh-theme-gallery',\n  factory: (require) => {\n${client}\n    return { apply, inject, BUILD_INFO, PANEL_ID, createUpdateController, createUpdatePanel, CATALOG, formatRunningStatus, createGallerySection, applyGallery, createStartupIntro, createStartupIntroView, createIntroArtwork, createIntroEmblem };\n  }\n});\n`;
+// The client module id MUST be the package name: the Host keys its boot graph
+// and the client entry roster by package name, so a bundle registering any
+// other id still downloads but never binds an entry ("import failed").
+const bundle = `window.__ModuleLoader__.load({\n  id: '${manifest.name}',\n  factory: (require) => {\n${client}\n    return { apply, inject, BUILD_INFO, PANEL_ID, createUpdateController, createUpdatePanel, CATALOG, formatRunningStatus, createGallerySection, applyGallery, createStartupIntro, createStartupIntroView, createIntroArtwork, createIntroEmblem };\n  }\n});\n`;
 await mkdir(new URL('../lib/', import.meta.url), { recursive: true });
 await writeFile(new URL('../lib/client.js', import.meta.url), bundle);
 

@@ -10,7 +10,7 @@ test('installable root package declares one bundle with all eleven theme assets'
   const loaded = [];
   vm.runInNewContext(client, { window: { __ModuleLoader__: { load: value => loaded.push(value) } } });
   assert.equal(loaded.length, 1);
-  assert.equal(loaded[0].id, 'dsh-theme-gallery');
+  assert.equal(loaded[0].id, pkg.name, 'the client module id must be the package name, because the Host keys its boot graph and the client entry roster by package name');
   const module = loaded[0].factory(name => { if (name === 'react') return { createElement() {} }; throw Error(name); });
   assert.equal(module.CATALOG.length, 11);
   assert.equal(module.CATALOG[0].id, 'gallery-shanhe');

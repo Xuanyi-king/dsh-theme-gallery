@@ -14,13 +14,13 @@ const manifest = { name: '@xuanyi-king/dsh-theme-gallery', main:'./lib/index.js'
 const target = { commit: sha, version: '0.3.22', manifest: { ...manifest, version: '0.3.22' }, build: { ...build, version: '0.3.22' }, artifactValid: true, channel: 'commit' };
 const info = { manifest, build, diskBuild: build, artifactValid: true, runtimeVersion: '0.2.1-alpha.1', nodeVersion: '24.19.0', source: { kind: 'github', spec: 'github:Xuanyi-king/dsh-theme-gallery', commit: old }, writable: true, entries: [{ moduleName: '@xuanyi-king/dsh-theme-gallery', enabled: true, fiberPhase: 'active' }], backupAvailable: true };
 const response = (status, value) => new Response(typeof value === 'string' ? value : JSON.stringify(value), { status });
-function artifactFixture(targetBuild=target.build) {
- const bundle=`window.__ModuleLoader__.load({id:'dsh-theme-gallery',factory:()=>{const BUILD_INFO = ${JSON.stringify(targetBuild)};/* ${Array.from({length:22},(_,i)=>'data:image/webp;base64,'+Buffer.from(String(i)).toString('base64')).join(' ')} */}});`;
+function artifactFixture(targetBuild=target.build, packageName=target.manifest.name) {
+ const bundle=`window.__ModuleLoader__.load({id:'${packageName}',factory:()=>{const BUILD_INFO = ${JSON.stringify(targetBuild)};/* ${Array.from({length:22},(_,i)=>'data:image/webp;base64,'+Buffer.from(String(i)).toString('base64')).join(' ')} */}});`;
  const files=Object.fromEntries(HOST_FILES.map(file=>[file,'// '+file]));
  const hash=text=>createHash('sha256').update(text).digest('hex');
  files['lib/build-info.js']=`export const BUILD_INFO = ${JSON.stringify(targetBuild)};\n`;
- files['cordis.patch.yml']="- insert:\n    - id: dsh-theme-gallery\n      name: '@xuanyi-king/dsh-theme-gallery'\n";
- files['lib/artifact.json']=JSON.stringify({...targetBuild,manifestSha256:hash(JSON.stringify(target.manifest)),resourceCount:11,clientSha256:hash(bundle),hostHashes:Object.fromEntries(HOST_FILES.map(file=>[file,hash(files[file])]))});
+ files['cordis.patch.yml']=`- insert:\n    - id: dsh-theme-gallery\n      name: '${packageName}'\n`;
+ files['lib/artifact.json']=JSON.stringify({...targetBuild,manifestSha256:hash(JSON.stringify({...target.manifest,name:packageName})),resourceCount:11,clientSha256:hash(bundle),hostHashes:Object.fromEntries(HOST_FILES.map(file=>[file,hash(files[file])]))});
  return{bundle,files};
 }
 test('SemVer includes prereleases without accepting a stable floor above alpha', () => {
@@ -48,7 +48,7 @@ test('commit locks are compared independently from manifest versions', () => {
   assert.equal(compareTarget(info, { ...target, version: '0.3.19' }).status, 'unknown');
 });
 test('target manifest and loaded bundle version must agree exactly', () => {
-  const bundle = `window.__ModuleLoader__.load({id:'dsh-theme-gallery',factory:()=>{const BUILD_INFO = ${JSON.stringify(build)};}});`;
+  const bundle = `window.__ModuleLoader__.load({id:'${manifest.name}',factory:()=>{const BUILD_INFO = ${JSON.stringify(build)};}});`;
   assert.equal(inspectTarget(manifest, bundle).artifactValid, true);
   assert.throws(() => inspectTarget({ ...manifest, version: '0.3.21-rc.1' }, bundle), /artifact/);
   assert.throws(() => inspectTarget(manifest, 'import x from "bad";'), /artifact/);
@@ -128,18 +128,18 @@ test('verification never reports success without matching saved baseline and dis
 test('complete pinned artifacts reject missing Host, corrupt hashes, wrong module and patch',()=>{
  const {bundle,files}=artifactFixture();
  assert.equal(validateArtifact(target.manifest,bundle,files).artifactValid,true);
- // A profile that still carries the pre-rename package name and patch must keep validating.
+ // A profile still carrying the pre-rename package name keeps validating its own artifacts,
+ // where bundle id, patch name and manifest name all agree on the legacy name.
  const legacyManifest={...target.manifest,name:'dsh-theme-gallery'};
- const legacyFiles={...files,'cordis.patch.yml':'- insert:\n    - id: dsh-theme-gallery\n      name: dsh-theme-gallery\n'};
- const digest=text=>createHash('sha256').update(text).digest('hex');
- legacyFiles['lib/artifact.json']=JSON.stringify({...target.build,manifestSha256:digest(JSON.stringify(legacyManifest)),resourceCount:11,clientSha256:digest(bundle),hostHashes:Object.fromEntries(HOST_FILES.map(file=>[file,digest(legacyFiles[file])]))});
- assert.equal(inspectTarget(legacyManifest,bundle).artifactValid,true);
- assert.equal(validateArtifact(legacyManifest,bundle,legacyFiles).artifactValid,true);
+ const legacy=artifactFixture(target.build,'dsh-theme-gallery');
+ assert.equal(inspectTarget(legacyManifest,legacy.bundle).artifactValid,true);
+ assert.equal(validateArtifact(legacyManifest,legacy.bundle,legacy.files).artifactValid,true);
+ assert.throws(()=>inspectTarget(target.manifest,legacy.bundle),/artifact/);
  assert.throws(()=>inspectTarget({...target.manifest,name:'other-plugin'},bundle),/artifact/);
  assert.throws(()=>inspectTarget({...target.manifest,name:'dsh-theme-gallery-x'},bundle),/artifact/);
  for(const corrupted of [{...files,'lib/index.js':'tampered'},{...files,'lib/build-info.js':`export const BUILD_INFO = ${JSON.stringify(build)};`},{...files,'cordis.patch.yml':'- insert: []'}])assert.throws(()=>validateArtifact(target.manifest,bundle,corrupted),/artifact/);
  assert.throws(()=>validateArtifact({...target.manifest,engines:{node:'>=100'}},bundle,files),/artifact/);
- assert.throws(()=>inspectTarget(target.manifest,bundle.replace("id:'dsh-theme-gallery'","id:'another-plugin'")),/artifact/);
+ assert.throws(()=>inspectTarget(target.manifest,bundle.replace(`id:'${target.manifest.name}'`,"id:'another-plugin'")),/artifact/);
  assert.throws(()=>inspectTarget({...target.manifest,dsh:{bundle:{patch:'./missing'}}},bundle),/artifact/);
 });
 test('official stable Release is pinned and manifest tag must match',async()=>{

@@ -1,6 +1,6 @@
 {
   "name": "@xuanyi-king/dsh-theme-gallery",
-  "version": "0.3.21",
+  "version": "0.3.22",
   "description": "DeepSeek Harness theme center with eleven themes and safe update checks",
   "license": "MIT",
   "type": "module",

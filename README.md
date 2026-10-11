@@ -36,7 +36,7 @@ v0.3.20 新增「王林 · 一念仙逆」（《仙逆》非官方同人主题�
 
 ### 方式一：npm 包名（推荐）
 
-注册表上的包名是 `@xuanyi-king/dsh-theme-gallery`（当前 `0.3.21`）。在 DSH 桌面应用中打开「插件 → 添加插件」，粘贴包名后点击「安装」：
+注册表上的包名是 `@xuanyi-king/dsh-theme-gallery`（当前 `0.3.22`）。在 DSH 桌面应用中打开「插件 → 添加插件」，粘贴包名后点击「安装」：
 
 ```text
 @xuanyi-king/dsh-theme-gallery
@@ -59,18 +59,18 @@ dsh plugin --profile web add @xuanyi-king/dsh-theme-gallery
 在 DSH 桌面应用中打开「插件 → 添加插件」，在输入框粘贴下面的 tarball 地址，点击「安装」：
 
 ```text
-https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz
+https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.22/artifacts/xuanyi-king-dsh-theme-gallery-0.3.22.tgz
 ```
 
 通过 Web profile 的命令行安装时，也是一条命令：
 
 ```bash
-dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.21/artifacts/xuanyi-king-dsh-theme-gallery-0.3.21.tgz"
+dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme-gallery@v0.3.22/artifacts/xuanyi-king-dsh-theme-gallery-0.3.22.tgz"
 ```
 
 > 该地址以 `.tgz` 结尾，DSH 会把它解析成远程 tarball 规格：非 git 规格不做 GitHub 连通性预检，pnpm 也不需要克隆 git 历史，只下载 2.6MB 的发布包（含依赖实测 3 秒左右装完）。
 >
-> `artifacts/` 里这份 tarball 与上传 npm 的是同一个文件：sha1 `63591cbdc9ae3784b1317d581d71f34410c36ff4`，sha512 `sha512-d2tyNOcC4ZaVJDVSs1aHSX8RDmjMXlmAbK1nKywjZHtESAtt6cQXbb7fbQEKejAxyvtQTyCFvoIBuwNZlneMcw==`。
+> `artifacts/` 里这份 tarball 与上传 npm 的是同一个文件：sha1 `55d75156c2715932f60f4f71e88851bd0b971c0f`，sha512 `sha512-BHdrDHQF2xrBTvxFeP72UyNUMibgioIa+skOP07tTSlThWnuCyHVDOPVUaX5dF4hx8fYOjVDlB1Ksx/VvltEow==`。
 >
 > jsDelivr 各节点的可用性随网络差别极大，受限网络实测（2.6MB）：`cdn.jsdmirror.com` 0.5–3 秒 ✅、`testingcf.jsdelivr.net` 0.2–1 秒 ✅、`jsd.nn.ci` 0.7–3.4 秒 ✅、`jsdelivr.b-cdn.net` 3–4 秒 ✅、`fastly.jsdelivr.net` 与 `quantil.jsdelivr.net` 约 20 余秒、`cdn.jsdelivr.net` 连接会被重置 ❌、`gcore.jsdelivr.net` 证书会被劫持 ❌、`jsd.cdn.zzko.cn` 证书过期 ❌。**如果这个域名在你那里不通，把域名换成上面任一 ✅ 节点即可**，路径与文件完全相同（下载后可核对上面的 sha1）。
 >
@@ -82,6 +82,12 @@ dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme
 
 安装后打开左侧「主题」中心，点击喜欢的主题卡片即可切换，不需要为每款主题分别安装插件。
 升级后关闭、重开一次 DSH，加载新版插件；已保存的主题会自动恢复。已安装的旧版单款主题插件需要移除，避免同时覆盖界面样式。
+
+## v0.3.22 客户端模块 id 修正
+
+改包名后，客户端 bundle 仍以旧插件 id `dsh-theme-gallery` 注册，而 DSH 运行时按**包名**登记 boot graph 与客户端 entry，两边对不上：页面直接停在 `web boot: 1 entry did not activate`。0.3.22 让 bundle 用包名注册（构建脚本从 `package.json.name` 派生），并在安全更新的产物校验里把「注册 id 必须等于 manifest 包名」变成硬条件；`test/bundle.test.mjs` 与 `test/update.test.mjs` 各加一条断言锁死这个不变量。
+
+如果你装过 0.3.21：升级到 0.3.22 即可，无需手工改文件。（0.3.21 的旧安装若已手工修过 `lib/client.js`，下次升级会被覆盖成正确内容。）
 
 ## v0.3.21 独立主题中心与安全更新
 
