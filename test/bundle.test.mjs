@@ -212,3 +212,36 @@ test('executed client build identity and Host identity match the root manifest',
  const metadata=JSON.parse(await readFile(new URL('../lib/artifact.json',import.meta.url),'utf8'));
  assert.equal(metadata.version,pkg.version);assert.equal(metadata.fingerprint,client.BUILD_INFO.fingerprint);
 });
+
+test('built gallery opens native details using the scoped Bundle package name', async () => {
+  const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url)));
+  const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
+  let entry, main, opened;
+  const stops = [];
+  const React = { createElement: (type, props, ...children) => ({ type, props, children }),
+    useState: init => [typeof init === 'function' ? init() : init, () => {}], useEffect() {} };
+  vm.runInNewContext(client, { window: { __ModuleLoader__: { load: value => { entry = value; } } },
+    AbortController, setTimeout, clearTimeout, queueMicrotask,
+    fetch: async () => ({ ok: true, json: async () => ({ themeId: null, info: {} }) }) });
+  const plugin = entry.factory(() => React);
+  const ctx = {
+    theme: { getTheme: () => ({ preference: 'system' }), register: () => () => {}, setTheme() {} },
+    get: () => ({ openBundle: name => { opened = name; } }),
+    effect: fn => { const stop = fn(); if (typeof stop === 'function') stops.push(stop); },
+    on: () => () => {}, locale: { register: () => () => {}, bind: () => key => key },
+    slots: { inject: (_name, fn) => fn(), register: (options, component) => {
+      if (options.name === 'main') main = component;
+      return () => {};
+    } },
+  };
+  try {
+    plugin.apply(ctx);
+    const tree = main({});
+    const updateNode = tree.children.find(node => typeof node?.type === 'function');
+    const updateTree = updateNode.type(updateNode.props);
+    const flatten = node => Array.isArray(node) ? node.flatMap(flatten) : node && typeof node === 'object' ? [node, ...node.children.flatMap(flatten)] : [];
+    const button = flatten(updateTree).find(node => node.type === 'button' && node.children.includes('openManager'));
+    button.props.onClick();
+    assert.equal(opened, pkg.name);
+  } finally { for (const stop of stops.reverse()) stop(); }
+});

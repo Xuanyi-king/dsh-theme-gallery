@@ -57,3 +57,17 @@ test('selection routes can enforce the official Connection admission fence', asy
   const req=Readable.from([]);req.method='GET';req.headers={host:'localhost'};let status;
   await route.handler(req,{writeHead(code){status=code},end(){}});assert.equal(status,401);
 });
+
+test('selection route belongs to its Connection injection lifetime', async () => {
+  const { attachSelectionRoute } = await import('../lib/selection-route.js');
+  const parent = [], injected = [], routes = new Map();
+  const effect = bucket => fn => { const stop = fn(); bucket.push(stop); return stop; };
+  attachSelectionRoute({ effect: effect(parent), inject: (_keys, fn) => fn({
+    effect: effect(injected), connection: { requestRejection: () => undefined },
+    webServer: { register: route => { routes.set(route.path, route); return () => routes.delete(route.path); } },
+  }) });
+  assert.equal(parent.length, 0);
+  assert.equal(routes.size, 1);
+  for (const stop of injected) stop();
+  assert.equal(routes.size, 0);
+});

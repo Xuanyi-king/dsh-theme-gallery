@@ -241,6 +241,7 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
   let desired = null;
   let userSelected = false;
   let disposed = false;
+  const requests = new AbortController();
   let restoreQueued = false;
   let writeQueue = Promise.resolve();
   let ready = Promise.resolve();
@@ -281,8 +282,9 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
     remember(desired);
     if (typeof fetchImpl === 'function') {
       const target = desired;
-      writeQueue = writeQueue.catch(() => {}).then(() => fetchImpl(ROUTE, {
+      writeQueue = writeQueue.catch(() => {}).then(() => disposed ? undefined : fetchImpl(ROUTE, {
         method: 'PUT', credentials: 'same-origin',
+        signal: requests.signal,
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ themeId: target }),
       })).catch(() => {}); // Browser storage remains a fallback if the Host route is absent.
@@ -324,7 +326,8 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
     sync(ctx.theme.getTheme().preference);
     if (typeof fetchImpl === 'function') {
       ready = Promise.resolve().then(async () => {
-        const response = await fetchImpl(ROUTE, { credentials: 'same-origin', headers: { accept: 'application/json' } });
+        if (disposed) return;
+        const response = await fetchImpl(ROUTE, { credentials: 'same-origin', signal: requests.signal, headers: { accept: 'application/json' } });
         if (!response.ok) throw new Error(`theme selection HTTP ${response.status}`);
         const state = await response.json();
         if (userSelected || disposed) return;
@@ -368,6 +371,7 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
       subscribe(fn) { subscribers.add(fn); return () => subscribers.delete(fn); },
       dispose() {
         disposed = true;
+        requests.abort();
         observer?.disconnect();
         if (typeof unlisten === 'function') unlisten();
         if (valid.has(ctx.theme.getTheme().preference)) {
@@ -385,6 +389,8 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
       },
     };
   } catch (error) {
+    disposed = true;
+    requests.abort();
     style?.remove();
     for (const stop of unregister.reverse()) stop();
     throw error;
@@ -489,7 +495,7 @@ export function apply(ctx) {
     }, navigate: () => {
       const navigation = ctx.get?.('pluginNavigation');
       if (!navigation?.openBundle) throw new Error('DSH plugin navigation unavailable');
-      navigation.openBundle('dsh-theme-gallery');
+      navigation.openBundle('@xuanyi-king/dsh-theme-gallery');
     } });
     void updates.check();
     return () => {
