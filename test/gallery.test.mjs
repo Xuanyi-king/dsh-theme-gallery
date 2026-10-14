@@ -305,3 +305,25 @@ test('Wang Lin switches palette, native heading and active reply text immediatel
   assert.equal(h.data.has('dsh.themeGallery.selection'), false);
   h.controller.dispose();
 });
+
+test('unload aborts selection requests and prevents queued writes after disposal', async () => {
+  const requests = [];
+  let finishWrite;
+  const h = harness(null, (url, options) => {
+    requests.push(options);
+    if (options.method === 'PUT') return new Promise(resolve => { finishWrite = resolve; });
+    return Promise.resolve({ ok: true, json: async () => ({ themeId: null }) });
+  });
+  await h.controller.whenReady();
+  h.controller.select(CATALOG[0].id);
+  await Promise.resolve();
+  await Promise.resolve();
+  h.controller.select(CATALOG[1].id);
+  h.controller.dispose();
+  assert.ok(requests.every(request => request.signal?.aborted === true));
+  finishWrite({ ok: true });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(requests.filter(request => request.method === 'PUT').length, 1);
+  assert.equal(h.data.get('dsh.themeGallery.selection'), CATALOG[1].id);
+  assert.equal(h.definitions.size, 2);
+});
