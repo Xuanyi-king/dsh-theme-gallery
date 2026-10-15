@@ -34,6 +34,8 @@ v0.3.20 新增「王林 · 一念仙逆」（《仙逆》非官方同人主题�
 
 主题库是一个 bundle，安装一次就包含全部十一款主题。任选一条安装方式即可。
 
+> **发行版与 main 区别**：下列 npm/CDN 的 `0.3.22` 是已发布的固定包；2026-10-14 合并到 `main` 的插件详情导航、请求取消和路由生命周期修复**尚未重新打版本或发布**，安装 `0.3.22` 不等于装到了这次审计后的源码。不要用相同版本号覆盖已发布包。
+
 ### 方式一：npm 包名（推荐）
 
 注册表上的包名是 `@xuanyi-king/dsh-theme-gallery`（当前 `0.3.22`）。在 DSH 桌面应用中打开「插件 → 添加插件」，粘贴包名后点击「安装」：
@@ -82,6 +84,16 @@ dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme
 
 安装后打开左侧「主题」中心，点击喜欢的主题卡片即可切换，不需要为每款主题分别安装插件。
 升级后关闭、重开一次 DSH，加载新版插件；已保存的主题会自动恢复。已安装的旧版单款主题插件需要移除，避免同时覆盖界面样式。
+
+## 兼容性、升级与卸载（2026-10 生命周期审计）
+
+- **准确测试版本**：Linux / Node.js 24 下以本地固定 tgz、真实 DSH Web/Chromium 验证 `0.2.0-rc.2` 和 `0.2.1-alpha.2` 的冷启动、主题选择、原生插件详情、禁用/卸载/重装，以及四插件同 Profile 共存；Windows Desktop、旧未 scoped 包的真实迁移和声明范围内其余 DSH 版本 **NOT TESTED**。声明的 `>=0.2.0-0 <0.3.0` 只是安装匹配范围，**不是全区间实测证明**。
+- **安装标识**：唯一统一包名是 `@xuanyi-king/dsh-theme-gallery`；历史 `dsh-theme-gallery` 是旧依赖名，两者不能并存。旧独立主题 Bundle 也要先退出，避免装饰层互相覆盖。**只移除旧 Bundle，不删除用户主题数据**。
+- **安全更新**：现有更新中心只负责检查兼容、保存恢复基线并打开原生插件详情，**不会自动执行 npm/pnpm、卸载或全局更新**。升级前在外部终端停止宿主、保留当前固定安装产物和 Profile lock；重启后核对 Client/Host/manifest、唯一 `active` 条目并硬刷新。
+- **卸载**：停止宿主后在原生插件管理器移除，或对实际的 CLI Profile 使用 `dsh plugin --profile web remove @xuanyi-king/dsh-theme-gallery`；再次启动确认旧路由、主题注册和样式不再生效。卸载会释放请求/监听器/路由，但**默认保留** `$DSH_HOME/dsh-theme-gallery/selection.json`、更新基线以及浏览器 `dsh.themeGallery.selection`、`dsh.themeGallery.visual` 等本插件键值，重装时可恢复。
+- **测试与发布边界**：本轮审计提交的根测试 **93/93 PASS**，同时有独立主题测试和真实宿主最小验证记录；全部主题/四滑条跨平台回归仍未完整重跑。源码合并不是发布，新发行包应另增版本并从干净提交构建。
+
+具体源码证据、测试范围和保留数据见 [DSH 生命周期审计](docs/DSH-LIFECYCLE-AUDIT.md)。
 
 ## v0.3.22 客户端模块 id 修正
 

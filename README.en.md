@@ -51,6 +51,8 @@ Version 0.3.20 adds **Wang Lin · Renegade Immortal**, with silver-white robes, 
 
 One installation includes all eleven themes. Pick either route.
 
+> **Release vs. source**: the registry/CDN `0.3.22` commands below install the previously published artifact. The October 2026 lifecycle fixes merged into `main` (correct scoped plugin details, aborted requests and route disposal) have **not** been republished or version-bumped. Do not overwrite a published package using the same version.
+
 ### Option 1: npm package name (recommended)
 
 The registry package is `@xuanyi-king/dsh-theme-gallery` (currently `0.3.22`).
@@ -118,6 +120,16 @@ dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme
 Then open the sidebar **Themes** center. One installation includes all eleven themes.
 
 After an upgrade, close and reopen DSH to load the new plugin. DSH restores your saved theme. If older standalone theme plugins remain installed, remove them to prevent competing styles.
+
+## DSH compatibility, update and uninstall (October 2026 audit)
+
+- **Verified** in isolated Linux / Node.js 24 environments using local tarballs: DSH `0.2.0-rc.2` and `0.2.1-alpha.2`, Web/Chromium boot, switching, native plugin details, disable/remove/reinstall, and coexistence with the other three plugins. Windows Desktop, old unscoped-package migration and other versions inside the declared `>=0.2.0-0 <0.3.0` peer range are **NOT TESTED**.
+- **One package**: use `@xuanyi-king/dsh-theme-gallery`. Remove any old unscoped `dsh-theme-gallery` bundle or separately installed legacy theme bundles before activating the new gallery; never clear user theme data as part of removal.
+- **Upgrading**: the built-in update center checks compatibility and saves a recovery baseline; it does **not** run npm/pnpm or automatically replace the plugin. From an external terminal, stop the Host and preserve the fixed original artifact/Profile lock. After upgrading only this package, restart the Host, hard-refresh the browser, and verify the Client/Host/manifest and one `active` entry.
+- **Uninstalling**: stop the Host and remove this bundle in the native manager or use `dsh plugin --profile web remove @xuanyi-king/dsh-theme-gallery` for the correct CLI Profile. Route handlers, UI/theme registrations and requests are disposed; **data is preserved by default**, including `$DSH_HOME/dsh-theme-gallery/selection.json`, recovery baselines, and the browser's `dsh.themeGallery.selection` / `dsh.themeGallery.visual` keys.
+- **Validation**: author-reported root tests **93/93 PASS** plus the existing standalone-theme suites and targeted real-Host tests. A full Windows/Desktop and all-themes/all-sliders regression was not repeated. A source merge does not imply a new npm release.
+
+For source evidence and the exact test limits, see [DSH lifecycle audit](docs/DSH-LIFECYCLE-AUDIT.md).
 
 ## v0.3.22: client module id fix
 
