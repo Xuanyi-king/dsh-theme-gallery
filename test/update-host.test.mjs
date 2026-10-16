@@ -99,3 +99,15 @@ test('scoped install path resolves and the pre-rename path keeps working',{skip:
   }finally{await rm(home,{recursive:true,force:true})}
  }
 });
+test('old recovery baselines remain verifiable with missing intro preference while new disabled values are protected',async()=>{
+ const home=await mkdtemp(join(tmpdir(),'gallery-intro-baseline-'));try{
+  await mkdir(join(home,'dsh-theme-gallery'));const {saveBaseline}=await import('../lib/update-core.js');
+  const original={selection:'gallery-shanhe',visual:null},target={version:build.version,build,artifactValid:true};
+  const saved=await saveBaseline(home,{configuration:original,target,client:build});
+  const handler=createUpdateHandler({home,info:async()=>({...info,diskBuild:build,entries:[{enabled:true,fiberPhase:'active'}]})});
+  const verify=configuration=>handler.fetch(new Request('http://localhost/api/dsh-theme-gallery/update/verify',{method:'POST',body:JSON.stringify({client:build,baselineId:saved.id,configuration,registration:{main:true,sidebar:true,resources:true,appearance:true}})}));
+  assert.equal((await(await verify({...original,startupIntro:null})).json()).status,'success');
+  assert.equal((await(await verify({...original,startupIntro:'true'})).json()).status,'success');
+  assert.equal((await(await verify({...original,startupIntro:'false'})).json()).status,'rollback-required');handler.dispose();
+ }finally{await rm(home,{recursive:true,force:true})}
+});

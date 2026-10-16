@@ -35,3 +35,13 @@ test('fresh checks invalidate preflight details and send the actual Client build
  await controller.check();await controller.preflight();assert.ok(controller.getSnapshot().checks);failure=true;
  await controller.check();assert.equal(controller.getSnapshot().checks,null);assert.equal(controller.getSnapshot().target,null);controller.dispose();
 });
+test('recovery baseline includes the global startup intro preference without changing other keys',async()=>{
+ const data=new Map([['dsh.themeGallery.startupIntro.enabled','false'],['other-plugin','original']]);let configuration;
+ const controller=createUpdateController({client,storage:{getItem:key=>data.get(key)??null,setItem:(key,value)=>data.set(key,value)},fetchImpl:async(path,init)=>{configuration=JSON.parse(init.body).configuration;return ok({status:'ready',baseline:{id:'saved',record:{configuration}}})}});
+ await controller.backup();assert.equal(configuration.startupIntro,'false');assert.equal(data.get('other-plugin'),'original');controller.dispose();
+});
+test('backup retains a disabled session intro preference when browser persistence fails',async()=>{
+ let configuration;
+ const controller=createUpdateController({client,getStartupIntroEnabled:()=>false,storage:{getItem:()=>{throw Error('denied')}},fetchImpl:async(path,init)=>{configuration=JSON.parse(init.body).configuration;return ok({baseline:{id:'saved',record:{configuration}}})}});
+ await controller.backup();assert.equal(configuration.startupIntro,'false');controller.dispose();
+});

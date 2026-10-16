@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import {join} from 'node:path';
+import {CATALOG} from '../src/catalog.mjs';
 const {DSH_CENTER_BROWSER_TOOLS:tools,DSH_CENTER_HOST_LOG:logPath,DSH_CENTER_TEST_HOME:home,DSH_CENTER_SCREENSHOTS:output,DSH_CENTER_RECOVERY_PHASE:phase}=process.env;
 if(!tools||!logPath||!home||!output||process.env.DSH_CENTER_ISOLATED!=='1'||!['prepare','verify'].includes(phase))throw Error('Explicit isolated test Profile, output and prepare/verify phase required.');
 const {chromium}=createRequire(join(tools,'package.json'))('playwright');
@@ -24,18 +25,20 @@ try{
   for(let i=0;i<30;i++){if((await readFile(join(home,'dsh-theme-gallery','selection.json'),'utf8')).includes('gallery-shanhe'))break;await page.waitForTimeout(100)}
   const range=page.locator('.dsh-gallery-controls input[type="range"]').first();await range.focus();await range.press('Home');
   assert.notEqual(await page.evaluate(()=>localStorage.getItem('dsh.themeGallery.visual')),baseline.configuration.visual);
-  // Restore only the two owned browser keys and the owned selection file; keep the backup.
-  await page.evaluate(configuration=>{for(const [key,value] of [['dsh.themeGallery.selection',configuration.selection],['dsh.themeGallery.visual',configuration.visual]]){if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)}},baseline.configuration);
+  // Restore only the three owned browser keys and the owned selection file; keep the backup.
+  await page.evaluate(configuration=>{for(const [key,value] of [['dsh.themeGallery.selection',configuration.selection],['dsh.themeGallery.visual',configuration.visual],['dsh.themeGallery.startupIntro.enabled',configuration.startupIntro??null]]){if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value)}},baseline.configuration);
   await writeFile(join(home,'dsh-theme-gallery','selection.json'),baseline.selectionRaw);
   await context.storageState({path:join(output,'browser-state.json')});
   console.log('PASS isolated failure simulation changed theme/sliders; original owned bytes restored; backup retained');
  }else{
-  assert.equal(await page.locator('body').getAttribute('data-dsh-gallery-theme'),'wang-lin');
+  assert.equal(await page.locator('body').getAttribute('data-dsh-gallery-theme'),CATALOG.find(item=>item.id===baseline.configuration.selection)?.slug??null);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('dsh.themeGallery.startupIntro.enabled')),baseline.configuration.startupIntro??null);
+  if(baseline.configuration.startupIntro==='false')assert.equal(await page.locator('.dsh-gallery-intro').count(),0);
   assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('dsh.themeGallery.visual'))),JSON.parse(baseline.configuration.visual));
   assert.equal(await readFile(join(home,'dsh-theme-gallery','selection.json'),'utf8'),baseline.selectionRaw);
   const info=await page.evaluate(async()=> (await (await fetch('/api/dsh-theme-gallery/update/info')).json()).info);
-  assert.equal(info.runtimeVersion,'0.2.1-alpha.1');assert.equal(info.entries[0].fiberPhase,'active');assert.equal(info.artifactValid,true);
+  assert.equal(info.runtimeVersion,process.env.DSH_CENTER_EXPECT_RUNTIME??'0.2.1-alpha.2');assert.equal(info.entries[0].fiberPhase,'active');assert.equal(info.artifactValid,true);
   assert.equal(await page.getByRole('button',{name:'主题',exact:true}).count(),1);assert.deepEqual(errors,[]);
-  console.log('PASS actual cold Host restart restores Wang Lin, four sliders, exact owned selection bytes and active unique navigation');
+  console.log('PASS actual cold Host restart restores saved theme, intro preference, four sliders, exact owned selection bytes and active unique navigation');
  }
 }finally{await browser.close()}

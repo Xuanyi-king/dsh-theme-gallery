@@ -25,3 +25,18 @@
 .dsh-gallery-control output { text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 480px) { .dsh-gallery-control { grid-template-columns: 80px minmax(60px, 1fr) 48px; gap: 7px; } }
 @media (prefers-reduced-motion: reduce) { .dsh-gallery-card { transition: none; } }
+
+/* Global preference deliberately lives outside the disabled appearance fieldset. */
+.dsh-gallery-intro-preference { border: 1px solid var(--dsw-alias-border-l2); border-radius: 14px; margin-top: 16px; padding: 16px 18px; }
+.dsh-gallery-intro-toggle { display: flex; align-items: center; justify-content: space-between; gap: 20px; cursor: pointer; font-size: 14px; }
+.dsh-gallery-intro-toggle span { min-width: 0; }
+.dsh-gallery-intro-toggle strong { font-weight: 500; }
+.dsh-gallery-intro-toggle small { display: block; color: var(--dsw-alias-label-secondary); line-height: 1.6; margin-top: 6px; font-size: 12px; }
+.dsh-gallery-intro-toggle input { flex: 0 0 auto; width: 36px; height: 24px; accent-color: var(--dsw-alias-brand-primary); cursor: pointer; }
+.dsh-gallery-intro-toggle input:focus-visible { outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: 4px; }
+
+.dsh-gallery-intro-toggle input { appearance: none; -webkit-appearance: none; position: relative; width: 42px; height: 24px; margin: 0; border: 1px solid var(--dsw-alias-border-l2); border-radius: 999px; background: var(--dsw-alias-bg-layer-3); transition: background-color .18s ease; }
+.dsh-gallery-intro-toggle input::before { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--dsw-alias-label-primary); transition: transform .18s ease; }
+.dsh-gallery-intro-toggle input:checked { background: var(--dsw-alias-brand-primary); }
+.dsh-gallery-intro-toggle input:checked::before { transform: translateX(18px); background: var(--dsw-alias-label-primary-inverted); }
+@media (prefers-reduced-motion: reduce) { .dsh-gallery-intro-toggle input, .dsh-gallery-intro-toggle input::before { transition: none; } }

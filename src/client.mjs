@@ -9,6 +9,7 @@ const STYLE_TEXT = '';
 const REACT = null;
 const STORAGE_KEY = 'dsh.themeGallery.selection';
 const VISUAL_KEY = 'dsh.themeGallery.visual';
+const STARTUP_INTRO_KEY = 'dsh.themeGallery.startupIntro.enabled';
 const VISUAL_DEFAULTS = Object.freeze({ fade: 0, sidebarOpacity: 40, blur: 0, contrast: 100 });
 const VISUAL_RANGES = Object.freeze({ fade: [0, 80], sidebarOpacity: [0, 90], blur: [0, 12], contrast: [80, 150] });
 const ATTR = 'data-dsh-gallery-theme';
@@ -246,6 +247,9 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
   let writeQueue = Promise.resolve();
   let ready = Promise.resolve();
   const subscribers = new Set();
+  const introSubscribers = new Set();
+  let startupIntroEnabled = true;
+  try { startupIntroEnabled = storage?.getItem(STARTUP_INTRO_KEY) !== 'false'; } catch { /* Keep the default if storage is unavailable. */ }
   const readVisual = () => {
     try {
       const saved = JSON.parse(storage?.getItem(VISUAL_KEY) ?? 'null');
@@ -352,6 +356,16 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
       whenReady: () => ready,
       hasUserSelection: () => userSelected,
       getAdjustments: () => ({ ...visual }),
+      getStartupIntroEnabled: () => startupIntroEnabled,
+      setStartupIntroEnabled(enabled) {
+        if (disposed) return;
+        if (typeof enabled !== 'boolean') throw new TypeError('startup intro preference must be boolean');
+        if (startupIntroEnabled === enabled) return;
+        startupIntroEnabled = enabled;
+        try { storage?.setItem(STARTUP_INTRO_KEY, JSON.stringify(enabled)); } catch { /* Session preference still applies. */ }
+        for (const fn of introSubscribers) fn(enabled);
+      },
+      subscribeStartupIntro(fn) { introSubscribers.add(fn); return () => introSubscribers.delete(fn); },
       adjust(key, value) {
         if (!Object.hasOwn(VISUAL_RANGES, key)) throw new Error(`unknown adjustment: ${key}`);
         const amount = Number(value);
@@ -386,6 +400,7 @@ export function applyGallery(ctx, { catalog = CATALOG, document: doc = globalThi
         style?.remove();
         for (const stop of unregister.reverse()) stop();
         subscribers.clear();
+        introSubscribers.clear();
       },
     };
   } catch (error) {
@@ -403,6 +418,8 @@ export function createGallerySection(React, controller, catalog = CATALOG, updat
   return function GallerySection(props) {
     const t = props.t ?? (key => key);
     const [selected, setSelected] = React.useState(() => controller.getSelection());
+    const [introEnabled, setIntroEnabled] = React.useState(() => controller.getStartupIntroEnabled?.() ?? true);
+    React.useEffect(() => controller.subscribeStartupIntro?.(setIntroEnabled), []);
     const [visual, setVisual] = React.useState(() => controller.getAdjustments());
     React.useEffect(() => controller.subscribe(setSelected), []);
     const controls = [
@@ -462,6 +479,15 @@ export function createGallerySection(React, controller, catalog = CATALOG, updat
           h('output', null, `${visual[control.key]}${control.unit}`),
         )),
       ),
+      h('div', { className: 'dsh-gallery-intro-preference' },
+        h('label', { className: 'dsh-gallery-intro-toggle' },
+          h('span', null, h('strong', null, t('startupIntro')), h('small', { id: 'dsh-gallery-intro-description' }, t('startupIntroHint'))),
+          h('input', { type: 'checkbox', role: 'switch', checked: introEnabled,
+            'aria-label': t('startupIntro'), 'aria-describedby': 'dsh-gallery-intro-description',
+            onChange: event => controller.setStartupIntroEnabled(event.target.checked),
+          }),
+        ),
+      ),
       h('p', { className: 'dsh-gallery-footnote' }, t('footnote')),
     );
   };
@@ -475,7 +501,7 @@ export function apply(ctx) {
   ctx.effect(() => {
     controller = applyGallery(ctx);
     startup = createStartupIntro(controller);
-    updates = createUpdateController({ client: BUILD_INFO, probe: async signal => {
+    updates = createUpdateController({ client: BUILD_INFO, getStartupIntroEnabled: () => controller.getStartupIntroEnabled(), probe: async signal => {
       const urls=[...new Set(STYLE_TEXT.match(/data:image\/webp;base64,[A-Za-z0-9+/=]+/g)??[])];
       const decoded=typeof Image==='function' ? await Promise.all(urls.map(url=>new Promise(resolve=>{
         const image=new Image();
@@ -487,7 +513,7 @@ export function apply(ctx) {
       let appearance=false;try{
         const selected=controller.getSelection(), cached=localStorage.getItem(STORAGE_KEY);
         const saved=JSON.parse(localStorage.getItem(VISUAL_KEY)??'null')??VISUAL_DEFAULTS;
-        appearance=(selected??null)===(cached??null) &&
+        appearance=controller.getStartupIntroEnabled()===(localStorage.getItem(STARTUP_INTRO_KEY)!=='false') && (selected??null)===(cached??null) &&
           Object.entries(controller.getAdjustments()).every(([key,value])=>value===Number(saved[key])) &&
           document.body.getAttribute(ATTR)===(CATALOG.find(item=>item.id===selected)?.slug??null);
       }catch{}
@@ -507,8 +533,8 @@ export function apply(ctx) {
   ctx.on?.('connection/reset', () => { updates.cancel(); void updates.check(); });
   const zh = { nav: '主题', title: '主题', intro: `挑选喜欢的主题，即点即换。${CATALOG.length} 款主题都包含在这个插件中。`, footnote: '选择保存在 DSH 中；可随时恢复默认外观。', system: '跟随 DSH', light: 'DSH 明亮', dark: 'DSH 深色', appearance: '画面与文字', appearanceHint: '调节时立即生效，重启后仍会保留。默认：深淡 0%、侧栏遮罩 40%、模糊 0px、文字对比 100%。', fade: '背景深淡', sidebarOpacity: '侧栏遮罩', blur: '背景模糊', contrast: '文字对比' };
   const en = { nav: 'Themes', title: 'Themes', intro: `Choose a theme and switch instantly. All ${CATALOG.length} are included.`, footnote: 'Your choice is saved by DSH. Return to the default at any time.', system: 'DSH default', light: 'DSH Light', dark: 'DSH Dark', appearance: 'Scene and text', appearanceHint: 'Updates instantly and persists after restart. Defaults: depth 0%, sidebar mask 40%, blur 0px, text contrast 100%.', fade: 'Background depth', sidebarOpacity: 'Sidebar mask', blur: 'Scene blur', contrast: 'Text contrast' };
-  Object.assign(zh, { introSkip: '跳过', introHint: 'Esc 跳过 · 即将启程', introThemedHint: 'Esc 跳过 · 即将开启对话' });
-  Object.assign(en, { introSkip: 'Skip', introHint: 'Esc to skip · Your journey begins', introThemedHint: 'Esc to skip · Your journey begins' });
+  Object.assign(zh, { startupIntro: '启动进场动画', startupIntroHint: '关闭后将直接进入工作界面，适用于全部主题。', introSkip: '跳过', introHint: 'Esc 跳过 · 即将启程', introThemedHint: 'Esc 跳过 · 即将开启对话' });
+  Object.assign(en, { startupIntro: 'Startup intro animation', startupIntroHint: 'Turn off to enter the workspace directly. Applies to all themes.', introSkip: 'Skip', introHint: 'Esc to skip · Your journey begins', introThemedHint: 'Esc to skip · Your journey begins' });
   Object.assign(zh, UPDATE_LOCALES.zh);
   Object.assign(en, UPDATE_LOCALES.en);
   for (const item of CATALOG) { zh[item.slug] = item.zh; en[item.slug] = item.en; }

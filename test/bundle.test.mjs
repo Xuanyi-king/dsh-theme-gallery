@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { CATALOG } from '../src/catalog.mjs';
 
-test('installable root package declares one bundle with all eleven theme assets', async () => {
+test('installable root package declares one bundle with all twelve theme assets', async () => {
   const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url)));
   const client = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const loaded = [];
@@ -12,7 +12,7 @@ test('installable root package declares one bundle with all eleven theme assets'
   assert.equal(loaded.length, 1);
   assert.equal(loaded[0].id, pkg.name, 'the client module id must be the package name, because the Host keys its boot graph and the client entry roster by package name');
   const module = loaded[0].factory(name => { if (name === 'react') return { createElement() {} }; throw Error(name); });
-  assert.equal(module.CATALOG.length, 11);
+  assert.equal(module.CATALOG.length, 12);
   assert.equal(module.CATALOG[0].id, 'gallery-shanhe');
   assert.equal((client.match(/data:image\/webp;base64,/g) ?? []).length, CATALOG.length * 2);
   assert.ok(!client.includes("name: 'settings.section'"));
@@ -88,6 +88,11 @@ test('all gallery themes expose wallpaper through the adjustable sidebar mask', 
   const bundle = await readFile(new URL('../lib/client.js', import.meta.url), 'utf8');
   const css = JSON.parse(bundle.match(/const STYLE_TEXT = ("(?:\\.|[^"\\])*");/)[1]);
   for (const { slug } of CATALOG) {
+    if (slug === 'aqua-glass') {
+      assert.match(css, /body\[data-dsh-gallery-theme="aqua-glass"\][^{]+> \[class\*="root"\] \{\s*background: #15243a;/, 'Aqua has an opaque no-backdrop fallback');
+      assert.ok(css.includes('calc(60% + var(--gallery-sidebar-opacity, 40%) * .35)'), 'Aqua glass still responds to the shared sidebar mask');
+      continue;
+    }
     const target = `body[data-dsh-gallery-theme="${slug}"] [class*="sidebarCol"] > *`;
     const block = css.slice(css.lastIndexOf(target));
     assert.ok(block.startsWith(target), `${slug} reaches the actual sidebar child`);
@@ -193,7 +198,7 @@ test('bundled plugin registers one native panel whose cards switch and reset the
   const visit = node => { if (!node || typeof node !== 'object') return; nodes.push(node); node.children?.forEach(visit); };
   visit(rendered);
   const buttons = nodes.filter(node => node.type === 'button');
-  assert.equal(buttons.filter(node=>node.props['data-theme']).length, 14);
+  assert.equal(buttons.filter(node=>node.props['data-theme']).length, CATALOG.length + 3);
   buttons.find(node => node.props['data-theme'] === 'gallery-wang-lin').props.onClick();
   assert.equal(preference, 'gallery-wang-lin');
   assert.equal(attrs.get('data-dsh-gallery-theme'), 'wang-lin');

@@ -14,6 +14,7 @@ const url=(await readFile(logPath,'utf8')).match(/http:\/\/127\.0\.0\.1:\d+\/\?t
 if(!url)throw Error('Test Host authentication URL unavailable');
 const output=process.env.DSH_CENTER_SCREENSHOTS??'/tmp/dsh-theme-center-screenshots';await mkdir(output,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.DSH_CENTER_CHROMIUM??'/usr/bin/chromium',headless:true});
+const manifest=JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8'));
 const errors=[],passed=[];
 const context=await browser.newContext({viewport:{width:1440,height:1000},locale:'zh-CN'});
 const page=await context.newPage();page.setDefaultTimeout(12000);page.on('pageerror',error=>errors.push(error.message));
@@ -38,12 +39,12 @@ try{
   await page.getByRole('button',{name:'打开',exact:true}).click();
  }
  await center().click();await page.locator('.dsh-gallery-page').waitFor();
- assert.equal(await center().count(),1);assert.equal(await page.locator('.dsh-gallery-card').count(),14);
+ assert.equal(await center().count(),1);assert.equal(await page.locator('.dsh-gallery-card').count(),CATALOG.length+3);
  const native=await page.locator('nav[aria-label]').filter({has:center()}).getByRole('button').allTextContents();
- assert.equal(native.indexOf('主题'),native.indexOf('插件')+1);mark('native single sidebar entry below Plugins and 14 cards');
+ assert.equal(native.indexOf('主题'),native.indexOf('插件')+1);mark('native single sidebar entry below Plugins and all gallery/built-in cards');
  const runtime=await page.evaluate(async()=>{const response=await fetch('/api/dsh-theme-gallery/update/info');return response.json()});
  assert.equal(runtime.info.runtimeVersion,process.env.DSH_CENTER_EXPECT_RUNTIME??'0.2.1-alpha.1');
- assert.equal(runtime.info.build.version,'0.3.21');assert.equal(runtime.info.artifactValid,true);
+ assert.equal(runtime.info.build.version,manifest.version);assert.equal(runtime.info.artifactValid,true);
  assert.equal(runtime.info.entries.length,1);assert.equal(runtime.info.entries[0].fiberPhase,'active');assert.equal(runtime.info.entries[0].enabled,true);
  const unauthorized=await fetch(new URL('/api/dsh-theme-gallery/update/info',url));assert.ok([401,403].includes(unauthorized.status));mark('actual Host/client artifact, active entry, runtime identity and authenticated API');
  for(const item of CATALOG){
@@ -53,7 +54,7 @@ try{
   assert.equal(await page.locator('body').getAttribute('data-dsh-gallery-theme'),item.slug);
   await center().click();assert.equal(await page.locator(`.dsh-gallery-card[data-theme="${item.id}"]`).getAttribute('aria-pressed'),'true');
  }
- mark('all 11 themes switch instantly and remain active with center unmounted');
+ mark('all gallery themes switch instantly and remain active with center unmounted');
  const ranges=page.locator('.dsh-gallery-controls input[type="range"]');assert.equal(await ranges.count(),4);
  for(const [index,value] of [25,60,2,120].entries()){
   await ranges.nth(index).focus();await ranges.nth(index).press('Home');for(let i=Number(await ranges.nth(index).getAttribute('min'));i<value;i++)await ranges.nth(index).press('ArrowRight');
@@ -79,7 +80,7 @@ try{
  mark('real update check, owned baseline export and honest runtime verification action');
  await page.getByRole('button',{name:'打开 DSH 插件详情',exact:true}).click();assert.equal(await page.locator('.dsh-gallery-page').count(),0);assert.ok((await page.locator('body').innerText()).includes('dsh-theme-gallery'));await center().click();mark('official pluginNavigation opens this bundle without installation');
  await page.getByRole('button',{name:'打开 DSH 插件详情',exact:true}).click();
- const enabled=page.getByRole('switch',{name:/启用 dsh-theme-gallery/});await enabled.click();
+ const enabled=page.getByRole('switch',{name:/启用 .*dsh-theme-gallery/});await enabled.click();
  await page.waitForFunction(()=>document.querySelector('[role="switch"][aria-label*="dsh-theme-gallery"]')?.getAttribute('aria-checked')==='false');
  await center().waitFor({state:'detached'});assert.equal(await page.locator('body').getAttribute('data-dsh-gallery-theme'),null);
  const unloaded=await page.evaluate(async()=>{const response=await fetch('/api/dsh-theme-gallery/update/info');return response.status});assert.equal(unloaded,404);
@@ -103,7 +104,7 @@ try{
  const english=await browser.newContext({viewport:{width:1440,height:1000},locale:'en-US'});
  const ep=await english.newPage();ep.on('pageerror',error=>errors.push(error.message));await ep.goto(url,{waitUntil:'networkidle'});
  for(const name of ['Continue','Configure later','Skip']){const button=ep.getByRole('button',{name,exact:true});await button.waitFor({state:'visible',timeout:1200}).catch(()=>{});if(await button.isVisible()){if(name==='Skip')await button.click({timeout:1000}).catch(async error=>{if(await ep.locator('.dsh-gallery-intro').count())throw error});else await button.click()}}
- await ep.getByRole('button',{name:'Themes',exact:true}).click();assert.equal(await ep.locator('.dsh-gallery-card').count(),14);
+ await ep.getByRole('button',{name:'Themes',exact:true}).click();assert.equal(await ep.locator('.dsh-gallery-card').count(),CATALOG.length+3);
  assert.ok(await ep.getByRole('button',{name:'Check for updates',exact:true}).isVisible());
  await ep.screenshot({path:join(output,'theme-center-english.png')});await english.close();mark('real English navigation and update actions');
  assert.deepEqual(errors,[]);mark('no real browser pageerror');

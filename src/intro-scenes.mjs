@@ -11,6 +11,11 @@ const rays = () => Array.from({ length: 8 }, (_, i) => {
     x2: 180 + Math.cos(a) * 125, y2: 180 + Math.sin(a) * 125, className: 'intro-sun-ray' }];
 });
 const INTRO_VECTORS = Object.freeze({
+  'aqua-glass': [
+    ['rect', {x:80,y:45,width:200,height:270,rx:48,className:'intro-glass-pane'}],
+    path('M103 153C146 105 214 215 257 153', 'intro-glass-wave'),
+    path('M80 185V93Q80 45 128 45H212', 'intro-glass-edge'),
+  ],
   ultraman: [
     circle(143, 'intro-orbit', { strokeDasharray: '2 15' }),
     circle(118, 'intro-orbit-inner', { strokeDasharray: '86 40' }),

@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { CATALOG } from '../src/catalog.mjs';
 
 // Wang Lin is a gallery-only resource; the ten legacy packages stay compatible.
-for (const { slug } of CATALOG.filter(item => item.slug !== 'wang-lin')) {
+for (const { slug } of CATALOG.filter(item => !['wang-lin', 'aqua-glass'].includes(item.slug))) {
   test(`${slug} standalone theme decorates the DSH 0.2 live status`, async () => {
     const theme = await import(`../themes/${slug}/src/client.mjs`);
     const attrs = new Map();

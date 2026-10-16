@@ -1,0 +1,24 @@
+{
+  "version": "0.3.23",
+  "fingerprint": "817f698b01efc7b1505d06d52aedd25510636dc56d718d9656db82e68dc68797",
+  "runtime": "0.2.1-alpha.2",
+  "platform": "Linux Chromium / real DSH Web",
+  "scriptedContent": true,
+  "passed": [
+    "real active package and all twelve themes switch with fifteen native cards",
+    "global switch keyboard toggle, built-in accessibility and disabled reload persistence",
+    "enabling does not replay; next startup uses Aqua artwork and Escape closes it",
+    "opaque composer fallback survives simulated absence of backdrop support",
+    "scripted stream in native DSH renderer: status remains active with intro off; Markdown, code colors, long text and model menu",
+    "390px and 320px real Host conversation and center stay within the viewport",
+    "English gallery and global preference label",
+    "four keyboard sliders persist across reload; exported recovery baseline includes disabled intro and original configuration",
+    "native disable/enable removes styles, routes, intro and navigation; reactivation restores theme and disabled preference once"
+  ],
+  "errors": [],
+  "notTested": [
+    "Windows Desktop/WebView",
+    "real paid model responses",
+    "other DSH versions outside tested matrix"
+  ]
+}

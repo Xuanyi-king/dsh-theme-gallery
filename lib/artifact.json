@@ -1,15 +1,15 @@
 {
-  "version": "0.3.22",
-  "fingerprint": "2547ba72554ba99f60e75a2c942cc7793d483644fc2205e3bdd6cf31e1baa088",
-  "sourceCommit": "3ea58385b4bd27c20e4f8459f862a0dbb21a3159",
+  "version": "0.3.23",
+  "fingerprint": "817f698b01efc7b1505d06d52aedd25510636dc56d718d9656db82e68dc68797",
+  "sourceCommit": "a29fa365a9ed4aec0cc6526552c96ccc69c1dea3",
   "sourceDirty": true,
-  "manifestSha256": "ea815b9bdf830984185fc9ebd0c131d68766d733e688554f125989482e66fa07",
-  "resourceCount": 11,
-  "clientSha256": "33bd4d7d303bd6f770ec4bcb26f2494a14305ffe93e7cc173bbd8cb4fa715210",
+  "manifestSha256": "96061030241b54be08d3f1c3221fbe76cb3f1d35b283d9f81ac27d8649630040",
+  "resourceCount": 12,
+  "clientSha256": "461a1e9ca6d95d235cc81850239fbae209f621bca910801dc9e6a7ed699403e6",
   "hostHashes": {
     "lib/index.js": "d7fd9b72e7750d98e9dcc35e831e4a4e392f2fe72877c569f9e7c51ac6f3be86",
-    "lib/selection-route.js": "08de8a0916b518ab4bf577bd5403089f3972156d1ebe1a212e6d0786246ccf18",
-    "lib/update-core.js": "2168dd9302fb615afb02cfd07ea5f51b3bd5e6d5ac963b0e560c779a4104b369",
-    "lib/update-host.js": "282c157ccd12e229869a2e68f052124265687f4c95cc78bf840573f85e0324dc"
+    "lib/selection-route.js": "98a6b36e2712aa4486c9f7ba11babb7924703ed79f96ea8af16d46d295e8fe5b",
+    "lib/update-core.js": "e859e9f2753aff535d6410382f1b4a41972b477d4bf9f41b6e0fc62cd2fbac42",
+    "lib/update-host.js": "044a92e7aeb03bb0ae8c3319b219f6965bf9fc221b8b02d804d087c1e46fb9f4"
   }
 }

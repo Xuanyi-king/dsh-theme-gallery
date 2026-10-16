@@ -23,6 +23,7 @@ export function createStartupIntro(gallery, {
   const skip = () => {
     decided = true;
     clearTimer(restoreTimer);
+    restoreTimer = undefined;
     clearTimer(playbackTimer);
     playbackTimer = undefined;
     if (snapshot !== null) publish(null);
@@ -31,7 +32,7 @@ export function createStartupIntro(gallery, {
     if (decided || disposed) return;
     decided = true;
     clearTimer(restoreTimer);
-    if (gallery.hasUserSelection() || reducedMotion()) return;
+    if (gallery.getStartupIntroEnabled?.() === false || gallery.hasUserSelection() || reducedMotion()) return;
     const theme = CATALOG.find(item => item.id === gallery.getSelection());
     if (!theme) return;
     playbackTimer = setTimer(skip, STARTUP_DURATION_MS);
@@ -40,10 +41,14 @@ export function createStartupIntro(gallery, {
   const stopSelection = gallery.subscribe(() => {
     if (snapshot !== null && gallery.getSelection() !== snapshot.id) skip();
   });
+  const stopPreference = gallery.subscribeStartupIntro?.(enabled => { if (!enabled) skip(); });
   // A stalled Host request must neither delay the interface forever nor cause
   // an intro to appear long after the user has begun working.
-  restoreTimer = setTimer(start, STARTUP_RESTORE_TIMEOUT_MS);
-  void gallery.whenReady().then(start, start);
+  if (gallery.getStartupIntroEnabled?.() === false) decided = true;
+  if (!decided) {
+    restoreTimer = setTimer(start, STARTUP_RESTORE_TIMEOUT_MS);
+    void gallery.whenReady().then(start, start);
+  }
   return {
     getSnapshot: () => snapshot,
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
@@ -51,6 +56,7 @@ export function createStartupIntro(gallery, {
     dispose() {
       disposed = true;
       stopSelection();
+      stopPreference?.();
       skip();
       listeners.clear();
     },
@@ -69,6 +75,9 @@ export function createStartupIntroView(React, intro, {
   return function StartupIntro() {
     const theme = React.useSyncExternalStore(intro.subscribe, intro.getSnapshot, () => null);
     const skipRef = React.useRef(null);
+    // An overlay can unmount before the Host restoration resolves. Own both
+    // the waiting and playing lifetimes, independently of the focus effect.
+    React.useEffect(() => () => intro.dispose(), [intro]);
     React.useEffect(() => {
       if (theme === null) return undefined;
       const previous = doc?.activeElement;

@@ -35,10 +35,10 @@ function harness(saved = null, fetchImpl = null, visualSaved = null) {
   return { ctx, controller, attrs, styles, data, definitions, elements, get choice() { return choice; } };
 }
 
-test('one gallery registers eleven unique themes and restores the Sunny Watch selection', () => {
-  assert.equal(CATALOG.length, 11);
+test('one gallery registers twelve unique themes and restores the Sunny Watch selection', () => {
+  assert.equal(CATALOG.length, 12);
   const h = harness('gallery-sunny-watch');
-  assert.equal(h.definitions.size, 13);
+  assert.equal(h.definitions.size, CATALOG.length + 2);
   assert.equal(h.choice, 'gallery-sunny-watch');
   assert.equal(h.attrs.get('data-dsh-gallery-theme'), 'sunny-watch');
   h.controller.dispose();
@@ -169,7 +169,7 @@ test('settings section offers every theme plus DSH default through an accessible
   const walk = x => { if (!x || typeof x !== 'object') return; nodes.push(x); x.children?.forEach(walk); };
   walk(root);
   const buttons = nodes.filter(x => x.type === 'button');
-  assert.equal(buttons.length, 14);
+  assert.equal(buttons.length, CATALOG.length + 3);
   assert.equal(buttons.filter(x => x.props['aria-pressed'] === true).length, 1);
   const ranges = nodes.filter(x => x.type === 'input' && x.props.type === 'range');
   assert.deepEqual(ranges.map(x => x.props['aria-label']), ['fade', 'sidebarOpacity', 'blur', 'contrast']);

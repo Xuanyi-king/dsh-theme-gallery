@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2048" height="1280" viewBox="0 0 2048 1280">
+<!-- Original vector artwork for Aqua Glass. Copyright 2026 DSH Theme Gallery contributors, MIT. -->
+<defs>
+ <linearGradient id="night" x2=".95" y2="1"><stop stop-color="#0b172b"/><stop offset=".42" stop-color="#1b2d49"/><stop offset="1" stop-color="#6683a8"/></linearGradient>
+ <radialGradient id="aura"><stop stop-color="#b7d2ea" stop-opacity=".75"/><stop offset=".48" stop-color="#688fc7" stop-opacity=".2"/><stop offset="1" stop-color="#7182bd" stop-opacity="0"/></radialGradient>
+ <linearGradient id="glass" x1=".2" y1="0" x2=".9" y2="1"><stop stop-color="#ecf5ff" stop-opacity=".8"/><stop offset=".23" stop-color="#95b0d5" stop-opacity=".27"/><stop offset=".52" stop-color="#9bb5d5" stop-opacity=".08"/><stop offset=".79" stop-color="#8294cb" stop-opacity=".4"/><stop offset="1" stop-color="#d9e8f6" stop-opacity=".75"/></linearGradient>
+ <linearGradient id="edge" x2=".8" y2="1"><stop stop-color="#e3f2ff"/><stop offset=".4" stop-color="#abc9e9" stop-opacity=".18"/><stop offset=".7" stop-color="#8e9ed8" stop-opacity=".55"/><stop offset="1" stop-color="#f3f9ff"/></linearGradient>
+ <linearGradient id="fold" x1="0" y1=".2" x2="1" y2=".8"><stop stop-color="#254261"/><stop offset=".48" stop-color="#9ab9d7"/><stop offset=".57" stop-color="#d9e6f2"/><stop offset=".63" stop-color="#6687b2"/><stop offset="1" stop-color="#233553"/></linearGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="50"/></filter>
+ <filter id="shade" x="-.5" y="-.5" width="2" height="2"><feGaussianBlur stdDeviation="24"/></filter>
+</defs>
+<path fill="url(#night)" d="M0 0H2048V1280H0Z"/>
+<ellipse cx="1580" cy="690" rx="1120" ry="1100" fill="url(#aura)"/>
+<path d="M980-170C537 108 928 370 1306 435S1742 694 1360 1050 1260 1380 1630 1460" stroke="#081528" stroke-width="230" fill="none" opacity=".4" filter="url(#shade)"/>
+<path d="M1180-170C600 90 892 351 1321 440S1812 671 1506 985 1368 1320 1710 1440L2220 1430C1634 1200 1940 970 1932 676S1540 446 1346 277 1440 18 1604-170Z" fill="url(#glass)" stroke="url(#edge)" stroke-width="2"/>
+<path d="M1180-170C600 90 892 351 1321 440S1812 671 1506 985 1368 1320 1710 1440" stroke="#d2eaff" stroke-width="22" fill="none" opacity=".13" filter="url(#shade)"/>
+<path d="M1180-170C600 90 892 351 1321 440S1812 671 1506 985 1368 1320 1710 1440" stroke="url(#edge)" stroke-width="3" fill="none"/>
+<path d="M2048 85C1817 257 1928 490 1835 649S1527 871 1517 1065 1733 1307 1913 1415L2122 1415C1840 1233 1641 1069 1791 904S2194 720 2188 493 1983 268 2168 100Z" fill="url(#fold)" opacity=".7"/>
+<path d="M2048 85C1817 257 1928 490 1835 649S1527 871 1517 1065 1733 1307 1913 1415" stroke="#e7f4ff" stroke-width="2" fill="none" opacity=".48"/>
+<ellipse cx="1604" cy="150" rx="240" ry="360" fill="#d0e5f8" opacity=".08" filter="url(#soft)"/>
+</svg>
