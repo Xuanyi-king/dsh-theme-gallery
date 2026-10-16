@@ -23,6 +23,7 @@ const sceneMap = {
   'sunny-watch': 'sunrise-city.webp',
   'young-goku': 'nimbus-journey.webp',
   'wang-lin': 'renegade-mist.webp',
+  'aqua-glass': 'aqua-glass.webp',
 };
 let css = await read('../assets/gallery.css');
 css += '\n' + await read('../assets/startup-intro.css');
@@ -41,6 +42,7 @@ const sidebarPalettes = {
   'jianlai-aliang': ['#172532', '#f2f0e9', '#bdc9cd', '#344553', '#c9a775'],
   'sunny-watch': ['#e9f3fa', '#173a54', '#496b82', '#d9e9f5', '#6eacd2'],
   'young-goku': ['#edf6f9', '#163d58', '#4e7284', '#d9edf4', '#f3b43f'],
+  'aqua-glass': ['#101c2e', '#edf4ff', '#a9bdd7', '#2a3c55', '#a4c8f0'],
   'wang-lin': ['#141a22', '#edf0f3', '#a6b1bf', '#303b47', '#bb5d60'],
 };
 // All scenes use one adjustable mask above the wallpaper. The three recent
@@ -59,6 +61,7 @@ const statusMarks = {
   'jianlai-aliang': '<path d="M3 19 19 3M16 3h3v3M5 20l-2 1 1-2M4 9l2-2m5 11 1-3m8 2 2-1" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
   'sunny-watch': '<path d="M3 18h18M7 14a5 5 0 0 1 10 0M12 2v3M4 7l2 2m14-2-2 2M2 14h2m16 0h2" fill="none" stroke="__ACCENT__" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
   'young-goku': '<path d="M2 17c0-2 1.5-3 3.5-3 0-2 1.5-3 3.3-3 1.5 0 2.5.8 3.1 2 1.4-1.8 4.6-1.3 5.1 1.3 2.4-.5 4.7 1 4.7 3.2 0 1.5-1.1 2.8-3.5 2.8H5c-2 0-3-1.1-3-2.3z" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 6 20 3" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round"/>',
+  'aqua-glass': '<rect x="5" y="3" width="14" height="18" rx="6" fill="none" stroke="__ACCENT__" stroke-width="1.4"/><path d="M7 9c3-4 7 4 10 0" fill="none" stroke="__ACCENT__" stroke-width="1.2"/>',
   'wang-lin': '<path d="M9 4a8.5 8.5 0 0 0 0 16M7 7a5.8 5.8 0 0 0 0 10" fill="none" stroke="__ACCENT__" stroke-width="1.5" stroke-linecap="round"/><path d="M15 4a8.5 8.5 0 0 1 0 16M17 7a5.8 5.8 0 0 1 0 10" fill="none" stroke="#d8dfe6" stroke-width="1.2" stroke-linecap="round"/><path d="M12 1l1 8-1 3-1-3zm0 12v10" fill="__ACCENT__" stroke="__ACCENT__" stroke-width=".8"/>',
 };
 const statusMotion = {
@@ -72,6 +75,7 @@ const statusMotion = {
   'jianlai-aliang': 'gallery-blade 2.7s ease-in-out infinite',
   'sunny-watch': 'gallery-sunrise 3.2s ease-in-out infinite',
   'young-goku': 'gallery-nimbus 2.9s ease-in-out infinite',
+  'aqua-glass': 'gallery-defiant 4s ease-in-out infinite',
   'wang-lin': 'gallery-defiant 3.6s ease-in-out infinite',
 };
 const heroLooks = {
@@ -85,8 +89,10 @@ const heroLooks = {
   'jianlai-aliang': ['"STKaiti", "KaiTi", "Songti SC", serif', '#f2eee4', '#d4c7b0', '.13em', '650'],
   'sunny-watch': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#17395b', '#385e79', '.08em', '720'],
   'young-goku': ['"Microsoft YaHei", "Noto Sans CJK SC", sans-serif', '#143956', '#3b6680', '.09em', '740'],
+  'aqua-glass': ['system-ui, -apple-system, "Segoe UI", sans-serif', '#edf4ff', '#c4d2e6', '.025em', '600'],
   'wang-lin': ['"Songti SC", "STSong", "Noto Serif CJK SC", serif', '#edf0f3', '#c2cbd4', '.10em', '650'],
 };
+let glassCss = '';
 for (const item of CATALOG) {
   const slug = item.slug;
   // The gallery owns one live-status renderer. Importing the standalone
@@ -113,7 +119,8 @@ for (const item of CATALOG) {
     .replaceAll('__SCENE_URL__', url)
     .replaceAll('var(--dsh-shanhe-scene)', 'var(--dsh-gallery-scene)');
   if (scoped.includes('__SCENE_URL__')) throw new Error(`unbundled scene: ${slug}`);
-  css += `\n/* ${slug} */\n${scoped}\n`;
+  if (slug === 'aqua-glass') glassCss = scoped;
+  else css += `\n/* ${slug} */\n${scoped}\n`;
   const [fill, ink, muted, selected, trim] = sidebarPalettes[slug];
   css += `body[data-dsh-gallery-theme="${slug}"] { --dsh-gallery-scene: url("${url}"); --dsh-gallery-accent: ${item.accent}; --gallery-scene-wash: ${slug === 'shanhe' ? '#faf6ed' : fill}; --gallery-sidebar-fill: ${fill}; --gallery-titlebar-fill: ${fill}; --gallery-sidebar-ink: ${ink}; --gallery-sidebar-muted: ${muted}; --gallery-sidebar-selected: ${selected}; --gallery-sidebar-trim: ${trim}; --gallery-chrome: ${slug === 'shanhe' ? '#a43d32' : trim}; --gallery-card-fill: ${slug === 'shanhe' ? 'rgba(250,247,240,.87)' : `color-mix(in srgb, ${fill} 77%, transparent)`}; --dsw-specific-sidebar-fill: transparent !important; ${recentScenes.has(slug) ? `--dsw-alias-bg-base: color-mix(in srgb, ${fill} 12%, transparent) !important; --dsw-alias-bg-layer-1: color-mix(in srgb, ${fill} 84%, transparent) !important; --dsw-alias-bg-layer-2: color-mix(in srgb, ${fill} 88%, transparent) !important; --dsw-alias-bg-layer-3: color-mix(in srgb, ${fill} 92%, transparent) !important; --dsw-alias-bg-overlay: color-mix(in srgb, ${fill} 97%, transparent) !important;` : ''} }\n`;
   const mark = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${statusMarks[slug].replaceAll('__ACCENT__', item.accent)}</svg>`;
@@ -522,7 +529,7 @@ body[data-dsh-gallery-theme]:not([data-dsh-gallery-theme="shanhe"]) [class*="_ti
   body[data-dsh-gallery-theme] [data-composer-card] button[class*="_primary"] { width: 34px; height: 34px; }
 }
 `;
-for (const { slug } of CATALOG) {
+for (const { slug } of CATALOG.filter(item => item.slug !== 'aqua-glass')) {
   css += `body[data-dsh-gallery-theme="${slug}"] [class*="sidebarCol"] > * { --dsw-specific-sidebar-fill: transparent !important; background: transparent !important; }\n`;
 }
 css += `
@@ -700,6 +707,7 @@ for (const item of CATALOG) {
   css += `body[data-dsh-gallery-theme="${item.slug}"] [class*="_titleGroup"] > span:first-child::after { content: ${JSON.stringify(item.tagline)} !important; font-family: ${font}; font-weight: 400; color: ${muted}; -webkit-text-fill-color: ${muted}; }\n`;
 }
 css += `\n.dsh-gallery-page { height: 100%; box-sizing: border-box; overflow: auto; padding: clamp(16px, 3vw, 36px); color: var(--dsw-alias-label-primary); background: color-mix(in srgb, var(--dsw-alias-bg-layer-1) 82%, transparent); }\n.dsh-gallery-updates { border: 1px solid var(--dsw-alias-border-l2); border-radius: 16px; padding: 18px; margin-bottom: 24px; background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 70%, transparent); backdrop-filter: blur(12px); }\n.dsh-gallery-version-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }\n.dsh-gallery-version-grid div { min-width: 0; }\n.dsh-gallery-version-grid dt { font-size: 12px; opacity: .7; }\n.dsh-gallery-version-grid dd { margin: 4px 0 0; overflow-wrap: anywhere; }\n.dsh-gallery-update-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }\n.dsh-gallery-update-actions button, .dsh-gallery-update-actions a { color: inherit; border: 1px solid var(--dsw-alias-border-l2); border-radius: 8px; padding: 8px 12px; background: var(--dsw-alias-bg-layer-2); cursor: pointer; font-size: 13px; }\n.dsh-gallery-update-actions button:disabled { opacity: .5; cursor: default; }\n.dsh-gallery-update-actions :focus-visible { outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: 3px; }\n.dsh-gallery-update-reason, .dsh-gallery-updates details p { overflow-wrap: anywhere; white-space: pre-wrap; }\n.dsh-gallery-updates summary { cursor: pointer; margin-top: 16px; }\n@media(max-width:700px) { .dsh-gallery-version-grid { grid-template-columns: minmax(0, 1fr); } .dsh-gallery-updates { padding: 12px; } }\n`;
+css += '\n' + glassCss;
 const catalog = CATALOG.map(({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, hero, tagline, definition }) =>
   ({ slug, id, zh, en, detail, accent, intro, elapsed, english, placeholder, hero, tagline, definition }));
 const fingerprint = createHash('sha256').update(JSON.stringify({ manifest, body, updater, artwork, startup, css, catalog, hostHashes })).digest('hex');

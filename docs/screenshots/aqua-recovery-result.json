@@ -1,0 +1,12 @@
+{
+  "runtime": "0.2.1-alpha.2",
+  "version": "0.3.23",
+  "fingerprint": "817f698b01efc7b1505d06d52aedd25510636dc56d718d9656db82e68dc68797",
+  "date": "2026-10-16",
+  "checks": {
+    "recoveryPrepare": "PASS isolated failure simulation changed theme/sliders; original owned bytes restored; backup retained",
+    "coldRestart": "PASS actual cold Host restart restores saved theme, intro preference, four sliders, exact owned selection bytes and active unique navigation",
+    "coldRemoval": "PASS official removal + real cold Host: no Client entry/style/body attribute/intro, owned configuration untouched",
+    "reinstallRestore": "PASS actual cold Host restart restores saved theme, intro preference, four sliders, exact owned selection bytes and active unique navigation"
+  }
+}

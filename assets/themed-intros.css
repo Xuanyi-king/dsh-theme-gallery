@@ -238,3 +238,20 @@
 @media (prefers-reduced-motion: reduce) {
   .dsh-gallery-intro-themed, .dsh-gallery-intro-themed * { animation: none !important; }
 }
+
+/* Aqua Glass: a quiet pane and one edge-light sweep, within the existing 4s lifecycle. */
+.dsh-gallery-intro-themed[data-intro-theme="aqua-glass"] { --intro-accent:#b6d7ff; --intro-ink:#edf4ff; --intro-muted:#c4d2e6; --intro-font:system-ui,-apple-system,"Segoe UI",sans-serif; background:#101c2e; }
+[data-intro-theme="aqua-glass"] .dsh-gallery-intro-scene { animation: aqua-intro-light 4s ease-out both; }
+[data-intro-theme="aqua-glass"] .dsh-gallery-intro-mist { background:linear-gradient(90deg,rgba(16,28,46,.94),rgba(16,28,46,.65) 45%,rgba(16,28,46,.18)); animation:none; }
+[data-intro-theme="aqua-glass"] .dsh-intro-stage { width:min(38vw,540px); right:6%; top:12%; opacity:.6; animation:aqua-intro-pane 1.5s 100ms ease-out both; }
+[data-intro-theme="aqua-glass"] .intro-glass-pane { fill:#b6d7ff; fill-opacity:.06; stroke:#dbeeff; stroke-opacity:.3; stroke-width:1; }
+[data-intro-theme="aqua-glass"] .intro-glass-wave { stroke-width:1.5; opacity:.55; }
+[data-intro-theme="aqua-glass"] .intro-glass-edge { stroke:#edf7ff; stroke-width:2; stroke-dasharray:100; animation:aqua-intro-edge 2.6s 250ms ease both; }
+[data-intro-theme="aqua-glass"] .dsh-intro-emblem { width:54px; height:54px; }
+[data-intro-theme="aqua-glass"] #dsh-gallery-intro-title { letter-spacing:.025em; font-weight:550; }
+[data-intro-theme="aqua-glass"] .dsh-intro-glow { display:none; }
+@keyframes aqua-intro-light { from {opacity:.12;transform:scale(1.025)} to {opacity:.75;transform:scale(1)} }
+@keyframes aqua-intro-pane { from {opacity:0;transform:translateY(8px)} to {opacity:.6;transform:translateY(0)} }
+@keyframes aqua-intro-edge { 0% {opacity:0;stroke-dashoffset:100} 25% {opacity:.8} 80% {opacity:.7;stroke-dashoffset:0} 100% {opacity:0;stroke-dashoffset:-30} }
+@media(max-width:700px) { [data-intro-theme="aqua-glass"] .dsh-intro-stage {width:76vw;right:-12%;top:-2%;opacity:.3} [data-intro-theme="aqua-glass"] .dsh-gallery-intro-mist {background:linear-gradient(0deg,rgba(16,28,46,.98),rgba(16,28,46,.76) 50%,rgba(16,28,46,.2))} }
+@media(prefers-reduced-motion:reduce) { [data-intro-theme="aqua-glass"] * {animation:none !important} }

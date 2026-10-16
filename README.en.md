@@ -2,7 +2,7 @@
 
 [简体中文（默认）](README.md) | **English**
 
-One plugin, eleven themes for DeepSeek Harness. Open the sidebar **Themes** center to choose a theme. Select **DSH default** to restore the built-in appearance. DSH restores your saved theme after a restart.
+One plugin, twelve themes for DeepSeek Harness. Open the sidebar **Themes** center to choose a theme. Select **DSH default** to restore the built-in appearance. DSH restores your saved theme after a restart.
 
 ## Themes and appearance
 
@@ -21,10 +21,11 @@ Each theme includes a color palette, scene wallpaper, headline, and input hint. 
 | Sunny Watch · 晴空守望 | [View preview](themes/sunny-watch/assets/concept-preview.webp) | Morning city, clear sky, warm sunlight |
 | Young Goku · Nimbus Journey · 少年悟空 | [View preview](themes/young-goku/assets/concept-preview.webp) | Young Goku, Flying Nimbus, Power Pole, bright landscapes. Unofficial fan theme. |
 | Wang Lin · Renegade Immortal · 王林 | [View preview](themes/wang-lin/assets/concept-preview.webp) | Silver-white hair and robes, slate mountain mist, cinnabar accents, a split red/silver seal. Unofficial Renegade Immortal fan theme. |
+| Aqua Glass · 琉璃 | [View preview](themes/aqua-glass/assets/concept-preview.webp) | Original silver-blue abstract curves, restrained glass edges and opaque reading/code surfaces. |
 
 The plugin uses newly made visual assets. Character themes are unofficial fan designs. New artwork does not mean original ownership of the characters or permission from their rights holders.
 
-Four sliders adjust the appearance across all eleven themes:
+Four sliders adjust the appearance across all twelve themes:
 
 | Control | Default | Effect |
 | --- | --- | --- |
@@ -47,11 +48,25 @@ Shanhe uses a WebP ink landscape instead of the older abstract SVG mountains.
 
 Version 0.3.20 adds **Wang Lin · Renegade Immortal**, with silver-white robes, slate mountain mist, and restrained cinnabar accents. The native home, sidebar, title bar, composer, and running status share the palette. Active replies retain their timer beside a softly breathing red/silver seal; the startup intro reveals the seal through mist. It uses the same four sliders and the existing single installation.
 
+## Aqua Glass and global startup preference (v0.3.23 source)
+
+**This is unpublished source for review.** Registry/CDN v0.3.22 below remains the existing eleven-theme release; its artifact and checksum are unchanged. The new source includes twelve themes and the audited lifecycle fixes.
+
+**Aqua Glass** uses an original locally bundled WebP wallpaper (MIT-authored SVG source), silver-blue lighting, and two restrained glass surfaces: sidebar and composer. Messages and code have high-opacity backgrounds. Native menus and syntax colors remain native. Unsupported backdrop-filter falls back to opaque surfaces; narrow composers disable blur. No Apple wallpaper, Dock, system menu bar or extra runtime dependency is used.
+
+In **Themes**, below **Scene and text**, **Startup intro animation** applies globally. Default: **on** for existing users. Turn it off to close an active opening immediately and suppress refresh/restart playback for every theme. Turning it on never opens a scene immediately; the next eligible page startup may play. The switch stays available on DSH default/light/dark. Reduced motion, Skip/Esc, the four-second limit and no replay on theme changes remain intact; running response status/timers are unaffected.
+
+The controller stores `dsh.themeGallery.startupIntro.enabled` as `true`/`false` in browser storage; missing/invalid data defaults on. Storage failures preserve the session preference. Update baselines add optional `configuration.startupIntro` and keep schema 1 compatible. Restore its raw value to this owned key; absent/null means remove only this key (default on), never clear localStorage. Theme selection, four sliders, unknown baseline fields and other plugins remain unchanged. Uninstall releases all effects but preserves these owned preferences for reinstallation. Select **DSH default** to restore native styling.
+
+![Aqua Glass in real DSH Web](docs/screenshots/aqua-home.png)
+
+Exact test evidence and NOT TESTED platform limits: [Aqua Glass acceptance](docs/AQUA-GLASS-ACCEPTANCE.md). No new compatibility range is claimed beyond the existing declaration.
+
 ## Installation
 
-One installation includes all eleven themes. Pick either route.
+The published v0.3.22 package below contains eleven themes. The unpublished v0.3.23 review source adds Aqua Glass as the twelfth theme in the same unified bundle. Pick either installation route for the published package.
 
-> **Release vs. source**: the registry/CDN `0.3.22` commands below install the previously published artifact. The October 2026 lifecycle fixes merged into `main` (correct scoped plugin details, aborted requests and route disposal) have **not** been republished or version-bumped. Do not overwrite a published package using the same version.
+> **Release vs. source**: the registry/CDN `0.3.22` commands below install the previously published artifact. The October 2026 lifecycle fixes merged into `main` (correct scoped plugin details, aborted requests and route disposal) have **not** been republished (the current review candidate is `0.3.23`). Do not overwrite a published package using the same version.
 
 ### Option 1: npm package name (recommended)
 
@@ -117,7 +132,7 @@ dsh plugin --profile web add "https://cdn.jsdmirror.com/gh/Xuanyi-king/dsh-theme
 
 > Before 0.3.21 the published name was `dsh-theme-gallery` (installed from the GitHub address). The name changed to avoid an unrelated npm package that already owned it. Remove the old `dsh-theme-gallery` dependency before installing the new name, or two bundles will insert the same plugin.
 
-Then open the sidebar **Themes** center. One installation includes all eleven themes.
+Then open the sidebar **Themes** center. The published v0.3.22 package includes eleven themes; the v0.3.23 source adds the twelfth.
 
 After an upgrade, close and reopen DSH to load the new plugin. DSH restores your saved theme. If older standalone theme plugins remain installed, remove them to prevent competing styles.
 
@@ -170,13 +185,13 @@ Node requires `^22.19.0 || >=24`. The DSH peer is `>=0.2.0-0 <0.3.0`: the floor 
 2. From an independent terminal or external Agent inspect `dsh --version`, Node, installation type and target peers. Confirm a recoverable original artifact before uninstalling. Use the official manager or the matching installation mechanism for this plugin only. GitHub installs may retain an old lock commit; verify the resolved result rather than deleting the whole lockfile or updating every dependency.
 3. On Windows fully stop DSH to release file locks; closing the browser is insufficient. Never install from the plugin/DSH session being replaced. A link/junction is the source itself: never blindly copy into, move or remove it.
 4. Restart the Host and hard-refresh the browser. Verify running Client/Host/manifest, locked commit, active status, navigation, resources, theme and sliders. Downloaded, installed and activated are separate stages. Inspect unknown outcomes before retrying.
-5. Download failures leave the original intact. After install failures reinstall the recorded original fixed artifact externally. Recover Host load failures externally; for client failures check the actual bundle/cache then refresh. Restore only baseline `selectionRaw` to this plugin’s `selection.json` at its original path, keeping the backup. Restore only browser keys `dsh.themeGallery.selection` and `dsh.themeGallery.visual` (remove a key when null); never clear all storage or other plugin settings.
+5. Download failures leave the original intact. After install failures reinstall the recorded original fixed artifact externally. Recover Host load failures externally; for client failures check the actual bundle/cache then refresh. Restore only baseline `selectionRaw` to this plugin’s `selection.json` at its original path, keeping the backup. Restore only browser keys `dsh.themeGallery.selection`, `dsh.themeGallery.visual` and `dsh.themeGallery.startupIntro.enabled` (remove a key when null; for an old baseline remove the absent intro key); never clear all storage or other plugin settings.
 
 See [design evidence](docs/THEME-CENTER-UPGRADE-DESIGN.md) and [acceptance record](docs/THEME-CENTER-ACCEPTANCE.md) for fault injection, actual Host evidence and Windows limitations.
 
 ## Theme selection and storage
 
-the sidebar **Themes** center includes eleven gallery themes and three built-in choices: **DSH default**, **DSH Light**, and **DSH Dark**.
+the sidebar **Themes** center includes twelve gallery themes and three built-in choices: **DSH default**, **DSH Light**, and **DSH Dark**.
 
 Select **DSH default** to remove the gallery override. You can select a gallery theme again at any time.
 
@@ -184,7 +199,7 @@ The plugin saves the selection in `dsh-theme-gallery/selection.json` inside the 
 
 ## Theme startup intros
 
-Each saved gallery theme displays its own opening for about 4 seconds after a page restart or refresh. All eleven openings use existing wallpapers and code animation. They need no video, audio, or remote media. Shanhe retains the accepted ink-style sample.
+Each saved gallery theme displays its own opening for about 4 seconds after a page restart or refresh. All twelve openings use existing wallpapers and code animation. They need no video, audio, or remote media. Shanhe retains the accepted ink-style sample.
 
 | Theme | Opening effect |
 | --- | --- |
@@ -199,6 +214,7 @@ Each saved gallery theme displays its own opening for about 4 seconds after a pa
 | Sunny Watch | Sunrise light, a sun symbol, and a city outline |
 | Young Goku | Light cloud trails, gold arcs, and bright theme text |
 | Wang Lin | Slate mist, a split red/silver seal, and resolute theme copy |
+| Aqua Glass | A dark-blue arrival, soft glass pane and one edge-light sweep |
 
 Desktop layouts place the text in the scene whitespace on the left. Narrow layouts place the text near the bottom. The wallpaper crop helps keep character faces visible.
 
@@ -222,7 +238,7 @@ The root package contains the combined gallery. `themes/<name>/` retains theme r
 
 ### Optional browser verification
 
-The browser script uses real React and the built `lib/client.js`. It covers all eleven themes at desktop, mobile, and 320px widths. It also covers Skip, Esc, automatic dismissal, reduced motion, and theme restoration.
+The browser script uses real React and the built `lib/client.js`. It covers all twelve themes at desktop, mobile, and 320px widths. It also covers Skip, Esc, automatic dismissal, reduced motion, and theme restoration.
 
 1. Install `playwright`, `react@18`, and `react-dom@18` in a directory outside this repository.
 2. Install Chromium through Playwright.

@@ -1,7 +1,7 @@
 {
   "name": "@xuanyi-king/dsh-theme-gallery",
-  "version": "0.3.22",
-  "description": "DeepSeek Harness theme center with eleven themes and safe update checks",
+  "version": "0.3.23",
+  "description": "DeepSeek Harness theme center with twelve themes, optional startup intros and safe update checks",
   "license": "MIT",
   "type": "module",
   "main": "./lib/index.js",
@@ -33,7 +33,8 @@
     "README.en.md",
     "LICENSE",
     "docs/THEME-CENTER-UPGRADE-DESIGN.md",
-    "docs/THEME-CENTER-ACCEPTANCE.md"
+    "docs/THEME-CENTER-ACCEPTANCE.md",
+    "docs/AQUA-GLASS-ACCEPTANCE.md"
   ],
   "workspaces": [
     "themes/*"

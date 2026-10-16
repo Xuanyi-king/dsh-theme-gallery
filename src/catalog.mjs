@@ -10,6 +10,8 @@ import { THEME as sunnyWatch } from '../themes/sunny-watch/src/client.mjs';
 import { THEME as youngGoku } from '../themes/young-goku/src/client.mjs';
 import { THEME as wangLin } from '../themes/wang-lin/src/client.mjs';
 
+import { THEME as aquaGlass } from '../themes/aqua-glass/src/client.mjs';
+
 const HERO_COPY = Object.freeze({
   shanhe: ['山河入墨，剑意问心', '一念为始 · 万里山河'],
   ultraman: ['以光之名，探索未知', '光在前方 · 向未知进发'],
@@ -21,6 +23,7 @@ const HERO_COPY = Object.freeze({
   'jianlai-aliang': ['雨落江湖，执剑同行', '且行江湖路 · 静候一剑鸣'],
   'sunny-watch': ['越过高楼，守护日常', '微光落在每一条街巷'],
   'young-goku': ['乘云而行，勇敢向前', '心怀热爱 · 一路闯关'],
+  'aqua-glass': ['澄明之间，专注所想', '柔光成境 · 思绪自如'],
   'wang-lin': ['一念逆天，执心问道', '凡心不灭 · 逆旅问道'],
 });
 
@@ -42,4 +45,5 @@ export const CATALOG = Object.freeze([
   entry('sunny-watch', '晴空守望', 'Sunny Watch · Daybreak', '晴空 · 城市 · 晨光', '#e58a4a', '晨光映城 · 正在思考', '晨光映城 · 已持续', 'Daylight · thinking', '写下你的问题，让答案从这里出发…', sunnyWatch),
   entry('young-goku', '少年悟空 · 筋斗云之旅', 'Young Goku · Nimbus Journey', '筋斗云 · 如意棒 · 晴空', '#efa93c', '乘云思索 · 勇敢向前', '乘云思索 · 已行', 'Nimbus · thinking', '带上你的问题，一起出发…', youngGoku),
   entry('wang-lin', '王林 · 一念仙逆', 'Wang Lin · Renegade Immortal', '白发 · 雾山 · 逆道赤印', '#bb5d60', '逆道推演 · 凝神中', '逆道推演 · 已历', 'Defiant insight', '执心问道，写下你的问题…', wangLin),
+  entry('aqua-glass', '琉璃 · Aqua Glass', 'Aqua Glass', '柔光 · 银蓝 · 液态玻璃', '#a4c8f0', '清晰思考 · 正在推演', '清晰思考 · 已持续', 'Clear thinking', '从一个清晰的问题开始…', aquaGlass),
 ]);

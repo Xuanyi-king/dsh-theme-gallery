@@ -36,10 +36,12 @@ test('both guides advertise the committed CDN tarball and its checksum', async (
   const zh = await readFile(new URL('../README.md', import.meta.url), 'utf8');
   const en = await readFile(new URL('../README.en.md', import.meta.url), 'utf8');
   const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
-  const tarballName = `${pkg.name.replace(/^@/, '').replace('/', '-')}-${pkg.version}.tgz`;
+  // Source is a new unpublished version; preserve the existing published artifact.
+  const releasedVersion = '0.3.22';
+  const tarballName = `${pkg.name.replace(/^@/, '').replace('/', '-')}-${releasedVersion}.tgz`;
   // jsDelivr serves the same file from several endpoints; which one is reachable is network-dependent.
   const cdnHosts = ['cdn.jsdmirror.com', 'testingcf.jsdelivr.net', 'jsd.nn.ci', 'jsdelivr.b-cdn.net', 'fastly.jsdelivr.net', 'quantil.jsdelivr.net'];
-  const tarballUrl = `https://${cdnHosts[0]}/gh/Xuanyi-king/dsh-theme-gallery@v${pkg.version}/artifacts/${tarballName}`;
+  const tarballUrl = `https://${cdnHosts[0]}/gh/Xuanyi-king/dsh-theme-gallery@v${releasedVersion}/artifacts/${tarballName}`;
   const tarball = await readFile(new URL(`../artifacts/${tarballName}`, import.meta.url));
   const sha1 = createHash('sha1').update(tarball).digest('hex');
   for (const guide of [zh, en]) {
